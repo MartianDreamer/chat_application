@@ -9,11 +9,15 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import jakarta.persistence.UniqueConstraint;
+import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+
+import java.io.Serializable;
+import java.util.UUID;
 
 @Entity
 @Table(
@@ -27,11 +31,13 @@ import lombok.Setter;
 @NoArgsConstructor
 @Setter
 @Getter
-public class FriendRelationship {
+public class FriendRelationship implements Serializable {
+
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.UUID)
     @Column(name = "id", nullable = false)
-    private Long id;
+    @Setter(AccessLevel.NONE)
+    private UUID id;
 
     @ManyToOne
     @JoinColumn(name = "user_1_id")

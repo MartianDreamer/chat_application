@@ -5,7 +5,7 @@ spring:
     url: jdbc:postgresql://localhost:5432/chat_application
   jpa:
     hibernate:
-      ddl-auto: update
+      ddl-auto: create-drop
     properties:
       hibernate:
         format_sql: true

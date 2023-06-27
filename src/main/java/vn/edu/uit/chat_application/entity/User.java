@@ -22,10 +22,12 @@ import org.springframework.security.core.userdetails.UserDetails;
 import vn.edu.uit.chat_application.constants.FileExtension;
 import vn.edu.uit.chat_application.constants.Role;
 
+import java.io.Serializable;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.Set;
+import java.util.UUID;
 
 @Entity
 @Table(name = "T_USER")
@@ -34,17 +36,18 @@ import java.util.Set;
 @NoArgsConstructor
 @Builder
 @Setter
-public class User implements UserDetails {
-
+public class User implements UserDetails, Serializable {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    @GeneratedValue(strategy = GenerationType.UUID)
+    @Column(name = "id", nullable = false)
+    @Setter(AccessLevel.NONE)
+    private UUID id;
 
-    @Column(unique = true, nullable = false)
+    @Column(unique = true, nullable = false, length = 20)
     @Getter(value = AccessLevel.NONE)
     private String username;
 
-    @Column(nullable = false)
+    @Column(nullable = false, length = 30)
     @Getter(value = AccessLevel.NONE)
     private String password;
 
@@ -60,18 +63,16 @@ public class User implements UserDetails {
     @Column(nullable = false)
     private LocalDateTime createdAt;
 
-    @Column(nullable = false, unique = true)
+    @Column(nullable = false, unique = true, length = 30)
     private String email;
 
-    @Column(unique = true)
+    @Column(unique = true, length = 15)
     private String phoneNumber;
 
     @Lob
-    @Column(columnDefinition = "BLOB")
     private byte[] avatar;
 
-    @Enumerated(EnumType.STRING)
-    private FileExtension.StaticImage avatarExtension;
+    private FileExtension.ImageFileExtension avatarExtension;
 
     @Column(nullable = false)
     private boolean isConfirmed;
