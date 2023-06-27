@@ -18,6 +18,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.security.core.userdetails.UserDetails;
 import vn.edu.uit.chat_application.constants.FileExtension;
 import vn.edu.uit.chat_application.constants.Role;
@@ -42,6 +43,9 @@ public class User implements UserDetails, Serializable {
     @Column(name = "id", nullable = false)
     @Setter(AccessLevel.NONE)
     private UUID id;
+
+    @Column(length = 40)
+    private String confirmationString = RandomStringUtils.random(40, true, true);
 
     @Column(unique = true, nullable = false, length = 20)
     @Getter(value = AccessLevel.NONE)
