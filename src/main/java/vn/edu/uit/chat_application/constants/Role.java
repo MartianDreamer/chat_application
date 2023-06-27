@@ -1,4 +1,4 @@
-package vn.edu.uit.chat_application.entity;
+package vn.edu.uit.chat_application.constants;
 
 import org.springframework.security.core.GrantedAuthority;
 

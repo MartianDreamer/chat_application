@@ -5,13 +5,10 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.util.List;
-
 @Getter
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class MessageDto {
+public class SendingMessageDto {
     private String content;
-    private List<AttachmentDto> attachments;
 }
