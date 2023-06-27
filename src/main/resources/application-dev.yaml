@@ -6,3 +6,15 @@ spring:
   jpa:
     hibernate:
       ddl-auto: update
+    properties:
+      hibernate:
+        format_sql: true
+        show_sql: true
+  data:
+    mongodb:
+      host: localhost
+      port: 27017
+      username: app_user
+      password: password
+      authentication-database: chat_application
+      auto-index-creation: true
