@@ -1,5 +1,6 @@
 package vn.edu.uit.chat_application.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -25,10 +26,12 @@ import java.util.List;
 )
 public class Message {
     @Id
-    private String id;
-    private LocalDateTime timestamp;
-    private String content;
-    private List<Attachment> attachments;
-    private boolean seen;
-    private long conversationId;
+    protected Long creatorUserId;
+    @JsonIgnore
+    protected String id;
+    protected LocalDateTime timestamp;
+    protected String content;
+    protected List<Attachment> attachments;
+    protected List<Long> seenBy;
+    protected Long conversationId;
 }

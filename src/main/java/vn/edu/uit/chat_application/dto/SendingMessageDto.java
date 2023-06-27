@@ -11,7 +11,7 @@ import java.util.List;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class MessageDto {
+public class SendingMessageDto {
     private String content;
     private List<AttachmentDto> attachments;
 }

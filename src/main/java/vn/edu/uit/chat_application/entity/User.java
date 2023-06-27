@@ -10,6 +10,7 @@ import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.Lob;
 import jakarta.persistence.Table;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -18,6 +19,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.springframework.security.core.userdetails.UserDetails;
+import vn.edu.uit.chat_application.constants.FileExtension;
+import vn.edu.uit.chat_application.constants.Role;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -62,6 +65,13 @@ public class User implements UserDetails {
 
     @Column(unique = true)
     private String phoneNumber;
+
+    @Lob
+    @Column(columnDefinition = "BLOB")
+    private byte[] avatar;
+
+    @Enumerated(EnumType.STRING)
+    private FileExtension.StaticImage avatarExtension;
 
     @Column(nullable = false)
     private boolean isConfirmed;
