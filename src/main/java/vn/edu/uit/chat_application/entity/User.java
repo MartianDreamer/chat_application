@@ -19,6 +19,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.springframework.security.core.userdetails.UserDetails;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.Set;
@@ -48,13 +49,22 @@ public class User implements UserDetails {
     @Getter(value = AccessLevel.NONE)
     private boolean accountLocked;
 
-    private LocalDateTime validUntil;
+    private LocalDate validUntil;
 
     @Column(nullable = false)
     private boolean online;
 
     @Column(nullable = false)
     private LocalDateTime createdAt;
+
+    @Column(nullable = false, unique = true)
+    private String email;
+
+    @Column(unique = true)
+    private String phoneNumber;
+
+    @Column(nullable = false)
+    private boolean isConfirmed;
 
     @ElementCollection(targetClass = Role.class, fetch = FetchType.EAGER)
     @CollectionTable(name = "T_USER_ROLES")

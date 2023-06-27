@@ -1,6 +1,8 @@
 package vn.edu.uit.chat_application.entity;
 
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
@@ -10,7 +12,8 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import vn.edu.uit.chat_application.dto.AttachmentDto;
+
+import java.time.LocalDateTime;
 
 @Getter
 @Setter
@@ -21,7 +24,7 @@ import vn.edu.uit.chat_application.dto.AttachmentDto;
 @Table(name = "T_ATTACHMENT")
 public class Attachment {
     public enum Type {
-        STICKER, PICTURE, VIDEO, FILE;
+        STICKER, PICTURE, VIDEO, FILE
     }
     @Id
     private String id;
@@ -29,6 +32,8 @@ public class Attachment {
     @ManyToOne
     @JoinColumn(name = "conversation_id")
     private Conversation conversation;
+    @Enumerated(EnumType.STRING)
     private Type type;
     private String name;
+    private LocalDateTime timestamp;
 }
