@@ -8,11 +8,14 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
+import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+
+import java.util.UUID;
 
 @Entity
 @Table(name = "T_BLOCK_RELATIONSHIP")
@@ -24,9 +27,10 @@ import lombok.Setter;
 public class BlockRelationship {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.UUID)
     @Column(name = "id", nullable = false)
-    private Long id;
+    @Setter(AccessLevel.NONE)
+    private UUID id;
 
     @ManyToOne
     @JoinColumn(name = "blocker_id")
@@ -35,4 +39,9 @@ public class BlockRelationship {
     @ManyToOne
     @JoinColumn(name = "blocked_id")
     private User blocked;
+
+    public BlockRelationship(User blocker, User blocked) {
+        this.blocker = blocker;
+        this.blocked = blocked;
+    }
 }

@@ -1,5 +1,6 @@
 package vn.edu.uit.chat_application.entity;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -16,6 +17,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
@@ -27,10 +29,11 @@ import java.util.UUID;
 @Builder
 @Entity
 @Table(name = "T_MESSAGE")
-public class Message {
+public class Message implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Setter(AccessLevel.NONE)
+    @Column(nullable = false, length = 36)
     private UUID id;
     @ManyToOne
     @JoinColumn(name = "from_id")
@@ -46,5 +49,6 @@ public class Message {
     )
     @ManyToMany
     private List<User> seenBy;
+    @Column(nullable = false, columnDefinition = "TEXT")
     protected String content;
 }

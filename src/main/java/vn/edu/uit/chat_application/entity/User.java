@@ -1,12 +1,7 @@
 package vn.edu.uit.chat_application.entity;
 
-import jakarta.persistence.CollectionTable;
 import jakarta.persistence.Column;
-import jakarta.persistence.ElementCollection;
 import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
-import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -19,13 +14,17 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.springframework.security.core.userdetails.UserDetails;
-import vn.edu.uit.chat_application.constants.FileExtension;
 import vn.edu.uit.chat_application.constants.Role;
+import vn.edu.uit.chat_application.dto.UserReceivedDto;
+import vn.edu.uit.chat_application.service.UserService;
 
+import java.io.Serializable;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Collection;
-import java.util.Set;
+import java.util.UUID;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Entity
 @Table(name = "T_USER")
@@ -34,56 +33,56 @@ import java.util.Set;
 @NoArgsConstructor
 @Builder
 @Setter
-public class User implements UserDetails {
-
+public class User implements UserDetails, Serializable {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    @GeneratedValue(strategy = GenerationType.UUID)
+    @Column(name = "id", nullable = false)
+    @Setter(AccessLevel.NONE)
+    private UUID id;
 
-    @Column(unique = true, nullable = false)
+    @Column(unique = true, length = 58)
+    private String confirmationString;
+
+    @Column(unique = true, nullable = false, length = 20)
     @Getter(value = AccessLevel.NONE)
     private String username;
 
-    @Column(nullable = false)
+    @Column(nullable = false, length = 30)
     @Getter(value = AccessLevel.NONE)
     private String password;
 
     @Column(nullable = false)
     @Getter(value = AccessLevel.NONE)
-    private boolean accountLocked;
+    private boolean accountLocked = false;
 
     private LocalDate validUntil;
 
     @Column(nullable = false)
-    private boolean online;
-
-    @Column(nullable = false)
     private LocalDateTime createdAt;
 
-    @Column(nullable = false, unique = true)
+    @Column(nullable = false, unique = true, length = 30)
     private String email;
 
-    @Column(unique = true)
+    @Column(unique = true, length = 15)
     private String phoneNumber;
 
     @Lob
-    @Column(columnDefinition = "BLOB")
     private byte[] avatar;
 
-    @Enumerated(EnumType.STRING)
-    private FileExtension.StaticImage avatarExtension;
+    @Column(length = 5)
+    private String avatarExtension;
 
     @Column(nullable = false)
-    private boolean isConfirmed;
+    private boolean active;
 
-    @ElementCollection(targetClass = Role.class, fetch = FetchType.EAGER)
-    @CollectionTable(name = "T_USER_ROLES")
-    @Enumerated(EnumType.STRING)
-    private Set<Role> roles;
+    @Column(nullable = false)
+    private String roles;
 
     @Override
     public Collection<Role> getAuthorities() {
-        return roles;
+        return Stream.of(roles.split("_"))
+                .map(Role::valueOf)
+                .collect(Collectors.toSet());
     }
 
     @Override
@@ -114,5 +113,22 @@ public class User implements UserDetails {
     @Override
     public boolean isEnabled() {
         return true;
+    }
+
+    public static User from(UserReceivedDto userReceivedDto) {
+        return User.builder()
+                .id(userReceivedDto.getId())
+                .username(userReceivedDto.getUsername())
+                .password(userReceivedDto.getPassword())
+                .validUntil(LocalDate.now().plusDays(1))
+                .createdAt(LocalDateTime.now())
+                .email(userReceivedDto.getEmail())
+                .phoneNumber(userReceivedDto.getPhoneNumber())
+                .avatar(userReceivedDto.getAvatar())
+                .avatarExtension(userReceivedDto.getAvatarExtension())
+                .confirmationString(UserService.generateConfirmationString())
+                .active(false)
+                .roles("USER")
+                .build();
     }
 }
