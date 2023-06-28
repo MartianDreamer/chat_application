@@ -62,6 +62,10 @@ public class UserService implements UserDetailsService {
         return confirmationString;
     }
 
+    public User findById(UUID id) {
+        return userRepository.findById(id).orElseThrow(CustomRuntimeException::notFound);
+    }
+
     public static String generateConfirmationString() {
         return RandomStringUtils.random(40, true, true) + LocalDateTime.now().toEpochSecond(ZoneOffset.UTC);
     }

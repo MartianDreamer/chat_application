@@ -1,6 +1,5 @@
 package vn.edu.uit.chat_application.controller;
 
-import jakarta.annotation.security.RolesAllowed;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -44,9 +43,13 @@ public class UserController {
     }
 
     @GetMapping("/username/{username}")
-    @RolesAllowed("USER")
     public ResponseEntity<UserSentDto> findByUsername(@PathVariable("username") String username) {
         return ResponseEntity.ok(UserSentDto.from(userService.loadByUsername(username)));
+    }
+
+    @GetMapping("/id/{id}")
+    public ResponseEntity<UserSentDto> findById(@PathVariable("id") UUID username) {
+        return ResponseEntity.ok(UserSentDto.from(userService.findById(username)));
     }
 
     @GetMapping("/confirmation/reset/{id}")
