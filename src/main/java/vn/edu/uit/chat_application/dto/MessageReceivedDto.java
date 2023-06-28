@@ -9,6 +9,6 @@ import lombok.Setter;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class SendingMessageDto {
+public class MessageReceivedDto {
     private String content;
 }

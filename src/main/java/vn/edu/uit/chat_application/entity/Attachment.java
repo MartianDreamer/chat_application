@@ -16,7 +16,6 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import vn.edu.uit.chat_application.constants.FileExtension;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
@@ -45,7 +44,7 @@ public class Attachment implements Serializable {
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, length =  10)
     private Type type;
-    private FileExtension fileExtension;
+    private String fileExtension;
     @Column(nullable = false, length =  100)
     private String name;
     @Column(nullable = false)

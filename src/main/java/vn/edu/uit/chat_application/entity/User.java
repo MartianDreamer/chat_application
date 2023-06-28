@@ -18,18 +18,19 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.security.core.userdetails.UserDetails;
-import vn.edu.uit.chat_application.constants.FileExtension;
 import vn.edu.uit.chat_application.constants.Role;
+import vn.edu.uit.chat_application.dto.UserReceivedDto;
+import vn.edu.uit.chat_application.service.UserService;
 
 import java.io.Serializable;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.ZoneOffset;
 import java.util.Collection;
 import java.util.Set;
 import java.util.UUID;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Entity
 @Table(name = "T_USER")
@@ -45,8 +46,8 @@ public class User implements UserDetails, Serializable {
     @Setter(AccessLevel.NONE)
     private UUID id;
 
-    @Column(length = 58)
-    private String confirmationString = RandomStringUtils.random(40, true, true) + LocalDateTime.now().toEpochSecond(ZoneOffset.UTC);
+    @Column(unique = true, length = 58)
+    private String confirmationString;
 
     @Column(unique = true, nullable = false, length = 20)
     @Getter(value = AccessLevel.NONE)
@@ -58,12 +59,9 @@ public class User implements UserDetails, Serializable {
 
     @Column(nullable = false)
     @Getter(value = AccessLevel.NONE)
-    private boolean accountLocked;
+    private boolean accountLocked = false;
 
     private LocalDate validUntil;
-
-    @Column(nullable = false)
-    private boolean online;
 
     @Column(nullable = false)
     private LocalDateTime createdAt;
@@ -77,19 +75,20 @@ public class User implements UserDetails, Serializable {
     @Lob
     private byte[] avatar;
 
-    private FileExtension.ImageFileExtension avatarExtension;
+    @Column(length = 5)
+    private String avatarExtension;
 
     @Column(nullable = false)
-    private boolean isConfirmed;
+    private boolean active;
 
-    @ElementCollection(targetClass = Role.class, fetch = FetchType.EAGER)
-    @CollectionTable(name = "T_USER_ROLES")
-    @Enumerated(EnumType.STRING)
-    private Set<Role> roles;
+    @Column(nullable = false)
+    private String roles;
 
     @Override
     public Collection<Role> getAuthorities() {
-        return roles;
+        return Stream.of(roles.split("_"))
+                .map(Role::valueOf)
+                .collect(Collectors.toSet());
     }
 
     @Override
@@ -120,5 +119,22 @@ public class User implements UserDetails, Serializable {
     @Override
     public boolean isEnabled() {
         return true;
+    }
+
+    public static User from(UserReceivedDto userReceivedDto) {
+        return User.builder()
+                .id(userReceivedDto.getId())
+                .username(userReceivedDto.getUsername())
+                .password(userReceivedDto.getPassword())
+                .validUntil(LocalDate.now().plusDays(1))
+                .createdAt(LocalDateTime.now())
+                .email(userReceivedDto.getEmail())
+                .phoneNumber(userReceivedDto.getPhoneNumber())
+                .avatar(userReceivedDto.getAvatar())
+                .avatarExtension(userReceivedDto.getAvatarExtension())
+                .confirmationString(UserService.generateConfirmationString())
+                .active(false)
+                .roles("USER")
+                .build();
     }
 }
