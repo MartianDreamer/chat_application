@@ -39,4 +39,9 @@ public class BlockRelationship {
     @ManyToOne
     @JoinColumn(name = "blocked_id")
     private User blocked;
+
+    public BlockRelationship(User blocker, User blocked) {
+        this.blocker = blocker;
+        this.blocked = blocked;
+    }
 }

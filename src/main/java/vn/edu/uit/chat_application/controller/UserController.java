@@ -1,5 +1,6 @@
 package vn.edu.uit.chat_application.controller;
 
+import jakarta.annotation.security.RolesAllowed;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -24,8 +25,13 @@ public class UserController {
 
     private final UserService userService;
 
-    @PutMapping
-    public ResponseEntity<UserSentDto> createOrUpdateUser(@RequestBody UserReceivedDto dto) {
+    @PutMapping("/create")
+    public ResponseEntity<UserSentDto> createUser(@RequestBody UserReceivedDto dto) {
+        return ResponseEntity.ok(UserSentDto.from(userService.saveUser(dto)));
+    }
+
+    @PutMapping("/update")
+    public ResponseEntity<UserSentDto> updateUser(@RequestBody UserReceivedDto dto) {
         return ResponseEntity.ok(UserSentDto.from(userService.saveUser(dto)));
     }
 
@@ -38,6 +44,7 @@ public class UserController {
     }
 
     @GetMapping("/username/{username}")
+    @RolesAllowed("USER")
     public ResponseEntity<UserSentDto> findByUsername(@PathVariable("username") String username) {
         return ResponseEntity.ok(UserSentDto.from(userService.loadByUsername(username)));
     }

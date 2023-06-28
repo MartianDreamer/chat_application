@@ -14,6 +14,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Entity
@@ -32,5 +33,5 @@ public class OnlineUser {
     @JoinColumn(name = "user_id", unique = true, nullable = false)
     private User user;
     @Column(nullable = false)
-    private boolean online;
+    private LocalDateTime lastSeen;
 }

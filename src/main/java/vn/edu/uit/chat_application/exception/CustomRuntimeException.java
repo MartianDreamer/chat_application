@@ -32,4 +32,7 @@ public class CustomRuntimeException extends RuntimeException {
         this.httpResponseStatus = httpResponseStatus;
     }
 
+    public static CustomRuntimeException notFound() {
+        return new CustomRuntimeException("resource not found", HttpStatus.NOT_FOUND);
+    }
 }
