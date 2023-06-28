@@ -17,6 +17,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.io.Serializable;
+import java.time.LocalDate;
 import java.util.UUID;
 
 @Entity
@@ -46,6 +47,8 @@ public class FriendRelationship implements Serializable {
     @ManyToOne
     @JoinColumn(name = "user_2_id")
     private User second;
+
+    private LocalDate since;
 
     public FriendRelationship(User first, User second) {
         this.first = first;
