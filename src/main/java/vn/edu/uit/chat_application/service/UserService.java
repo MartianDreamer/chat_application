@@ -1,5 +1,6 @@
 package vn.edu.uit.chat_application.service;
 
+import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -7,6 +8,7 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import vn.edu.uit.chat_application.annotation.EncryptPassword;
 import vn.edu.uit.chat_application.dto.UserReceivedDto;
 import vn.edu.uit.chat_application.entity.User;
 import vn.edu.uit.chat_application.exception.CustomRuntimeException;
@@ -17,19 +19,17 @@ import java.time.ZoneOffset;
 import java.util.UUID;
 
 @Service
+@RequiredArgsConstructor
 public class UserService implements UserDetailsService {
 
     private final UserRepository userRepository;
-
-    public UserService(UserRepository userRepository) {
-        this.userRepository = userRepository;
-    }
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         return loadByUsername(username);
     }
 
+    @EncryptPassword
     public User saveUser(UserReceivedDto dto) {
         return userRepository.save(User.from(dto));
     }

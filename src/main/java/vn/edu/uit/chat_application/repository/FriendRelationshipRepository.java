@@ -10,9 +10,9 @@ import java.util.UUID;
 
 public interface FriendRelationshipRepository extends JpaRepository<FriendRelationship, UUID> {
     @Query(value = "select count(*) = 1 from FriendRelationship fs " +
-            "where (fs.first.id = :first and fs.second.id = :second) " +
-            "or (fs.first.id = :second and fs.second.id = :first)")
+            "where (fs.first.id = :firstId and fs.second.id = :secondId) " +
+            "or (fs.first.id = :secondId and fs.second.id = :firstId)")
     boolean existsByUserIds(UUID firstId, UUID secondId);
 
-    Page<FriendRelationship> findAllByFirstIdOrSecondId(UUID userId, Pageable pageable);
+    Page<FriendRelationship> findAllByFirstIdOrSecondId(UUID firstId, UUID secondId, Pageable pageable);
 }

@@ -12,7 +12,7 @@ public interface UserRepository extends JpaRepository<User, UUID> {
 
     @Modifying
     @Query(
-            value = "update User u set u.confirmationString = null, u.active = true " +
+            value = "update User u set u.confirmationString = null, u.active = true, u.validUntil = null " +
                     "where u.confirmationString = :confirmationString"
     )
     int activateUser(String confirmationString);

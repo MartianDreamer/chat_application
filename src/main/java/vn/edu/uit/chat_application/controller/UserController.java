@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -18,24 +19,24 @@ import vn.edu.uit.chat_application.service.UserService;
 import java.util.UUID;
 
 @RestController
-@RequestMapping("/rest/user")
+@RequestMapping("/rest/users")
 @RequiredArgsConstructor
 public class UserController {
 
     private final UserService userService;
 
-    @PutMapping("/create")
+    @PutMapping
     public ResponseEntity<UserSentDto> createUser(@RequestBody UserReceivedDto dto) {
         return ResponseEntity.ok(UserSentDto.from(userService.saveUser(dto)));
     }
 
-    @PutMapping("/update")
+    @PatchMapping
     public ResponseEntity<UserSentDto> updateUser(@RequestBody UserReceivedDto dto) {
         return ResponseEntity.ok(UserSentDto.from(userService.saveUser(dto)));
     }
 
     @PostMapping("/confirm/{confirmationString}")
-    public ResponseEntity<String> activateUser(@PathVariable("confirmationString") String confirmationString) {
+    public ResponseEntity<Void> activateUser(@PathVariable("confirmationString") String confirmationString) {
         if (userService.activateUser(confirmationString)) {
             return ResponseEntity.ok().build();
         }

@@ -47,7 +47,7 @@ public class User implements UserDetails, Serializable {
     @Getter(value = AccessLevel.NONE)
     private String username;
 
-    @Column(nullable = false, length = 30)
+    @Column(nullable = false)
     @Getter(value = AccessLevel.NONE)
     private String password;
 

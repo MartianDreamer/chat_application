@@ -52,8 +52,8 @@ public class WebSecurityConfig {
                 .cors(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(authorizationManagerRequestMatcherRegistry -> {
                     RequestMatcher[] permitAllRequests = {
-                            RegexRequestMatcher.regexMatcher(HttpMethod.PUT, "/rest/user/create"),
-                            RegexRequestMatcher.regexMatcher(HttpMethod.PUT, "/rest/user/confirm.*"),
+                            RegexRequestMatcher.regexMatcher(HttpMethod.PUT, "/rest/users"),
+                            RegexRequestMatcher.regexMatcher("/rest/users/confirm.*"),
                             RegexRequestMatcher.regexMatcher("/swagger-ui.html.*"),
                             RegexRequestMatcher.regexMatcher("/v3/api-docs.*"),
                             RegexRequestMatcher.regexMatcher("/swagger-ui.*")
