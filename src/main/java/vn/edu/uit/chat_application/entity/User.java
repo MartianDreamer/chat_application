@@ -26,6 +26,7 @@ import vn.edu.uit.chat_application.constants.Role;
 import java.io.Serializable;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.ZoneOffset;
 import java.util.Collection;
 import java.util.Set;
 import java.util.UUID;
@@ -44,8 +45,8 @@ public class User implements UserDetails, Serializable {
     @Setter(AccessLevel.NONE)
     private UUID id;
 
-    @Column(length = 40)
-    private String confirmationString = RandomStringUtils.random(40, true, true);
+    @Column(length = 58)
+    private String confirmationString = RandomStringUtils.random(40, true, true) + LocalDateTime.now().toEpochSecond(ZoneOffset.UTC);
 
     @Column(unique = true, nullable = false, length = 20)
     @Getter(value = AccessLevel.NONE)
