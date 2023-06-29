@@ -8,7 +8,7 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import vn.edu.uit.chat_application.annotation.EncryptPassword;
+import vn.edu.uit.chat_application.aspect.annotation.EncryptPassword;
 import vn.edu.uit.chat_application.dto.UserReceivedDto;
 import vn.edu.uit.chat_application.entity.User;
 import vn.edu.uit.chat_application.exception.CustomRuntimeException;

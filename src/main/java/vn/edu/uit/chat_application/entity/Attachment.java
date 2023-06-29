@@ -10,15 +10,17 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
+import jakarta.persistence.Transient;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import vn.edu.uit.chat_application.aspect.annotation.FillFromUserField;
+import vn.edu.uit.chat_application.dto.AttachmentReceivedDto;
 
 import java.io.Serializable;
-import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Getter
@@ -37,16 +39,29 @@ public class Attachment implements Serializable {
     @Column(name = "id", nullable = false)
     @Setter(AccessLevel.NONE)
     private UUID id;
-
     @ManyToOne
     @JoinColumn(name = "conversation_id")
-    private Conversation conversation;
+    private Conversation to;
+    @ManyToOne
+    @JoinColumn(name = "from_id")
+    private User from;
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, length =  10)
     private Type type;
+    @Column(nullable = false, length = 10)
     private String fileExtension;
-    @Column(nullable = false, length =  100)
-    private String name;
-    @Column(nullable = false)
-    private LocalDateTime timestamp;
+    @Transient
+    private byte[] content;
+
+    @FillFromUserField
+    public static Attachment from(AttachmentReceivedDto attachmentReceivedDto) {
+        Conversation to = Conversation.builder().id(attachmentReceivedDto.getTo()).build();
+        return Attachment.builder()
+                .to(to)
+                .from(attachmentReceivedDto.getFrom())
+                .type(attachmentReceivedDto.getType())
+                .fileExtension(attachmentReceivedDto.getExtension())
+                .content(attachmentReceivedDto.getContent())
+                .build();
+    }
 }

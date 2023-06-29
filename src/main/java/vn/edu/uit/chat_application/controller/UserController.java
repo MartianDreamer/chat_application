@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import vn.edu.uit.chat_application.aspect.annotation.UserApisAuthorize;
 import vn.edu.uit.chat_application.dto.UserReceivedDto;
 import vn.edu.uit.chat_application.dto.UserSentDto;
 import vn.edu.uit.chat_application.exception.CustomRuntimeException;
@@ -20,6 +21,7 @@ import java.util.UUID;
 
 @RestController
 @RequestMapping("/rest/users")
+@UserApisAuthorize
 @RequiredArgsConstructor
 public class UserController {
 

@@ -1,4 +1,4 @@
-package vn.edu.uit.chat_application.aspect;
+package vn.edu.uit.chat_application.aspect.processor;
 
 import lombok.RequiredArgsConstructor;
 import org.aspectj.lang.JoinPoint;
@@ -17,7 +17,7 @@ import java.util.stream.Stream;
 public class EncryptPasswordProcessor {
     private final BCryptPasswordEncoder passwordEncoder;
 
-    @Before("@annotation(vn.edu.uit.chat_application.annotation.EncryptPassword)")
+    @Before("@annotation(vn.edu.uit.chat_application.aspect.annotation.EncryptPassword)")
     public void encryptPassword(JoinPoint joinPoint) {
         List<UserReceivedDto> userReceivedDtos = Stream.of(joinPoint.getArgs())
                 .filter(e -> UserReceivedDto.class.equals(e.getClass()))
