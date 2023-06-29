@@ -1,4 +1,4 @@
-package vn.edu.uit.chat_application.aspect;
+package vn.edu.uit.chat_application.aspect.util;
 
 import lombok.RequiredArgsConstructor;
 import org.aspectj.lang.JoinPoint;
