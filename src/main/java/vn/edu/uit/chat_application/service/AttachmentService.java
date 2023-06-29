@@ -10,7 +10,6 @@ public interface AttachmentService {
     List<Attachment> createAttachments(List<AttachmentReceivedDto> dtos);
     void deleteAttachmens(List<UUID> ids);
     List<Attachment> getAttachments(List<UUID> ids);
-    List<Attachment> getByMessageId(UUID messageId);
     List<Attachment> getByConversationId(UUID conversationId);
     void persistAttachment(Attachment attachment);
     void deleteAttachmentFile(Attachment attachment);

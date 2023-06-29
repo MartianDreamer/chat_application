@@ -9,7 +9,6 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -17,9 +16,12 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import vn.edu.uit.chat_application.aspect.annotation.FillFromUserField;
+import vn.edu.uit.chat_application.dto.MessageReceivedDto;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.UUID;
 
@@ -50,8 +52,18 @@ public class Message implements Serializable {
     )
     @ManyToMany
     private List<User> seenBy;
-    @OneToMany
-    private List<Attachment> attachments;
     @Column(nullable = false, columnDefinition = "TEXT")
     protected String content;
+
+    @FillFromUserField
+    public static Message from(MessageReceivedDto dto) {
+        Conversation conversation = Conversation.builder().id(dto.getTo()).build();
+        return Message.builder()
+                .conversation(conversation)
+                .from(dto.getFrom())
+                .timestamp(LocalDateTime.now())
+                .seenBy(new LinkedList<>())
+                .content(dto.getContent())
+                .build();
+    }
 }

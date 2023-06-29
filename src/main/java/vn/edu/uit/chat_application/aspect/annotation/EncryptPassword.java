@@ -1,4 +1,4 @@
-package vn.edu.uit.chat_application.annotation;
+package vn.edu.uit.chat_application.aspect.annotation;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;

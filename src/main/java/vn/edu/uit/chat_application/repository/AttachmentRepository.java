@@ -7,7 +7,6 @@ import java.util.List;
 import java.util.UUID;
 
 public interface AttachmentRepository extends JpaRepository<Attachment, UUID> {
-    List<Attachment> findAllByMessageId(UUID messageId);
 
-    List<Attachment> findAllByMessageConversationId(UUID conversationId);
+    List<Attachment> findAllByToId(UUID conversationId);
 }

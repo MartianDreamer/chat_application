@@ -47,18 +47,13 @@ public class LocalStorageAttachmentService implements AttachmentService {
     }
 
     @Override
-    public List<Attachment> getByMessageId(UUID messageId) {
-        return attachmentRepository.findAllByMessageId(messageId);
-    }
-
-    @Override
     public List<Attachment> getByConversationId(UUID conversationId) {
-        return attachmentRepository.findAllByMessageConversationId(conversationId);
+        return attachmentRepository.findAllByToId(conversationId);
     }
 
 
     public void deleteAttachmentFile(Attachment attachment) {
-        String dir = "/attachment/" + attachment.getMessage().getId().toString();
+        String dir = "/attachment/" + attachment.getTo().getId().toString();
         File dirFile = new File(dir);
         String fileName = attachment.getId().toString() + attachment.getFileExtension();
         File file = new File(dirFile, fileName);
@@ -69,7 +64,7 @@ public class LocalStorageAttachmentService implements AttachmentService {
 
     @Override
     public Attachment getAttachmentContent(Attachment attachment) {
-        String dir = "/attachment/" + attachment.getMessage().getId().toString();
+        String dir = "/attachment/" + attachment.getTo().getId().toString();
         File dirFile = new File(dir);
         String fileName = attachment.getId().toString() + attachment.getFileExtension();
         File file = new File(dirFile, fileName);
@@ -83,7 +78,7 @@ public class LocalStorageAttachmentService implements AttachmentService {
 
     @Override
     public void persistAttachment(Attachment attachment) {
-        String dir = "/attachment/" + attachment.getMessage().getId().toString();
+        String dir = "/attachment/" + attachment.getTo().getId().toString();
         File dirFile = new File(dir);
         String fileName = attachment.getId().toString() + attachment.getFileExtension();
         File file = new File(dirFile, fileName);

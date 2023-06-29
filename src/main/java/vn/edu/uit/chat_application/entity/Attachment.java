@@ -17,6 +17,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import vn.edu.uit.chat_application.aspect.annotation.FillFromUserField;
 import vn.edu.uit.chat_application.dto.AttachmentReceivedDto;
 
 import java.io.Serializable;
@@ -39,8 +40,11 @@ public class Attachment implements Serializable {
     @Setter(AccessLevel.NONE)
     private UUID id;
     @ManyToOne
-    @JoinColumn(name = "message_id")
-    private Message message;
+    @JoinColumn(name = "conversation_id")
+    private Conversation to;
+    @ManyToOne
+    @JoinColumn(name = "from_id")
+    private User from;
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, length =  10)
     private Type type;
@@ -49,9 +53,12 @@ public class Attachment implements Serializable {
     @Transient
     private byte[] content;
 
+    @FillFromUserField
     public static Attachment from(AttachmentReceivedDto attachmentReceivedDto) {
+        Conversation to = Conversation.builder().id(attachmentReceivedDto.getTo()).build();
         return Attachment.builder()
-                .message(Message.builder().id(attachmentReceivedDto.getMessageId()).build())
+                .to(to)
+                .from(attachmentReceivedDto.getFrom())
                 .type(attachmentReceivedDto.getType())
                 .fileExtension(attachmentReceivedDto.getExtension())
                 .content(attachmentReceivedDto.getContent())

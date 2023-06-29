@@ -1,10 +1,12 @@
 package vn.edu.uit.chat_application.dto;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import vn.edu.uit.chat_application.entity.Attachment;
+import vn.edu.uit.chat_application.entity.User;
 
 import java.util.UUID;
 
@@ -12,8 +14,10 @@ import java.util.UUID;
 @NoArgsConstructor
 @Getter
 @Setter
-public class AttachmentReceivedDto {
-    private UUID messageId;
+public class AttachmentReceivedDto implements FromLoggedInUserDto {
+    private UUID to;
+    @JsonIgnore
+    private User from;
     private Attachment.Type type;
     private String extension;
     private byte[] content;
