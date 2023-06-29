@@ -9,6 +9,7 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -49,6 +50,8 @@ public class Message implements Serializable {
     )
     @ManyToMany
     private List<User> seenBy;
+    @OneToMany
+    private List<Attachment> attachments;
     @Column(nullable = false, columnDefinition = "TEXT")
     protected String content;
 }

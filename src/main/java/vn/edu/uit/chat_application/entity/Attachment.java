@@ -16,9 +16,10 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.springframework.data.annotation.Transient;
+import vn.edu.uit.chat_application.dto.AttachmentReceivedDto;
 
 import java.io.Serializable;
-import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Getter
@@ -37,16 +38,23 @@ public class Attachment implements Serializable {
     @Column(name = "id", nullable = false)
     @Setter(AccessLevel.NONE)
     private UUID id;
-
     @ManyToOne
-    @JoinColumn(name = "conversation_id")
-    private Conversation conversation;
+    @JoinColumn(name = "message_id")
+    private Message message;
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, length =  10)
     private Type type;
+    @Column(nullable = false, length = 10)
     private String fileExtension;
-    @Column(nullable = false, length =  100)
-    private String name;
-    @Column(nullable = false)
-    private LocalDateTime timestamp;
+    @Transient
+    private byte[] content;
+
+    public static Attachment from(AttachmentReceivedDto attachmentReceivedDto) {
+        return Attachment.builder()
+                .message(Message.builder().id(attachmentReceivedDto.getMessageId()).build())
+                .type(attachmentReceivedDto.getType())
+                .fileExtension(attachmentReceivedDto.getExtension())
+                .content(attachmentReceivedDto.getContent())
+                .build();
+    }
 }
