@@ -1,6 +1,5 @@
 package vn.edu.uit.chat_application.aspect.processor;
 
-import lombok.RequiredArgsConstructor;
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Before;
@@ -12,7 +11,6 @@ import java.util.stream.Stream;
 
 @Aspect
 @Component
-@RequiredArgsConstructor
 public class FillFromUserFieldProcessor {
     @Before("@annotation(vn.edu.uit.chat_application.aspect.annotation.FillFromUserField)")
     public void fillFromUserField(JoinPoint joinPoint) {
