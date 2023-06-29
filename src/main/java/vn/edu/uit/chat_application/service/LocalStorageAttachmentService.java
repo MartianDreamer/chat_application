@@ -3,7 +3,7 @@ package vn.edu.uit.chat_application.service;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
-import vn.edu.uit.chat_application.dto.AttachmentReceivedDto;
+import vn.edu.uit.chat_application.dto.received.AttachmentReceivedDto;
 import vn.edu.uit.chat_application.entity.Attachment;
 import vn.edu.uit.chat_application.exception.CustomRuntimeException;
 import vn.edu.uit.chat_application.repository.AttachmentRepository;

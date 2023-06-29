@@ -29,6 +29,9 @@ public class RelationshipService {
 
     public FriendRequest createFriendRequest(UUID userId) {
         User creator = PrincipalUtils.getLoggedInUser();
+        if (creator.getId().equals(userId)) {
+            throw new CustomRuntimeException("can not create friend request to yourself", HttpStatus.BAD_REQUEST);
+        }
         User user = userService.findById(userId);
         if (blockRelationshipRepository.existsByUserIds(creator.getId(), user.getId())) {
             throw new CustomRuntimeException("blocked", HttpStatus.BAD_REQUEST);
@@ -69,6 +72,9 @@ public class RelationshipService {
 
     public BlockRelationship blockUser(UUID userId) {
         User blocker = PrincipalUtils.getLoggedInUser();
+        if (blocker.getId().equals(userId)) {
+            throw new CustomRuntimeException("can not block yourself", HttpStatus.BAD_REQUEST);
+        }
         User blocked = userService.findById(userId);
         return blockRelationshipRepository.save(new BlockRelationship(blocker, blocked));
     }

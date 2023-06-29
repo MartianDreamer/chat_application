@@ -6,7 +6,7 @@ import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Before;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Component;
-import vn.edu.uit.chat_application.dto.UserReceivedDto;
+import vn.edu.uit.chat_application.dto.received.UserReceivedDto;
 
 import java.util.List;
 import java.util.stream.Stream;
