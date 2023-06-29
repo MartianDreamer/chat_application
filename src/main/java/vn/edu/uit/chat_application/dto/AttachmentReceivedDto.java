@@ -5,19 +5,20 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import vn.edu.uit.chat_application.entity.Attachment;
 import vn.edu.uit.chat_application.entity.User;
 
-import java.util.List;
 import java.util.UUID;
 
-@Getter
-@Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class MessageReceivedDto implements FromLoggedInUserDto {
+@Getter
+@Setter
+public class AttachmentReceivedDto implements FromLoggedInUserDto {
+    private UUID to;
     @JsonIgnore
     private User from;
-    private UUID to;
-    private String content;
-    private List<AttachmentReceivedDto> attachments;
+    private Attachment.Type type;
+    private String extension;
+    private byte[] content;
 }
