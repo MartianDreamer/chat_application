@@ -4,7 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
-import vn.edu.uit.chat_application.dto.MessageReceivedDto;
+import vn.edu.uit.chat_application.dto.received.MessageReceivedDto;
 import vn.edu.uit.chat_application.entity.Message;
 import vn.edu.uit.chat_application.repository.MessageRepository;
 

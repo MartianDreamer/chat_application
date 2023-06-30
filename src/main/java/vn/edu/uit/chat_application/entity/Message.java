@@ -17,7 +17,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import vn.edu.uit.chat_application.aspect.annotation.FillFromUserField;
-import vn.edu.uit.chat_application.dto.MessageReceivedDto;
+import vn.edu.uit.chat_application.dto.received.MessageReceivedDto;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;

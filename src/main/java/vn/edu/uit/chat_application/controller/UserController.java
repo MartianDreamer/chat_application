@@ -11,9 +11,8 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import vn.edu.uit.chat_application.aspect.annotation.UserApisAuthorize;
-import vn.edu.uit.chat_application.dto.UserReceivedDto;
-import vn.edu.uit.chat_application.dto.UserSentDto;
+import vn.edu.uit.chat_application.dto.received.UserReceivedDto;
+import vn.edu.uit.chat_application.dto.sent.UserSentDto;
 import vn.edu.uit.chat_application.exception.CustomRuntimeException;
 import vn.edu.uit.chat_application.service.UserService;
 
@@ -21,7 +20,6 @@ import java.util.UUID;
 
 @RestController
 @RequestMapping("/rest/users")
-@UserApisAuthorize
 @RequiredArgsConstructor
 public class UserController {
 
@@ -53,10 +51,5 @@ public class UserController {
     @GetMapping("/id/{id}")
     public ResponseEntity<UserSentDto> findById(@PathVariable("id") UUID username) {
         return ResponseEntity.ok(UserSentDto.from(userService.findById(username)));
-    }
-
-    @GetMapping("/confirmation/reset/{id}")
-    public ResponseEntity<String> resetConfirmationString(@PathVariable("id") UUID id) {
-        return ResponseEntity.ok(userService.resetConfirmationString(id));
     }
 }

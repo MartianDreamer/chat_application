@@ -18,7 +18,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import vn.edu.uit.chat_application.aspect.annotation.FillFromUserField;
-import vn.edu.uit.chat_application.dto.AttachmentReceivedDto;
+import vn.edu.uit.chat_application.dto.received.AttachmentReceivedDto;
 
 import java.io.Serializable;
 import java.util.UUID;
@@ -40,7 +40,7 @@ public class Attachment implements Serializable {
     @Setter(AccessLevel.NONE)
     private UUID id;
     @ManyToOne
-    @JoinColumn(name = "conversation_id")
+    @JoinColumn(name = "to_id")
     private Conversation to;
     @ManyToOne
     @JoinColumn(name = "from_id")

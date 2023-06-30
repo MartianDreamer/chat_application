@@ -1,4 +1,4 @@
-package vn.edu.uit.chat_application.dto;
+package vn.edu.uit.chat_application.dto.received;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

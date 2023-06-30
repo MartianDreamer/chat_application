@@ -8,12 +8,14 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import vn.edu.uit.chat_application.aspect.annotation.AllowedMethod;
 import vn.edu.uit.chat_application.aspect.annotation.EncryptPassword;
-import vn.edu.uit.chat_application.dto.UserReceivedDto;
+import vn.edu.uit.chat_application.dto.received.UserReceivedDto;
 import vn.edu.uit.chat_application.entity.User;
 import vn.edu.uit.chat_application.exception.CustomRuntimeException;
 import vn.edu.uit.chat_application.repository.UserRepository;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.util.UUID;
@@ -25,8 +27,9 @@ public class UserService implements UserDetailsService {
     private final UserRepository userRepository;
 
     @Override
+    @AllowedMethod
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        return loadByUsername(username);
+        return userRepository.findDistinctByUsername(username);
     }
 
     @EncryptPassword
@@ -43,29 +46,19 @@ public class UserService implements UserDetailsService {
     }
 
     @Transactional
+    @AllowedMethod
     public boolean activateUser(String confirmationString) {
-        long epoch = Long.parseLong(confirmationString.substring(40));
-        LocalDateTime invalidTimestamp = LocalDateTime.ofEpochSecond(epoch, 0, ZoneOffset.UTC);
-        LocalDateTime now = LocalDateTime.now();
-        if (now.minusDays(1).isAfter(invalidTimestamp)) {
+        if (userRepository.activateUser(confirmationString, LocalDate.now()) == 0) {
             throw new CustomRuntimeException("invalid confirmation", HttpStatus.BAD_REQUEST);
         }
-        return userRepository.activateUser(confirmationString) != 0;
-    }
-
-    public String resetConfirmationString(UUID id) {
-        if (!userRepository.existsById(id)) {
-            throw new CustomRuntimeException("user with id" + id + " not found", HttpStatus.NOT_FOUND);
-        }
-        String confirmationString = generateConfirmationString();
-        userRepository.resetConfirmationString(id, generateConfirmationString());
-        return confirmationString;
+        return true;
     }
 
     public User findById(UUID id) {
         return userRepository.findById(id).orElseThrow(CustomRuntimeException::notFound);
     }
 
+    @AllowedMethod
     public static String generateConfirmationString() {
         return RandomStringUtils.random(40, true, true) + LocalDateTime.now().toEpochSecond(ZoneOffset.UTC);
     }

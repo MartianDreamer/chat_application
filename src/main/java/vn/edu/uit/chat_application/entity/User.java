@@ -15,7 +15,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.springframework.security.core.userdetails.UserDetails;
 import vn.edu.uit.chat_application.constants.Role;
-import vn.edu.uit.chat_application.dto.UserReceivedDto;
+import vn.edu.uit.chat_application.dto.received.UserReceivedDto;
 import vn.edu.uit.chat_application.service.UserService;
 
 import java.io.Serializable;
@@ -25,6 +25,8 @@ import java.util.Collection;
 import java.util.UUID;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+
+import static vn.edu.uit.chat_application.constants.Constants.CONFIRMATION_DURATION_IN_DAY;
 
 @Entity
 @Table(name = "T_USER")
@@ -120,7 +122,7 @@ public class User implements UserDetails, Serializable {
                 .id(userReceivedDto.getId())
                 .username(userReceivedDto.getUsername())
                 .password(userReceivedDto.getPassword())
-                .validUntil(LocalDate.now().plusDays(1))
+                .validUntil(LocalDate.now().plusDays(CONFIRMATION_DURATION_IN_DAY))
                 .createdAt(LocalDateTime.now())
                 .email(userReceivedDto.getEmail())
                 .phoneNumber(userReceivedDto.getPhoneNumber())

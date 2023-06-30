@@ -10,3 +10,10 @@ spring:
       hibernate:
         format_sql: true
         show_sql: true
+
+jwt:
+  access:
+    duration: 20
+  refresh:
+    duration: 2
+  secret: my-super-strong-powerful-charming-and-lovely-secret-1DW*(#$Pf42fDS23

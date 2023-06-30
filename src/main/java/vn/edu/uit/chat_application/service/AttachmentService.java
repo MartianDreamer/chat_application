@@ -1,6 +1,6 @@
 package vn.edu.uit.chat_application.service;
 
-import vn.edu.uit.chat_application.dto.AttachmentReceivedDto;
+import vn.edu.uit.chat_application.dto.received.AttachmentReceivedDto;
 import vn.edu.uit.chat_application.entity.Attachment;
 
 import java.util.List;

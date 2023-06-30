@@ -1,10 +1,11 @@
-package vn.edu.uit.chat_application.dto;
+package vn.edu.uit.chat_application.dto.received;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import vn.edu.uit.chat_application.dto.FromLoggedInUserDto;
 import vn.edu.uit.chat_application.entity.Attachment;
 import vn.edu.uit.chat_application.entity.User;
 
