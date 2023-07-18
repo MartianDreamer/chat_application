@@ -6,9 +6,8 @@ import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Before;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Component;
-import vn.edu.uit.chat_application.dto.received.UserReceivedDto;
+import vn.edu.uit.chat_application.dto.PasswordHolder;
 
-import java.util.List;
 import java.util.stream.Stream;
 
 @Aspect
@@ -19,10 +18,9 @@ public class EncryptPasswordProcessor {
 
     @Before("@annotation(vn.edu.uit.chat_application.aspect.annotation.EncryptPassword)")
     public void encryptPassword(JoinPoint joinPoint) {
-        List<UserReceivedDto> userReceivedDtos = Stream.of(joinPoint.getArgs())
-                .filter(e -> UserReceivedDto.class.equals(e.getClass()))
-                .map(UserReceivedDto.class::cast)
-                .toList();
-        userReceivedDtos.forEach(e -> e.setPassword(passwordEncoder.encode(e.getPassword())));
+        Stream.of(joinPoint.getArgs())
+                .filter(e -> e instanceof PasswordHolder)
+                .map(PasswordHolder.class::cast)
+                .forEach(e -> e.setPassword(passwordEncoder.encode(e.getPassword())));
     }
 }

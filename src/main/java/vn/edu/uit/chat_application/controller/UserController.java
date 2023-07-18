@@ -27,12 +27,12 @@ public class UserController {
 
     @PutMapping
     public ResponseEntity<UserSentDto> createUser(@RequestBody UserReceivedDto dto) {
-        return ResponseEntity.ok(UserSentDto.from(userService.saveUser(dto)));
+        return ResponseEntity.ok(UserSentDto.from(userService.createUser(dto)));
     }
 
     @PatchMapping
     public ResponseEntity<UserSentDto> updateUser(@RequestBody UserReceivedDto dto) {
-        return ResponseEntity.ok(UserSentDto.from(userService.saveUser(dto)));
+        return ResponseEntity.ok(UserSentDto.from(userService.updateUser(dto)));
     }
 
     @PostMapping("/confirm/{confirmationString}")

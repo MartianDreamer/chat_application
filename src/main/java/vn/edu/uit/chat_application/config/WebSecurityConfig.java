@@ -15,8 +15,10 @@ import org.springframework.security.config.annotation.web.configurers.AbstractHt
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.util.matcher.RegexRequestMatcher;
 import org.springframework.security.web.util.matcher.RequestMatcher;
+import vn.edu.uit.chat_application.service.JwtFilter;
 import vn.edu.uit.chat_application.service.UserService;
 
 @Configuration
@@ -28,6 +30,7 @@ import vn.edu.uit.chat_application.service.UserService;
 public class WebSecurityConfig {
     private final AuthenticationConfiguration authenticationConfiguration;
     private final AuthenticationManagerBuilder authenticationManagerBuilder;
+    private final JwtFilter jwtFilter;
     private final UserService userService;
 
     @Bean
@@ -47,7 +50,9 @@ public class WebSecurityConfig {
     @Bean
     @SneakyThrows
     public SecurityFilterChain config(HttpSecurity httpSecurity) {
-        return httpSecurity.sessionManagement(httpSecuritySessionManagementConfigurer -> httpSecuritySessionManagementConfigurer.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+        return httpSecurity
+                .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)
+                .sessionManagement(httpSecuritySessionManagementConfigurer -> httpSecuritySessionManagementConfigurer.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .csrf(AbstractHttpConfigurer::disable)
                 .cors(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(authorizationManagerRequestMatcherRegistry -> {
@@ -56,7 +61,8 @@ public class WebSecurityConfig {
                             RegexRequestMatcher.regexMatcher("/rest/users/confirm.*"),
                             RegexRequestMatcher.regexMatcher("/swagger-ui.html.*"),
                             RegexRequestMatcher.regexMatcher("/v3/api-docs.*"),
-                            RegexRequestMatcher.regexMatcher("/swagger-ui.*")
+                            RegexRequestMatcher.regexMatcher("/swagger-ui.*"),
+                            RegexRequestMatcher.regexMatcher(HttpMethod.POST, "/rest/login")
                     };
                     authorizationManagerRequestMatcherRegistry
                             .requestMatchers(permitAllRequests)

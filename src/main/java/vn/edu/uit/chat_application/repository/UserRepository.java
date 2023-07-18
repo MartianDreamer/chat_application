@@ -10,6 +10,7 @@ import java.util.UUID;
 
 public interface UserRepository extends JpaRepository<User, UUID> {
     User findDistinctByUsername(String username);
+    User findByUsernameAndPassword(String username, String password);
 
     @Modifying
     @Query(

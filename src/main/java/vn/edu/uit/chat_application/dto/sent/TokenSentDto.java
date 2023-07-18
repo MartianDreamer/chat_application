@@ -1,4 +1,4 @@
-package vn.edu.uit.chat_application.dto;
+package vn.edu.uit.chat_application.dto.sent;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -11,7 +11,7 @@ import java.util.Date;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class TokenDto {
+public class TokenSentDto {
     private String token;
     private String refreshToken;
     private Date issuedAt;
