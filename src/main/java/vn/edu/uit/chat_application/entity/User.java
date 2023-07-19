@@ -6,6 +6,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Lob;
+import jakarta.persistence.NamedQuery;
 import jakarta.persistence.Table;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -35,7 +36,19 @@ import static vn.edu.uit.chat_application.constants.Constants.CONFIRMATION_DURAT
 @NoArgsConstructor
 @Builder
 @Setter
+@NamedQuery(
+        name = "User.updateWithPassword",
+        query = "update User u set u.username = :username, u.password = :password, u.email = :email, u.phoneNumber = :phoneNumber, u.avatar = :avatar, u.avatarExtension = :avatarExtension " +
+                "where u.id = :id"
+)
+@NamedQuery(
+        name = "User.updateWithoutPassword",
+        query = "update User u set u.username = :username, u.email = :email, u.phoneNumber = :phoneNumber, u.avatar = :avatar, u.avatarExtension = :avatarExtension " +
+                "where u.id = :id"
+)
 public class User implements UserDetails, Serializable {
+    public static final String UPDATE_WITHOUT_PASSWORD = "User.updateWithoutPassword";
+    public static final String UPDATE_WITH_PASSWORD = "User.updateWithPassword";
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     @Column(name = "id", nullable = false)
@@ -119,7 +132,6 @@ public class User implements UserDetails, Serializable {
 
     public static User from(UserReceivedDto userReceivedDto) {
         return User.builder()
-                .id(userReceivedDto.getId())
                 .username(userReceivedDto.getUsername())
                 .password(userReceivedDto.getPassword())
                 .validUntil(LocalDate.now().plusDays(CONFIRMATION_DURATION_IN_DAY))

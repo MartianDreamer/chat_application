@@ -1,5 +1,4 @@
-package vn.edu.uit.chat_application.aspect.annotation;
-
+package vn.edu.uit.chat_application.aspect.authorization.annotations;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -8,5 +7,5 @@ import java.lang.annotation.Target;
 
 @Target(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)
-public @interface SingleWriteMethod {
+public @interface SingleReadMethod {
 }
