@@ -13,5 +13,5 @@ public interface AttachmentService {
     List<Attachment> getByConversationId(UUID conversationId);
     void persistAttachment(Attachment attachment);
     void deleteAttachmentFile(Attachment attachment);
-    Attachment getAttachmentContent(Attachment attachment);
+    byte[] getAttachmentContent(Attachment attachment);
 }

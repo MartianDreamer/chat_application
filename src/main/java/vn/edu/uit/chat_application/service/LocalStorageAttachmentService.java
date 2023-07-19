@@ -42,7 +42,7 @@ public class LocalStorageAttachmentService implements AttachmentService {
     @Override
     public List<Attachment> getAttachments(List<UUID> ids) {
         return attachmentRepository.findAllById(ids).stream()
-                .map(this::getAttachmentContent)
+                .peek(e -> e.setContent(getAttachmentContent(e)))
                 .toList();
     }
 
@@ -63,14 +63,13 @@ public class LocalStorageAttachmentService implements AttachmentService {
     }
 
     @Override
-    public Attachment getAttachmentContent(Attachment attachment) {
+    public byte[] getAttachmentContent(Attachment attachment) {
         String dir = "/attachment/" + attachment.getTo().getId().toString();
         File dirFile = new File(dir);
         String fileName = attachment.getId().toString() + attachment.getFileExtension();
         File file = new File(dirFile, fileName);
         try (FileInputStream fileInputStream = new FileInputStream(file)){
-            attachment.setContent(fileInputStream.readAllBytes());
-            return attachment;
+            return fileInputStream.readAllBytes();
         } catch (IOException e) {
             throw new CustomRuntimeException("can not get attachment file", HttpStatus.INTERNAL_SERVER_ERROR);
         }
