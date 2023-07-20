@@ -75,8 +75,4 @@ public class ConversationService {
         }
         conversationMembershipRepository.deleteByConversationIdAndMemberId(conversationId, memberId);
     }
-
-    public void leaveConversation(UUID conversationId) {
-        removeMember(conversationId, PrincipalUtils.getLoggedInUser().getId());
-    }
 }

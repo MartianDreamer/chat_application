@@ -18,7 +18,7 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.util.matcher.RegexRequestMatcher;
 import org.springframework.security.web.util.matcher.RequestMatcher;
-import vn.edu.uit.chat_application.service.JwtFilter;
+import vn.edu.uit.chat_application.authentication.HttpJwtFilter;
 import vn.edu.uit.chat_application.service.UserService;
 
 @Configuration
@@ -30,7 +30,7 @@ import vn.edu.uit.chat_application.service.UserService;
 public class WebSecurityConfig {
     private final AuthenticationConfiguration authenticationConfiguration;
     private final AuthenticationManagerBuilder authenticationManagerBuilder;
-    private final JwtFilter jwtFilter;
+    private final HttpJwtFilter httpJwtFilter;
     private final UserService userService;
 
     @Bean
@@ -51,7 +51,7 @@ public class WebSecurityConfig {
     @SneakyThrows
     public SecurityFilterChain config(HttpSecurity httpSecurity) {
         return httpSecurity
-                .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)
+                .addFilterBefore(httpJwtFilter, UsernamePasswordAuthenticationFilter.class)
                 .sessionManagement(httpSecuritySessionManagementConfigurer -> httpSecuritySessionManagementConfigurer.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .csrf(AbstractHttpConfigurer::disable)
                 .cors(AbstractHttpConfigurer::disable)

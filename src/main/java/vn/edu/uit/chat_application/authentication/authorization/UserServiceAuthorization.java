@@ -1,4 +1,4 @@
-package vn.edu.uit.chat_application.aspect.authorization;
+package vn.edu.uit.chat_application.authentication.authorization;
 
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.annotation.Aspect;
