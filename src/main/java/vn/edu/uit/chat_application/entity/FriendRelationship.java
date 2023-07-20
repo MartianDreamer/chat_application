@@ -54,4 +54,8 @@ public class FriendRelationship implements Serializable {
         this.first = first;
         this.second = second;
     }
+
+    public FriendRelationship(UUID id) {
+        this.id = id;
+    }
 }

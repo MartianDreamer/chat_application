@@ -1,5 +1,7 @@
 package vn.edu.uit.chat_application.util;
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.BeanWrapper;
 import org.springframework.beans.BeanWrapperImpl;
@@ -8,7 +10,8 @@ import java.beans.PropertyDescriptor;
 import java.util.ArrayList;
 import java.util.List;
 
-public final class CopyObjectUtils {
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+public final class CommonUtils {
     public static void copyPropertiesIgnoreNull(Object source, Object dest) {
         final BeanWrapper src = new BeanWrapperImpl(source);
         PropertyDescriptor[] pds = src.getPropertyDescriptors();

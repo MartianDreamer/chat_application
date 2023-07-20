@@ -66,4 +66,8 @@ public class Message implements Serializable {
                 .content(dto.getContent())
                 .build();
     }
+
+    public Message(UUID id) {
+        this.id = id;
+    }
 }

@@ -13,7 +13,7 @@ import vn.edu.uit.chat_application.dto.received.UserReceivedDto;
 import vn.edu.uit.chat_application.entity.User;
 import vn.edu.uit.chat_application.exception.CustomRuntimeException;
 import vn.edu.uit.chat_application.repository.UserRepository;
-import vn.edu.uit.chat_application.util.CopyObjectUtils;
+import vn.edu.uit.chat_application.util.CommonUtils;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -39,7 +39,7 @@ public class UserService implements UserDetailsService {
     @EncryptPassword
     public void updateUser(UUID id, UserReceivedDto dto) {
         userRepository.findById(id).ifPresentOrElse(o -> {
-            CopyObjectUtils.copyPropertiesIgnoreNull(dto, o);
+            CommonUtils.copyPropertiesIgnoreNull(dto, o);
             userRepository.save(o);
         }, () -> {
             throw new CustomRuntimeException("user not found", HttpStatus.NOT_FOUND);

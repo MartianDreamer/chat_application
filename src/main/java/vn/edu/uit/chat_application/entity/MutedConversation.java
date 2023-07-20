@@ -40,4 +40,8 @@ public class MutedConversation implements Serializable {
     @JoinColumn(name = "muter_id")
     private User muter;
     private LocalDateTime muteUntil;
+
+    public MutedConversation(UUID id) {
+        this.id = id;
+    }
 }

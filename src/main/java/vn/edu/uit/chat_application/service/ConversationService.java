@@ -14,8 +14,10 @@ import vn.edu.uit.chat_application.util.PrincipalUtils;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 import static vn.edu.uit.chat_application.entity.Conversation.ConversationBuilder;
 
@@ -27,7 +29,8 @@ public class ConversationService {
     private final RelationshipService relationshipService;
 
     public Conversation createConversation(String name, List<UUID> members) {
-        UUID creatorId = PrincipalUtils.getLoggedInUser().getId();
+        User creator = PrincipalUtils.getLoggedInUser();
+        UUID creatorId = creator.getId();
         if (members.stream()
                 .anyMatch(e -> !relationshipService.areFriends(creatorId, e))) {
             throw new CustomRuntimeException("people whom you added into this conversation are not your friend", HttpStatus.BAD_REQUEST);
@@ -46,14 +49,36 @@ public class ConversationService {
         }
         Conversation savedConversation = conversationRepository.save(conversationBuilder.build());
         List<ConversationMembership> conversationMemberships = members.stream()
-                .map(e -> User.builder().id(e).build())
-                .map(e -> new ConversationMembership(e, savedConversation))
-                .toList();
+                .map(User::new)
+                .map(e -> new ConversationMembership(savedConversation, e))
+                .collect(Collectors.toCollection(LinkedList::new));
+        conversationMemberships.add(new ConversationMembership(savedConversation, creator));
         conversationMembershipRepository.saveAll(conversationMemberships);
         return savedConversation;
     }
 
     public void addMember(UUID conversationId, UUID memberId) {
+        UUID adderId = PrincipalUtils.getLoggedInUser().getId();
+        if (!conversationMembershipRepository.existsByConversationIdAndMemberId(conversationId, adderId)) {
+            throw new CustomRuntimeException("you are not a member of this conversation", HttpStatus.FORBIDDEN);
+        }
+        if (!relationshipService.areFriends(adderId, memberId)) {
+            throw new CustomRuntimeException("the person whom you added into this conversation is not your friend", HttpStatus.BAD_REQUEST);
+        }
+        if (conversationMembershipRepository.existsByConversationIdAndMemberId(conversationId, memberId)) {
+            throw new CustomRuntimeException("this person is already a member", HttpStatus.BAD_REQUEST);
+        }
+        conversationMembershipRepository.save(new ConversationMembership(new Conversation(conversationId), new User(memberId)));
+    }
 
+    public void removeMember(UUID conversationId, UUID memberId) {
+        UUID adderId = PrincipalUtils.getLoggedInUser().getId();
+        if (!conversationMembershipRepository.existsByConversationIdAndMemberId(conversationId, adderId)) {
+            throw new CustomRuntimeException("you are not a member of this conversation", HttpStatus.FORBIDDEN);
+        }
+        if (!conversationMembershipRepository.existsByConversationIdAndMemberId(conversationId, memberId)) {
+            throw new CustomRuntimeException("this person is not a member", HttpStatus.BAD_REQUEST);
+        }
+        conversationMembershipRepository.deleteByConversationIdAndMemberId(conversationId, memberId);
     }
 }

@@ -19,13 +19,14 @@ import java.io.Serializable;
 import java.util.UUID;
 
 @Entity
-@Table(name = "T_USER_GROUP_CONVERSATION")
+@Table(name = ConversationMembership.TABLE_NAME)
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
 @Getter
 @Setter
 public class ConversationMembership implements Serializable {
+    public static final String TABLE_NAME = "T_USER_GROUP_CONVERSATION";
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     @Column(name = "id", nullable = false)
@@ -33,15 +34,19 @@ public class ConversationMembership implements Serializable {
     private UUID id;
 
     @ManyToOne
-    @JoinColumn(name = "member_id")
-    private User member;
-
-    @ManyToOne
     @JoinColumn(name = "conversation_id")
     private Conversation conversation;
 
-    public ConversationMembership(User member, Conversation conversation) {
-        this.member = member;
+    @ManyToOne
+    @JoinColumn(name = "member_id")
+    private User member;
+
+    public ConversationMembership(UUID id) {
+        this.id = id;
+    }
+
+    public ConversationMembership(Conversation conversation, User member) {
         this.conversation = conversation;
+        this.member = member;
     }
 }

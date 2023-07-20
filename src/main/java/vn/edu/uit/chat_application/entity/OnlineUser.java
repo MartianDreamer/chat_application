@@ -34,4 +34,8 @@ public class OnlineUser {
     private User user;
     @Column(nullable = false)
     private LocalDateTime lastSeen;
+
+    public OnlineUser(UUID id) {
+        this.id = id;
+    }
 }

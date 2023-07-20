@@ -132,4 +132,8 @@ public class User implements UserDetails, Serializable {
                 .roles("USER")
                 .build();
     }
+
+    public User(UUID id) {
+        this.id = id;
+    }
 }

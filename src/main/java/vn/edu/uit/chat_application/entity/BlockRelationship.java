@@ -40,6 +40,10 @@ public class BlockRelationship {
     @JoinColumn(name = "blocked_id")
     private User blocked;
 
+    public BlockRelationship(UUID id) {
+        this.id = id;
+    }
+
     public BlockRelationship(User blocker, User blocked) {
         this.blocker = blocker;
         this.blocked = blocked;

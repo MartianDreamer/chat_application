@@ -53,6 +53,10 @@ public class Attachment implements Serializable {
     @Transient
     private byte[] content;
 
+    public Attachment(UUID id) {
+        this.id = id;
+    }
+
     @FillFromUserField
     public static Attachment from(AttachmentReceivedDto attachmentReceivedDto) {
         Conversation to = Conversation.builder().id(attachmentReceivedDto.getTo()).build();
