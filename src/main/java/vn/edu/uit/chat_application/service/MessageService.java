@@ -39,6 +39,6 @@ public class MessageService {
     }
 
     Page<Message> findByConversation(UUID conversationId, int page, int size) {
-        return messageRepository.findAllByConversationId(conversationId, PageRequest.of(page, size));
+        return messageRepository.findAllByToId(conversationId, PageRequest.of(page, size));
     }
 }

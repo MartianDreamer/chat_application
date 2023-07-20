@@ -21,6 +21,7 @@ import vn.edu.uit.chat_application.aspect.annotation.FillFromUserField;
 import vn.edu.uit.chat_application.dto.received.AttachmentReceivedDto;
 
 import java.io.Serializable;
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Getter
@@ -30,7 +31,7 @@ import java.util.UUID;
 @Builder
 @Entity
 @Table(name = "T_ATTACHMENT")
-public class Attachment implements Serializable {
+public class Attachment implements Serializable, ConversationContent {
     public enum Type {
         STICKER, PICTURE, VIDEO, FILE
     }
@@ -50,6 +51,8 @@ public class Attachment implements Serializable {
     private Type type;
     @Column(nullable = false, length = 10)
     private String fileExtension;
+    @Column(nullable = false)
+    private LocalDateTime timestamp;
     @Transient
     private byte[] content;
 
@@ -66,6 +69,7 @@ public class Attachment implements Serializable {
                 .type(attachmentReceivedDto.getType())
                 .fileExtension(attachmentReceivedDto.getExtension())
                 .content(attachmentReceivedDto.getContent())
+                .timestamp(LocalDateTime.now())
                 .build();
     }
 }

@@ -17,3 +17,6 @@ jwt:
   refresh:
     duration: 3600
   secret: my-super-strong-powerful-charming-and-lovely-secret-1DW*(#$Pf42fDS23
+
+app:
+  message-modifiability-duration: 5

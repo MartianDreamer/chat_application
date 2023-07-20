@@ -1,10 +1,18 @@
 package vn.edu.uit.chat_application.service;
 
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.persistence.criteria.CriteriaQuery;
+import jakarta.persistence.criteria.Root;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import vn.edu.uit.chat_application.entity.Attachment;
 import vn.edu.uit.chat_application.entity.Conversation;
+import vn.edu.uit.chat_application.entity.Conversation.ConversationBuilder;
+import vn.edu.uit.chat_application.entity.ConversationContent;
 import vn.edu.uit.chat_application.entity.ConversationMembership;
+import vn.edu.uit.chat_application.entity.Message;
 import vn.edu.uit.chat_application.entity.User;
 import vn.edu.uit.chat_application.exception.CustomRuntimeException;
 import vn.edu.uit.chat_application.repository.ConversationMembershipRepository;
@@ -13,13 +21,13 @@ import vn.edu.uit.chat_application.util.PrincipalUtils;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Comparator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
-
-import static vn.edu.uit.chat_application.entity.Conversation.ConversationBuilder;
+import java.util.stream.Stream;
 
 @Service
 @RequiredArgsConstructor
@@ -27,6 +35,7 @@ public class ConversationService {
     private final ConversationRepository conversationRepository;
     private final ConversationMembershipRepository conversationMembershipRepository;
     private final RelationshipService relationshipService;
+    private final EntityManager entityManager;
 
     public Conversation createConversation(String name, List<UUID> members) {
         User creator = PrincipalUtils.getLoggedInUser();
@@ -74,5 +83,26 @@ public class ConversationService {
             throw new CustomRuntimeException("this person is not a member", HttpStatus.BAD_REQUEST);
         }
         conversationMembershipRepository.deleteByConversationIdAndMemberId(conversationId, memberId);
+    }
+
+    public List<ConversationContent> getConversationContentsBefore(LocalDateTime before, int limit) {
+        return Stream.of(getConversationContentsBefore(before, limit, Message.class),
+                        getConversationContentsBefore(before, limit, Attachment.class))
+                .flatMap(Collection::stream)
+                .sorted(Comparator.comparing(ConversationContent::getTimestamp))
+                .limit(limit)
+                .toList();
+    }
+
+    private <T extends ConversationContent> List<ConversationContent> getConversationContentsBefore(LocalDateTime before, int limit, Class<T> clazz) {
+        CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
+        CriteriaQuery<ConversationContent> criteriaQuery = criteriaBuilder.createQuery(ConversationContent.class);
+        Root<T> root = criteriaQuery.from(clazz);
+        criteriaQuery.select(root)
+                .where(criteriaBuilder.lessThanOrEqualTo(root.get("timestamp"), before))
+                .orderBy(criteriaBuilder.desc(root.get("timestamp")));
+        return entityManager.createQuery(criteriaQuery)
+                .setMaxResults(limit)
+                .getResultList();
     }
 }

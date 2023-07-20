@@ -12,7 +12,9 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 
 @RequiredArgsConstructor
@@ -23,11 +25,21 @@ public class LocalStorageAttachmentService implements AttachmentService {
 
     @Override
     public List<Attachment> createAttachments(List<AttachmentReceivedDto> dtos) {
-        return dtos.stream()
+        List<Attachment> savedAttachments = attachmentRepository.saveAll(dtos.stream()
                 .map(Attachment::from)
-                .peek(attachmentRepository::save)
-                .peek(this::persistAttachment)
-                .toList();
+                .toList());
+        Set<AttachmentReceivedDto> processedDtos = new HashSet<>();
+        savedAttachments.forEach(e -> {
+            AttachmentReceivedDto processedDto = dtos.stream()
+                    .filter(dto -> e.getFileExtension().equals(dto.getExtension()))
+                    .filter(dto -> !processedDtos.contains(dto))
+                    .findFirst()
+                    .orElseThrow();
+            processedDtos.add(processedDto);
+            e.setContent(processedDto.getContent());
+            persistAttachment(e);
+        });
+        return savedAttachments;
     }
 
     @Override
@@ -51,8 +63,7 @@ public class LocalStorageAttachmentService implements AttachmentService {
         return attachmentRepository.findAllByToId(conversationId);
     }
 
-
-    public void deleteAttachmentFile(Attachment attachment) {
+    private void deleteAttachmentFile(Attachment attachment) {
         String dir = "/attachment/" + attachment.getTo().getId().toString();
         File dirFile = new File(dir);
         String fileName = attachment.getId().toString() + attachment.getFileExtension();
@@ -62,21 +73,19 @@ public class LocalStorageAttachmentService implements AttachmentService {
         }
     }
 
-    @Override
-    public byte[] getAttachmentContent(Attachment attachment) {
+    private byte[] getAttachmentContent(Attachment attachment) {
         String dir = "/attachment/" + attachment.getTo().getId().toString();
         File dirFile = new File(dir);
         String fileName = attachment.getId().toString() + attachment.getFileExtension();
         File file = new File(dirFile, fileName);
-        try (FileInputStream fileInputStream = new FileInputStream(file)){
+        try (FileInputStream fileInputStream = new FileInputStream(file)) {
             return fileInputStream.readAllBytes();
         } catch (IOException e) {
             throw new CustomRuntimeException("can not get attachment file", HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
-    @Override
-    public void persistAttachment(Attachment attachment) {
+    private void persistAttachment(Attachment attachment) {
         String dir = "/attachment/" + attachment.getTo().getId().toString();
         File dirFile = new File(dir);
         String fileName = attachment.getId().toString() + attachment.getFileExtension();

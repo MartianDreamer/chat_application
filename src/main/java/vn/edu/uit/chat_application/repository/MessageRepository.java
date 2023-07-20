@@ -11,7 +11,7 @@ import java.time.LocalDateTime;
 import java.util.UUID;
 
 public interface MessageRepository extends JpaRepository<Message, UUID> {
-    Page<Message> findAllByConversationId(UUID conversationId, Pageable pageable);
+    Page<Message> findAllByToId(UUID toId, Pageable pageable);
 
     @Query(value = "select (m.timestamp >= :validTime) from Message m where m.id = :id")
     boolean isModifiable(UUID id, LocalDateTime validTime);
