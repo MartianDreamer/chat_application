@@ -42,14 +42,14 @@ public class UserService implements UserDetailsService {
             CommonUtils.copyPropertiesIgnoreNull(dto, o);
             userRepository.save(o);
         }, () -> {
-            throw new CustomRuntimeException("user not found", HttpStatus.NOT_FOUND);
+            throw CustomRuntimeException.notFound();
         });
     }
 
     public User loadByUsername(String username) {
         User user = userRepository.findDistinctByUsername(username);
         if (user == null) {
-            throw new CustomRuntimeException("user with username " + username + " not found", HttpStatus.NOT_FOUND);
+            throw CustomRuntimeException.notFound();
         }
         return user;
     }

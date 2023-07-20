@@ -32,7 +32,7 @@ public class ConversationService {
         User creator = PrincipalUtils.getLoggedInUser();
         UUID creatorId = creator.getId();
         if (members.stream()
-                .anyMatch(e -> !relationshipService.areFriends(creatorId, e))) {
+                .anyMatch(e -> relationshipService.areNotFriends(creatorId, e))) {
             throw new CustomRuntimeException("people whom you added into this conversation are not your friend", HttpStatus.BAD_REQUEST);
         }
         ConversationBuilder conversationBuilder = Conversation.builder()
@@ -59,7 +59,7 @@ public class ConversationService {
 
     public void addMember(UUID conversationId, UUID memberId) {
         UUID adderId = PrincipalUtils.getLoggedInUser().getId();
-        if (!relationshipService.areFriends(adderId, memberId)) {
+        if (relationshipService.areNotFriends(adderId, memberId)) {
             throw new CustomRuntimeException("the person whom you added into this conversation is not your friend", HttpStatus.BAD_REQUEST);
         }
         if (conversationMembershipRepository.existsByConversationIdAndMemberId(conversationId, memberId)) {

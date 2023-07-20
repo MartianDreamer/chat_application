@@ -5,7 +5,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import vn.edu.uit.chat_application.entity.BlockRelationship;
 import vn.edu.uit.chat_application.entity.FriendRelationship;
@@ -47,7 +46,7 @@ public class RelationshipService {
         friendRequestRepository.deleteById(id);
     }
 
-    @Transactional(propagation = Propagation.REQUIRED)
+    @Transactional
     public void acceptFriendRequest(UUID id) {
         FriendRequest friendRequest = friendRequestRepository.findById(id).orElseThrow(CustomRuntimeException::notFound);
         friendRelationshipRepository.save(new FriendRelationship(friendRequest.getFrom(), friendRequest.getTo()));
@@ -87,7 +86,7 @@ public class RelationshipService {
         blockRelationshipRepository.deleteById(id);
     }
 
-    public boolean areFriends(UUID id1, UUID id2) {
-        return friendRelationshipRepository.existsByUserIds(id1, id2);
+    public boolean areNotFriends(UUID id1, UUID id2) {
+        return !friendRelationshipRepository.existsByUserIds(id1, id2);
     }
 }

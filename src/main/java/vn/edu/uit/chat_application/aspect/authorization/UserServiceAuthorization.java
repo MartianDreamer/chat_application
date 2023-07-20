@@ -1,6 +1,5 @@
 package vn.edu.uit.chat_application.aspect.authorization;
 
-import lombok.RequiredArgsConstructor;
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Before;
@@ -14,10 +13,9 @@ import java.util.stream.Stream;
 
 @Aspect
 @Component
-@RequiredArgsConstructor
-public class UserServiceAuthorizer {
+public class UserServiceAuthorization {
     @Before(value = "execution(public void vn.edu.uit.chat_application.service.UserService.updateUser(..))")
-    public void singleWriteMethod(JoinPoint joinPoint) {
+    public void updateUser(JoinPoint joinPoint) {
         Stream.of(joinPoint.getArgs())
                 .filter(e -> e instanceof UUID)
                 .map(UUID.class::cast)
