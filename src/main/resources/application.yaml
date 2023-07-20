@@ -3,3 +3,6 @@ spring:
     driver-class-name: org.postgresql.Driver
   profiles:
     active: dev
+
+app:
+  message-modifiability-duration: 5L
