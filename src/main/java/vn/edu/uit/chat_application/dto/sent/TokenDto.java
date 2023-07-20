@@ -11,7 +11,7 @@ import java.util.Date;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class TokenSentDto {
+public class TokenDto {
     private String token;
     private String refreshToken;
     private Date issuedAt;

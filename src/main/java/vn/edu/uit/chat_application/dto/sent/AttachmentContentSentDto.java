@@ -16,5 +16,4 @@ import java.util.UUID;
 public class AttachmentContentSentDto {
     private UUID id;
     private byte[] content;
-    private String extension;
 }

@@ -5,7 +5,7 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-import vn.edu.uit.chat_application.dto.sent.TokenSentDto;
+import vn.edu.uit.chat_application.dto.sent.TokenDto;
 import vn.edu.uit.chat_application.entity.User;
 
 import javax.crypto.spec.SecretKeySpec;
@@ -29,7 +29,7 @@ public class JwtService {
         return new SecretKeySpec(Base64.getEncoder().encode(secret.getBytes()), SignatureAlgorithm.HS256.getJcaName());
     }
 
-    public TokenSentDto issueTokenPair(User user) {
+    public TokenDto issueTokenPair(User user) {
         Date now = new Date();
         Date refreshValidFrom = Date.from(now.toInstant().plus(duration, ChronoUnit.SECONDS));
         Date refreshExpired = Date.from(refreshValidFrom.toInstant().plus(refreshDuration, ChronoUnit.SECONDS));
@@ -48,7 +48,7 @@ public class JwtService {
                 .claim("username", user.getUsername())
                 .signWith(getKey())
                 .compact();
-        return new TokenSentDto(accessToken, refreshToken, now, duration, refreshValidFrom, refreshDuration);
+        return new TokenDto(accessToken, refreshToken, now, duration, refreshValidFrom, refreshDuration);
     }
 
 
