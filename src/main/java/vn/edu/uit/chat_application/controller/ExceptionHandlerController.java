@@ -10,8 +10,8 @@ import vn.edu.uit.chat_application.exception.CustomRuntimeException;
 public class ExceptionHandlerController extends ResponseEntityExceptionHandler {
 
     @ExceptionHandler(value = {Exception.class})
-    public ResponseEntity<String> internalException() {
-        return ResponseEntity.internalServerError().body("internal");
+    public ResponseEntity<String> internalException(Exception e) {
+        return ResponseEntity.internalServerError().body(e.getMessage());
     }
 
     @ExceptionHandler(value = {CustomRuntimeException.class})

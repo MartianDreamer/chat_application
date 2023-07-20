@@ -16,8 +16,7 @@ import java.util.stream.Stream;
 @Component
 @RequiredArgsConstructor
 public class UserServiceAuthorizer {
-    @Before("@annotation(vn.edu.uit.chat_application.aspect.authorization.annotations.SingleWriteMethod) " +
-            "&& execution(* vn.edu.uit.chat_application.service.UserService.*(..))")
+    @Before(value = "execution(public void vn.edu.uit.chat_application.service.UserService.updateUser(..))")
     public void singleWriteMethod(JoinPoint joinPoint) {
         Stream.of(joinPoint.getArgs())
                 .filter(e -> e instanceof UUID)

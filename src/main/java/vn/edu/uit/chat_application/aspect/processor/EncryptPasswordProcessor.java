@@ -21,6 +21,7 @@ public class EncryptPasswordProcessor {
         Stream.of(joinPoint.getArgs())
                 .filter(e -> e instanceof PasswordHolder)
                 .map(PasswordHolder.class::cast)
+                .filter(e -> e.getPassword() != null)
                 .forEach(e -> e.setPassword(passwordEncoder.encode(e.getPassword())));
     }
 }

@@ -1,6 +1,5 @@
 package vn.edu.uit.chat_application.service;
 
-import jakarta.persistence.EntityManager;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.http.HttpStatus;
@@ -10,11 +9,11 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import vn.edu.uit.chat_application.aspect.annotation.EncryptPassword;
-import vn.edu.uit.chat_application.aspect.authorization.annotations.SingleWriteMethod;
 import vn.edu.uit.chat_application.dto.received.UserReceivedDto;
 import vn.edu.uit.chat_application.entity.User;
 import vn.edu.uit.chat_application.exception.CustomRuntimeException;
 import vn.edu.uit.chat_application.repository.UserRepository;
+import vn.edu.uit.chat_application.util.CopyObjectUtils;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -26,7 +25,6 @@ import java.util.UUID;
 public class UserService implements UserDetailsService {
 
     private final UserRepository userRepository;
-    private final EntityManager entityManager;
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
@@ -39,28 +37,13 @@ public class UserService implements UserDetailsService {
     }
 
     @EncryptPassword
-    @SingleWriteMethod
-    @Transactional
     public void updateUser(UUID id, UserReceivedDto dto) {
-        if (dto.getPassword() != null) {
-            entityManager.createNamedQuery(User.UPDATE_WITH_PASSWORD)
-                    .setParameter("id", id)
-                    .setParameter("username", dto.getUsername())
-                    .setParameter("password", dto.getPassword())
-                    .setParameter("email", dto.getEmail())
-                    .setParameter("phoneNumber", dto.getPhoneNumber())
-                    .setParameter("avatar", dto.getAvatar())
-                    .setParameter("avatarExtension", dto.getAvatarExtension())
-                    .executeUpdate();
-        }
-        entityManager.createNamedQuery(User.UPDATE_WITHOUT_PASSWORD)
-                .setParameter("id", id)
-                .setParameter("username", dto.getUsername())
-                .setParameter("email", dto.getEmail())
-                .setParameter("phoneNumber", dto.getPhoneNumber())
-                .setParameter("avatar", dto.getAvatar())
-                .setParameter("avatarExtension", dto.getAvatarExtension())
-                .executeUpdate();
+        userRepository.findById(id).ifPresentOrElse(o -> {
+            CopyObjectUtils.copyPropertiesIgnoreNull(dto, o);
+            userRepository.save(o);
+        }, () -> {
+            throw new CustomRuntimeException("user not found", HttpStatus.NOT_FOUND);
+        });
     }
 
     public User loadByUsername(String username) {
