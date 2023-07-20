@@ -25,7 +25,7 @@ import java.util.UUID;
 @Builder
 @Getter
 @Setter
-public class UserConversation implements Serializable {
+public class ConversationMembership implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     @Column(name = "id", nullable = false)
@@ -39,4 +39,9 @@ public class UserConversation implements Serializable {
     @ManyToOne
     @JoinColumn(name = "conversation_id")
     private Conversation conversation;
+
+    public ConversationMembership(User member, Conversation conversation) {
+        this.member = member;
+        this.conversation = conversation;
+    }
 }

@@ -86,4 +86,8 @@ public class RelationshipService {
     public void unblockUser(UUID id) {
         blockRelationshipRepository.deleteById(id);
     }
+
+    public boolean areFriends(UUID id1, UUID id2) {
+        return friendRelationshipRepository.existsByUserIds(id1, id2);
+    }
 }
