@@ -59,9 +59,6 @@ public class ConversationService {
 
     public void addMember(UUID conversationId, UUID memberId) {
         UUID adderId = PrincipalUtils.getLoggedInUser().getId();
-        if (!conversationMembershipRepository.existsByConversationIdAndMemberId(conversationId, adderId)) {
-            throw new CustomRuntimeException("you are not a member of this conversation", HttpStatus.FORBIDDEN);
-        }
         if (!relationshipService.areFriends(adderId, memberId)) {
             throw new CustomRuntimeException("the person whom you added into this conversation is not your friend", HttpStatus.BAD_REQUEST);
         }
@@ -73,12 +70,13 @@ public class ConversationService {
 
     public void removeMember(UUID conversationId, UUID memberId) {
         UUID adderId = PrincipalUtils.getLoggedInUser().getId();
-        if (!conversationMembershipRepository.existsByConversationIdAndMemberId(conversationId, adderId)) {
-            throw new CustomRuntimeException("you are not a member of this conversation", HttpStatus.FORBIDDEN);
-        }
         if (!conversationMembershipRepository.existsByConversationIdAndMemberId(conversationId, memberId)) {
             throw new CustomRuntimeException("this person is not a member", HttpStatus.BAD_REQUEST);
         }
         conversationMembershipRepository.deleteByConversationIdAndMemberId(conversationId, memberId);
+    }
+
+    public void leaveConversation(UUID conversationId) {
+        removeMember(conversationId, PrincipalUtils.getLoggedInUser().getId());
     }
 }
