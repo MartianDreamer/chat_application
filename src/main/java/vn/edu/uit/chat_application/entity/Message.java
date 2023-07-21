@@ -51,7 +51,7 @@ public final class Message implements Serializable, ConversationContent {
     @ManyToMany
     private List<User> seenBy;
     @Column(nullable = false, columnDefinition = "TEXT")
-    protected String content;
+    private String content;
 
     @FillFromUserField
     public static Message from(MessageReceivedDto dto) {
