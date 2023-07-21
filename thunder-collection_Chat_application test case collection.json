@@ -1,0 +1,121 @@
+{
+    "client": "Thunder Client",
+    "collectionName": "Chat_application test case collection",
+    "dateExported": "2023-07-21T03:38:18.193Z",
+    "version": "1.1",
+    "folders": [
+        {
+            "_id": "2a91da09-49d8-4638-a352-40ccd24ffd3b",
+            "name": "User",
+            "containerId": "",
+            "created": "2023-07-19T09:36:17.578Z",
+            "sortNum": 10000
+        }
+    ],
+    "requests": [
+        {
+            "_id": "abeb4d29-942a-41bd-b30d-652687225224",
+            "colId": "1c20c9c4-8728-40b6-adc2-bf8dc97283be",
+            "containerId": "2a91da09-49d8-4638-a352-40ccd24ffd3b",
+            "name": "Find By Username",
+            "url": "http://localhost:8080/rest/users/username/sang321",
+            "method": "GET",
+            "sortNum": 10000,
+            "created": "2023-07-19T09:34:48.954Z",
+            "modified": "2023-07-19T09:34:48.954Z",
+            "headers": [],
+            "params": [],
+            "body": {
+                "type": "json",
+                "raw": "{\n  \"username\": \"sang2\",\n  \"password\": \"sang\",\n  \"email\": \"23wdaasd\",\n  \"phoneNumber\": \"2131213123\"\n}",
+                "form": []
+            },
+            "auth": {
+                "type": "bearer",
+                "bearer": "eyJhbGciOiJIUzUxMiJ9.eyJpYXQiOjE2ODk3NTg5MTIsImV4cCI6MTY4OTc2MjUxMiwic3ViIjoiZDRlMjQ2ZmYtOTI1Yi00OWM1LWE4YmUtOGFmNTQ4MjZmNjljIiwidXNlcm5hbWUiOiJzYW5nIiwiYXV0aG9yaXR5IjpbIlVTRVIiXX0.MtmytqnilAuGgGyW3Icl3y83O5B6ONZI-GALRex-5NMXgJ1qUBcr99I6TM5n9WsNLPbUnhb1FqTCJcGK20P3hw"
+            },
+            "tests": []
+        },
+        {
+            "_id": "c7487606-a6b4-4c38-84e5-c1e42902ffcf",
+            "colId": "1c20c9c4-8728-40b6-adc2-bf8dc97283be",
+            "containerId": "2a91da09-49d8-4638-a352-40ccd24ffd3b",
+            "name": "Update by user id",
+            "url": "http://localhost:8080/rest/users/1c281f0f-4284-47d3-bb6e-5a27dc4a3a9a",
+            "method": "PATCH",
+            "sortNum": 20000,
+            "created": "2023-07-19T09:35:04.149Z",
+            "modified": "2023-07-20T03:10:59.141Z",
+            "headers": [
+                {
+                    "name": "Authorization",
+                    "value": "",
+                    "isDisabled": true
+                }
+            ],
+            "params": [],
+            "body": {
+                "type": "json",
+                "raw": "{\n  \"username\": \"sang4\",\n  \"email\": \"sang@mail.com\",\n  \"phoneNumber\": \"0985470552\"\n}",
+                "form": []
+            },
+            "auth": {
+                "type": "bearer",
+                "bearer": "eyJhbGciOiJIUzUxMiJ9.eyJpYXQiOjE2ODk4MjI2NDQsImV4cCI6MTY4OTgyNjI0NCwic3ViIjoiMWMyODFmMGYtNDI4NC00N2QzLWJiNmUtNWEyN2RjNGEzYTlhIiwidXNlcm5hbWUiOiJzYW5nMzIxIiwiYXV0aG9yaXR5IjpbIlVTRVIiXX0.fLQcARt7wY2dkeCjKHZNStdJPCUvpkM92jeif-NwGsYCjeW5fiphokJIw9n6osbYFQbOwdOJHDTyzacyLpEMYw"
+            },
+            "tests": []
+        },
+        {
+            "_id": "95f7742c-02da-433b-bacf-8e56c03191aa",
+            "colId": "1c20c9c4-8728-40b6-adc2-bf8dc97283be",
+            "containerId": "2a91da09-49d8-4638-a352-40ccd24ffd3b",
+            "name": "Activate account",
+            "url": "http://localhost:8080/rest/users/confirm/yWUNzHrlMDlHBPXwrVnuToOrpdYN2cTmdz0lHrGP1689783047",
+            "method": "POST",
+            "sortNum": 30000,
+            "created": "2023-07-19T09:35:46.502Z",
+            "modified": "2023-07-19T09:35:46.502Z",
+            "headers": [],
+            "params": [],
+            "tests": []
+        },
+        {
+            "_id": "4680dceb-9b3a-42da-be82-0b47bbf850c8",
+            "colId": "1c20c9c4-8728-40b6-adc2-bf8dc97283be",
+            "containerId": "2a91da09-49d8-4638-a352-40ccd24ffd3b",
+            "name": "Create account",
+            "url": "http://localhost:8080/rest/users",
+            "method": "PUT",
+            "sortNum": 40000,
+            "created": "2023-07-19T09:36:06.313Z",
+            "modified": "2023-07-19T09:36:06.313Z",
+            "headers": [],
+            "params": [],
+            "body": {
+                "type": "json",
+                "raw": "{\n  \"username\": \"sang2\",\n  \"password\": \"sang\",\n  \"email\": \"23wdaasd\",\n  \"phoneNumber\": \"2131213123\"\n}",
+                "form": []
+            },
+            "tests": []
+        },
+        {
+            "_id": "ebdbd06f-3faa-4557-b41c-525fee325d2c",
+            "colId": "1c20c9c4-8728-40b6-adc2-bf8dc97283be",
+            "containerId": "2a91da09-49d8-4638-a352-40ccd24ffd3b",
+            "name": "Login",
+            "url": "http://localhost:8080/rest/login",
+            "method": "POST",
+            "sortNum": 50000,
+            "created": "2023-07-20T03:10:22.290Z",
+            "modified": "2023-07-20T03:10:44.649Z",
+            "headers": [],
+            "params": [],
+            "body": {
+                "type": "json",
+                "raw": "{\n  \"username\" : \"sang321\",\n  \"password\": \"sang\"\n}",
+                "form": []
+            },
+            "tests": []
+        }
+    ]
+}
