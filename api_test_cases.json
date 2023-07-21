@@ -1,7 +1,7 @@
 {
     "client": "Thunder Client",
     "collectionName": "api test cases",
-    "dateExported": "2023-07-21T04:57:36.225Z",
+    "dateExported": "2023-07-21T05:05:38.645Z",
     "version": "1.1",
     "folders": [
         {
@@ -29,7 +29,7 @@
             "method": "GET",
             "sortNum": 10000,
             "created": "2023-07-21T04:10:20.010Z",
-            "modified": "2023-07-21T04:31:01.541Z",
+            "modified": "2023-07-21T05:00:00.794Z",
             "headers": [],
             "params": [
                 {
@@ -43,10 +43,6 @@
                     "isPath": false
                 }
             ],
-            "auth": {
-                "type": "bearer",
-                "bearer": "{{accessToken}}"
-            },
             "tests": []
         },
         {
@@ -58,7 +54,7 @@
             "method": "PATCH",
             "sortNum": 20000,
             "created": "2023-07-21T04:10:20.011Z",
-            "modified": "2023-07-21T04:18:00.624Z",
+            "modified": "2023-07-21T04:59:55.311Z",
             "headers": [
                 {
                     "name": "Authorization",
@@ -71,10 +67,6 @@
                 "type": "json",
                 "raw": "{\n  \"username\": \"sang4\",\n  \"email\": \"sang@mail.com\",\n  \"phoneNumber\": \"0985470552\"\n}",
                 "form": []
-            },
-            "auth": {
-                "type": "bearer",
-                "bearer": "{{accessToken}}"
             },
             "tests": []
         },
@@ -120,7 +112,7 @@
             "method": "POST",
             "sortNum": 50000,
             "created": "2023-07-21T04:10:20.014Z",
-            "modified": "2023-07-21T04:57:02.747Z",
+            "modified": "2023-07-21T05:05:23.264Z",
             "headers": [],
             "params": [],
             "body": {
@@ -146,7 +138,7 @@
             "method": "PUT",
             "sortNum": 70000,
             "created": "2023-07-21T04:10:20.015Z",
-            "modified": "2023-07-21T04:16:25.425Z",
+            "modified": "2023-07-21T05:02:05.237Z",
             "headers": [],
             "params": [],
             "body": {
@@ -154,17 +146,13 @@
                 "raw": "\"12cf9f71-c28d-4ec2-bd12-319b8c9f8eee\"",
                 "form": []
             },
-            "auth": {
-                "type": "bearer",
-                "bearer": "{{accessToken}}"
-            },
             "tests": []
         },
         {
             "_id": "0aedcac2-49e4-45b0-b907-798a1bc79bb0",
             "colId": "3b25d847-82ae-4634-be75-74a975e0ef1e",
             "containerId": "6a75a1c1-5501-4e64-b52d-a5416570282b",
-            "name": "get from requests",
+            "name": "get from me requests",
             "url": "http://localhost:8080/rest/relationships/friend-requests?from_me=true",
             "method": "GET",
             "sortNum": 90000,
@@ -184,7 +172,7 @@
             "_id": "b325b702-0ece-4f8a-9ffb-b71f2f7798f4",
             "colId": "3b25d847-82ae-4634-be75-74a975e0ef1e",
             "containerId": "6a75a1c1-5501-4e64-b52d-a5416570282b",
-            "name": "get to request",
+            "name": "get to me request",
             "url": "http://localhost:8080/rest/relationships/friend-requests?from_me=false",
             "method": "GET",
             "sortNum": 110000,
@@ -198,6 +186,48 @@
                     "isPath": false
                 }
             ],
+            "tests": []
+        },
+        {
+            "_id": "a82fdba5-44da-4aed-9c48-77612af49c79",
+            "colId": "3b25d847-82ae-4634-be75-74a975e0ef1e",
+            "containerId": "6a75a1c1-5501-4e64-b52d-a5416570282b",
+            "name": "reject friend request",
+            "url": "http://localhost:8080/rest/relationships/friend-requests/dab16322-85cb-4325-a4eb-8b754ebd9b8a",
+            "method": "DELETE",
+            "sortNum": 120000,
+            "created": "2023-07-21T04:59:11.492Z",
+            "modified": "2023-07-21T05:04:13.738Z",
+            "headers": [],
+            "params": [],
+            "tests": []
+        },
+        {
+            "_id": "908b7896-1f0b-45ad-a33a-7bbc16c3e25b",
+            "colId": "3b25d847-82ae-4634-be75-74a975e0ef1e",
+            "containerId": "6a75a1c1-5501-4e64-b52d-a5416570282b",
+            "name": "accept friend request",
+            "url": "http://localhost:8080/rest/relationships/friend-requests/473ea6b0-665c-4669-bcf3-3fe6cad0faeb",
+            "method": "POST",
+            "sortNum": 130000,
+            "created": "2023-07-21T05:02:59.450Z",
+            "modified": "2023-07-21T05:04:20.330Z",
+            "headers": [],
+            "params": [],
+            "tests": []
+        },
+        {
+            "_id": "fb31aa74-6d8f-45ec-92ae-3d83645dbaf1",
+            "colId": "3b25d847-82ae-4634-be75-74a975e0ef1e",
+            "containerId": "6a75a1c1-5501-4e64-b52d-a5416570282b",
+            "name": "see friends",
+            "url": "http://localhost:8080/rest/relationships/friends",
+            "method": "GET",
+            "sortNum": 140000,
+            "created": "2023-07-21T05:04:49.783Z",
+            "modified": "2023-07-21T05:05:13.385Z",
+            "headers": [],
+            "params": [],
             "tests": []
         }
     ],
