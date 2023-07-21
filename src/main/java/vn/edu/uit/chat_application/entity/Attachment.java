@@ -29,7 +29,7 @@ import java.util.UUID;
 @Builder
 @Entity
 @Table(name = "T_ATTACHMENT")
-public class Attachment implements Serializable, ConversationContent {
+public final class Attachment implements Serializable, ConversationContent {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     @Column(name = "id", nullable = false)

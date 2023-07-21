@@ -32,7 +32,7 @@ import java.util.UUID;
 @Builder
 @Entity
 @Table(name = "T_MESSAGE")
-public class Message implements Serializable, ConversationContent {
+public final class Message implements Serializable, ConversationContent {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Setter(AccessLevel.NONE)
