@@ -10,11 +10,13 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import vn.edu.uit.chat_application.dto.received.UserReceivedDto;
 import vn.edu.uit.chat_application.dto.sent.UserSentDto;
 import vn.edu.uit.chat_application.exception.CustomRuntimeException;
 import vn.edu.uit.chat_application.service.UserService;
+import vn.edu.uit.chat_application.util.PrincipalUtils;
 
 import java.util.UUID;
 
@@ -44,12 +46,17 @@ public class UserController {
         throw new CustomRuntimeException("invalid confirmation", HttpStatus.BAD_REQUEST);
     }
 
-    @GetMapping("/username/{username}")
-    public ResponseEntity<UserSentDto> findByUsername(@PathVariable("username") String username) {
+    @GetMapping()
+    public ResponseEntity<UserSentDto> findByUsername(
+            @RequestParam(value = "username", required = false) String username,
+            @RequestParam(value = "self", required = false, defaultValue = "false") boolean self) {
+        if (self) {
+            return ResponseEntity.ok(UserSentDto.from(PrincipalUtils.getLoggedInUser()));
+        }
         return ResponseEntity.ok(UserSentDto.from(userService.loadByUsername(username)));
     }
 
-    @GetMapping("/id/{id}")
+    @GetMapping("/{id}")
     public ResponseEntity<UserSentDto> findById(@PathVariable("id") UUID username) {
         return ResponseEntity.ok(UserSentDto.from(userService.findById(username)));
     }

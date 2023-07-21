@@ -47,24 +47,20 @@ public class RelationshipController {
         return ResponseEntity.ok().build();
     }
 
-    @GetMapping("/friend-requests/from")
-    public ResponseEntity<Page<FriendRequestSentDto>> getFromFriendRequest(
+    @GetMapping("/friend-requests")
+    public ResponseEntity<Page<FriendRequestSentDto>> getFriendRequests(
             @RequestParam(name = "page", required = false, defaultValue = "0") int page,
-            @RequestParam(name = "size", required = false, defaultValue = "10") int size
+            @RequestParam(name = "size", required = false, defaultValue = "10") int size,
+            @RequestParam(name = "from_me", required = false, defaultValue = "true") boolean fromMe
     ) {
         UUID userId = PrincipalUtils.getLoggedInUser().getId();
-        Page<FriendRequest> results = relationshipService.getFromFriendRequests(userId, page, size);
-        return ResponseEntity.ok(results.map(FriendRequestSentDto::fromFrom));
-    }
-
-    @GetMapping("/friend-requests/to")
-    public ResponseEntity<Page<FriendRequestSentDto>> getToFriendRequest(
-            @RequestParam(name = "page", required = false, defaultValue = "0") int page,
-            @RequestParam(name = "size", required = false, defaultValue = "10") int size
-    ) {
-        UUID userId = PrincipalUtils.getLoggedInUser().getId();
-        Page<FriendRequest> results = relationshipService.getToFriendRequests(userId, page, size);
-        return ResponseEntity.ok(results.map(FriendRequestSentDto::fromTo));
+        Page<FriendRequest> results;
+        if (fromMe) {
+            results = relationshipService.getFromFriendRequests(userId, page, size);
+            return ResponseEntity.ok(results.map(FriendRequestSentDto::friendRequestWithToUser));
+        }
+        results = relationshipService.getToFriendRequests(userId, page, size);
+        return ResponseEntity.ok(results.map(FriendRequestSentDto::friendRequestWithFromUser));
     }
 
     @DeleteMapping("/friends/{id}")

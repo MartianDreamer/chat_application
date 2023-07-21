@@ -21,7 +21,7 @@ public class FriendRequestSentDto {
     private Type type;
     private UserSentDto user;
 
-    public static FriendRequestSentDto from(FriendRequest friendRequest, Type type) {
+    private static FriendRequestSentDto from(FriendRequest friendRequest, Type type) {
         return switch (type) {
             case FROM ->
                     new FriendRequestSentDto(friendRequest.getId(), type, UserSentDto.from(friendRequest.getFrom()));
@@ -29,11 +29,11 @@ public class FriendRequestSentDto {
         };
     }
 
-    public static FriendRequestSentDto fromFrom(FriendRequest friendRequest) {
+    public static FriendRequestSentDto friendRequestWithFromUser(FriendRequest friendRequest) {
         return from(friendRequest, Type.FROM);
     }
 
-    public static FriendRequestSentDto fromTo(FriendRequest friendRequest) {
+    public static FriendRequestSentDto friendRequestWithToUser(FriendRequest friendRequest) {
         return from(friendRequest, Type.TO);
     }
 

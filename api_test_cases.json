@@ -1,51 +1,64 @@
 {
     "client": "Thunder Client",
-    "collectionName": "Chat_application test case collection",
-    "dateExported": "2023-07-21T03:38:18.193Z",
+    "collectionName": "api test cases",
+    "dateExported": "2023-07-21T04:57:36.225Z",
     "version": "1.1",
     "folders": [
         {
-            "_id": "2a91da09-49d8-4638-a352-40ccd24ffd3b",
+            "_id": "f780dc7f-7c5d-432f-b99f-ead7763a0b53",
             "name": "User",
             "containerId": "",
-            "created": "2023-07-19T09:36:17.578Z",
+            "created": "2023-07-21T04:10:20.010Z",
             "sortNum": 10000
+        },
+        {
+            "_id": "6a75a1c1-5501-4e64-b52d-a5416570282b",
+            "name": "Relationship",
+            "containerId": "",
+            "created": "2023-07-21T04:10:20.011Z",
+            "sortNum": 20000
         }
     ],
     "requests": [
         {
-            "_id": "abeb4d29-942a-41bd-b30d-652687225224",
-            "colId": "1c20c9c4-8728-40b6-adc2-bf8dc97283be",
-            "containerId": "2a91da09-49d8-4638-a352-40ccd24ffd3b",
+            "_id": "2f212f09-fa93-435f-8d7b-767b5b39b9be",
+            "colId": "3b25d847-82ae-4634-be75-74a975e0ef1e",
+            "containerId": "f780dc7f-7c5d-432f-b99f-ead7763a0b53",
             "name": "Find By Username",
-            "url": "http://localhost:8080/rest/users/username/sang321",
+            "url": "http://localhost:8080/rest/users?username=thanhnguyen&self=true",
             "method": "GET",
             "sortNum": 10000,
-            "created": "2023-07-19T09:34:48.954Z",
-            "modified": "2023-07-19T09:34:48.954Z",
+            "created": "2023-07-21T04:10:20.010Z",
+            "modified": "2023-07-21T04:31:01.541Z",
             "headers": [],
-            "params": [],
-            "body": {
-                "type": "json",
-                "raw": "{\n  \"username\": \"sang2\",\n  \"password\": \"sang\",\n  \"email\": \"23wdaasd\",\n  \"phoneNumber\": \"2131213123\"\n}",
-                "form": []
-            },
+            "params": [
+                {
+                    "name": "username",
+                    "value": "thanhnguyen",
+                    "isPath": false
+                },
+                {
+                    "name": "self",
+                    "value": "true",
+                    "isPath": false
+                }
+            ],
             "auth": {
                 "type": "bearer",
-                "bearer": "eyJhbGciOiJIUzUxMiJ9.eyJpYXQiOjE2ODk3NTg5MTIsImV4cCI6MTY4OTc2MjUxMiwic3ViIjoiZDRlMjQ2ZmYtOTI1Yi00OWM1LWE4YmUtOGFmNTQ4MjZmNjljIiwidXNlcm5hbWUiOiJzYW5nIiwiYXV0aG9yaXR5IjpbIlVTRVIiXX0.MtmytqnilAuGgGyW3Icl3y83O5B6ONZI-GALRex-5NMXgJ1qUBcr99I6TM5n9WsNLPbUnhb1FqTCJcGK20P3hw"
+                "bearer": "{{accessToken}}"
             },
             "tests": []
         },
         {
-            "_id": "c7487606-a6b4-4c38-84e5-c1e42902ffcf",
-            "colId": "1c20c9c4-8728-40b6-adc2-bf8dc97283be",
-            "containerId": "2a91da09-49d8-4638-a352-40ccd24ffd3b",
+            "_id": "7c64a2df-d536-45fb-9baa-8fba98d0181a",
+            "colId": "3b25d847-82ae-4634-be75-74a975e0ef1e",
+            "containerId": "f780dc7f-7c5d-432f-b99f-ead7763a0b53",
             "name": "Update by user id",
             "url": "http://localhost:8080/rest/users/1c281f0f-4284-47d3-bb6e-5a27dc4a3a9a",
             "method": "PATCH",
             "sortNum": 20000,
-            "created": "2023-07-19T09:35:04.149Z",
-            "modified": "2023-07-20T03:10:59.141Z",
+            "created": "2023-07-21T04:10:20.011Z",
+            "modified": "2023-07-21T04:18:00.624Z",
             "headers": [
                 {
                     "name": "Authorization",
@@ -61,61 +74,137 @@
             },
             "auth": {
                 "type": "bearer",
-                "bearer": "eyJhbGciOiJIUzUxMiJ9.eyJpYXQiOjE2ODk4MjI2NDQsImV4cCI6MTY4OTgyNjI0NCwic3ViIjoiMWMyODFmMGYtNDI4NC00N2QzLWJiNmUtNWEyN2RjNGEzYTlhIiwidXNlcm5hbWUiOiJzYW5nMzIxIiwiYXV0aG9yaXR5IjpbIlVTRVIiXX0.fLQcARt7wY2dkeCjKHZNStdJPCUvpkM92jeif-NwGsYCjeW5fiphokJIw9n6osbYFQbOwdOJHDTyzacyLpEMYw"
+                "bearer": "{{accessToken}}"
             },
             "tests": []
         },
         {
-            "_id": "95f7742c-02da-433b-bacf-8e56c03191aa",
-            "colId": "1c20c9c4-8728-40b6-adc2-bf8dc97283be",
-            "containerId": "2a91da09-49d8-4638-a352-40ccd24ffd3b",
+            "_id": "636f2476-bcef-43b7-99ee-017d34d820af",
+            "colId": "3b25d847-82ae-4634-be75-74a975e0ef1e",
+            "containerId": "f780dc7f-7c5d-432f-b99f-ead7763a0b53",
             "name": "Activate account",
-            "url": "http://localhost:8080/rest/users/confirm/yWUNzHrlMDlHBPXwrVnuToOrpdYN2cTmdz0lHrGP1689783047",
+            "url": "http://localhost:8080/rest/users/confirm/9aTn7G4GoEKi25Wol8lT6eY8PMtfrLMNKfbc3V8S1689936626",
             "method": "POST",
             "sortNum": 30000,
-            "created": "2023-07-19T09:35:46.502Z",
-            "modified": "2023-07-19T09:35:46.502Z",
+            "created": "2023-07-21T04:10:20.012Z",
+            "modified": "2023-07-21T04:10:20.012Z",
             "headers": [],
             "params": [],
             "tests": []
         },
         {
-            "_id": "4680dceb-9b3a-42da-be82-0b47bbf850c8",
-            "colId": "1c20c9c4-8728-40b6-adc2-bf8dc97283be",
-            "containerId": "2a91da09-49d8-4638-a352-40ccd24ffd3b",
+            "_id": "1f8bbebe-3696-4dfa-b034-c32ed0118b3c",
+            "colId": "3b25d847-82ae-4634-be75-74a975e0ef1e",
+            "containerId": "f780dc7f-7c5d-432f-b99f-ead7763a0b53",
             "name": "Create account",
             "url": "http://localhost:8080/rest/users",
             "method": "PUT",
             "sortNum": 40000,
-            "created": "2023-07-19T09:36:06.313Z",
-            "modified": "2023-07-19T09:36:06.313Z",
+            "created": "2023-07-21T04:10:20.013Z",
+            "modified": "2023-07-21T04:10:20.013Z",
             "headers": [],
             "params": [],
             "body": {
                 "type": "json",
-                "raw": "{\n  \"username\": \"sang2\",\n  \"password\": \"sang\",\n  \"email\": \"23wdaasd\",\n  \"phoneNumber\": \"2131213123\"\n}",
+                "raw": "{\n  \"username\": \"thanhnguyen\",\n  \"password\": \"password\",\n  \"email\": \"thanhnguyen@email.com\",\n  \"phoneNumber\": \"0987654322\"\n}",
                 "form": []
             },
             "tests": []
         },
         {
-            "_id": "ebdbd06f-3faa-4557-b41c-525fee325d2c",
-            "colId": "1c20c9c4-8728-40b6-adc2-bf8dc97283be",
-            "containerId": "2a91da09-49d8-4638-a352-40ccd24ffd3b",
+            "_id": "ad4cbd48-0b58-4903-a73b-af808e833be2",
+            "colId": "3b25d847-82ae-4634-be75-74a975e0ef1e",
+            "containerId": "f780dc7f-7c5d-432f-b99f-ead7763a0b53",
             "name": "Login",
             "url": "http://localhost:8080/rest/login",
             "method": "POST",
             "sortNum": 50000,
-            "created": "2023-07-20T03:10:22.290Z",
-            "modified": "2023-07-20T03:10:44.649Z",
+            "created": "2023-07-21T04:10:20.014Z",
+            "modified": "2023-07-21T04:57:02.747Z",
             "headers": [],
             "params": [],
             "body": {
                 "type": "json",
-                "raw": "{\n  \"username\" : \"sang321\",\n  \"password\": \"sang\"\n}",
+                "raw": "{\n  \"username\" : \"sangnguyen\",\n  \"password\": \"password\"\n}",
                 "form": []
             },
+            "tests": [
+                {
+                    "type": "set-env-var",
+                    "custom": "json.token",
+                    "action": "setto",
+                    "value": "{{accessToken}}"
+                }
+            ]
+        },
+        {
+            "_id": "83388b7d-d1ac-4448-a7fc-cf7ef8708441",
+            "colId": "3b25d847-82ae-4634-be75-74a975e0ef1e",
+            "containerId": "6a75a1c1-5501-4e64-b52d-a5416570282b",
+            "name": "add friend",
+            "url": "http://localhost:8080/rest/relationships/friend-requests",
+            "method": "PUT",
+            "sortNum": 70000,
+            "created": "2023-07-21T04:10:20.015Z",
+            "modified": "2023-07-21T04:16:25.425Z",
+            "headers": [],
+            "params": [],
+            "body": {
+                "type": "json",
+                "raw": "\"12cf9f71-c28d-4ec2-bd12-319b8c9f8eee\"",
+                "form": []
+            },
+            "auth": {
+                "type": "bearer",
+                "bearer": "{{accessToken}}"
+            },
+            "tests": []
+        },
+        {
+            "_id": "0aedcac2-49e4-45b0-b907-798a1bc79bb0",
+            "colId": "3b25d847-82ae-4634-be75-74a975e0ef1e",
+            "containerId": "6a75a1c1-5501-4e64-b52d-a5416570282b",
+            "name": "get from requests",
+            "url": "http://localhost:8080/rest/relationships/friend-requests?from_me=true",
+            "method": "GET",
+            "sortNum": 90000,
+            "created": "2023-07-21T04:10:20.016Z",
+            "modified": "2023-07-21T04:42:07.107Z",
+            "headers": [],
+            "params": [
+                {
+                    "name": "from_me",
+                    "value": "true",
+                    "isPath": false
+                }
+            ],
+            "tests": []
+        },
+        {
+            "_id": "b325b702-0ece-4f8a-9ffb-b71f2f7798f4",
+            "colId": "3b25d847-82ae-4634-be75-74a975e0ef1e",
+            "containerId": "6a75a1c1-5501-4e64-b52d-a5416570282b",
+            "name": "get to request",
+            "url": "http://localhost:8080/rest/relationships/friend-requests?from_me=false",
+            "method": "GET",
+            "sortNum": 110000,
+            "created": "2023-07-21T04:33:30.909Z",
+            "modified": "2023-07-21T04:42:21.544Z",
+            "headers": [],
+            "params": [
+                {
+                    "name": "from_me",
+                    "value": "false",
+                    "isPath": false
+                }
+            ],
             "tests": []
         }
-    ]
+    ],
+    "settings": {
+        "auth": {
+            "type": "bearer",
+            "bearer": "{{accessToken}}"
+        }
+    }
 }
