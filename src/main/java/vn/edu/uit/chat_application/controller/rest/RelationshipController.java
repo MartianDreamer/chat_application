@@ -1,4 +1,4 @@
-package vn.edu.uit.chat_application.controller;
+package vn.edu.uit.chat_application.controller.rest;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;

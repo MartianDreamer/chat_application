@@ -1,4 +1,4 @@
-package vn.edu.uit.chat_application.controller;
+package vn.edu.uit.chat_application.controller.rest;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;

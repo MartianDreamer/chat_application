@@ -1,4 +1,4 @@
-package vn.edu.uit.chat_application.websocket;
+package vn.edu.uit.chat_application.event.listener;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
