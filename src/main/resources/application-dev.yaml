@@ -20,3 +20,4 @@ jwt:
 
 app:
   message-modifiability-duration: 5
+  confirm-duration-in-day: 1

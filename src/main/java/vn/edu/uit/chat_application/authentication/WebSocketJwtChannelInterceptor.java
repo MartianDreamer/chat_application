@@ -15,7 +15,7 @@ import vn.edu.uit.chat_application.service.UserService;
 
 @Component
 @RequiredArgsConstructor
-public class WebSocketJwtFilter implements ChannelInterceptor {
+public class WebSocketJwtChannelInterceptor implements ChannelInterceptor {
 
     private final JwtService jwtService;
     private final UserService userService;

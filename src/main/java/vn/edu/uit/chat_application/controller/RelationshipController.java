@@ -85,14 +85,14 @@ public class RelationshipController {
         return ResponseEntity.ok(relationshipService.blockUser(userId).getId());
     }
 
-    @DeleteMapping("/block/{id}")
-    public ResponseEntity<Void> unblockUser(@PathVariable("id") UUID id) {
-        relationshipService.unblockUser(id);
+    @DeleteMapping("/block/{userId}")
+    public ResponseEntity<Void> unblockUser(@PathVariable("userId") UUID userId) {
+        relationshipService.unblockUser(userId);
         return ResponseEntity.ok().build();
     }
 
     @GetMapping("/block")
-    public ResponseEntity<Page<BlockRelationshipSentDto>> getBlockedUsers(
+    public ResponseEntity<Page<BlockRelationshipSentDto>> getBlockedRelationships(
             @RequestParam(name = "page", required = false, defaultValue = "0") int page,
             @RequestParam(name = "size", required = false, defaultValue = "10") int size
     ) {

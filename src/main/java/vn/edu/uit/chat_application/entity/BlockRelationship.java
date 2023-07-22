@@ -8,6 +8,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
+import jakarta.persistence.UniqueConstraint;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -18,7 +19,12 @@ import lombok.Setter;
 import java.util.UUID;
 
 @Entity
-@Table(name = "T_BLOCK_RELATIONSHIP")
+@Table(
+        name = "T_BLOCK_RELATIONSHIP",
+        uniqueConstraints = {
+                @UniqueConstraint(name = "blocked_blocker", columnNames = {"blocked_id", "blocker_id"})
+        }
+)
 @Getter
 @Setter
 @AllArgsConstructor

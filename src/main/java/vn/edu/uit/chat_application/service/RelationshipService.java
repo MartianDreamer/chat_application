@@ -74,7 +74,7 @@ public class RelationshipService {
         if (blocker.getId().equals(userId)) {
             throw new CustomRuntimeException("can not block yourself", HttpStatus.BAD_REQUEST);
         }
-        User blocked = userService.findById(userId);
+        User blocked = new User(userId);
         return blockRelationshipRepository.save(new BlockRelationship(blocker, blocked));
     }
 
@@ -82,8 +82,9 @@ public class RelationshipService {
         friendRelationshipRepository.deleteById(id);
     }
 
-    public void unblockUser(UUID id) {
-        blockRelationshipRepository.deleteById(id);
+    public void unblockUser(UUID userId) {
+        UUID blockerId = PrincipalUtils.getLoggedInUser().getId();
+        blockRelationshipRepository.deleteByBlockerIdAndBlockedId(blockerId, userId);
     }
 
     public boolean areNotFriends(UUID id1, UUID id2) {

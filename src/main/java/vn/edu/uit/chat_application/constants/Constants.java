@@ -1,9 +1,13 @@
 package vn.edu.uit.chat_application.constants;
 
+import org.springframework.beans.factory.annotation.Value;
+
 public final class Constants {
     private Constants() {
         super();
     }
 
-    public static int CONFIRMATION_DURATION_IN_DAY = 1;
+    @Value("${app.confirm-duration-in-day}")
+    public static int CONFIRMATION_DURATION_IN_DAY;
+    public static int UUID_LENGTH = 36;
 }
