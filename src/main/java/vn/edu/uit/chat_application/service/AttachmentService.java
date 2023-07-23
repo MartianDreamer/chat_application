@@ -9,6 +9,7 @@ import java.util.UUID;
 public interface AttachmentService {
     List<Attachment> createAttachments(List<AttachmentReceivedDto> dtos);
     void deleteAttachmens(List<UUID> ids);
-    List<Attachment> getAttachments(List<UUID> ids);
     List<Attachment> getByConversationId(UUID conversationId);
+    byte[] getAttachmentContent(Attachment attachment);
+    List<byte[]> getgetAttachmentContents(List<Attachment> attachments);
 }

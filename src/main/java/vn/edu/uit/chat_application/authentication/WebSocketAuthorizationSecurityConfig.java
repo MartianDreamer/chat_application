@@ -14,7 +14,7 @@ public class WebSocketAuthorizationSecurityConfig {
     @Bean
     public AuthorizationManager<Message<?>> messageAuthorizationManager(MessageMatcherDelegatingAuthorizationManager.Builder messages) {
         return messages
-                .simpMessageDestMatchers("/app/admin")
+                .simpMessageDestMatchers("/app/admin/**")
                 .hasAuthority(Role.ADMIN.getAuthority())
                 .anyMessage()
                 .authenticated()

@@ -1,6 +1,7 @@
 package vn.edu.uit.chat_application.service;
 
 import lombok.RequiredArgsConstructor;
+import lombok.SneakyThrows;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import vn.edu.uit.chat_application.dto.received.AttachmentReceivedDto;
@@ -24,21 +25,22 @@ public class LocalStorageAttachmentService implements AttachmentService {
     private final AttachmentRepository attachmentRepository;
 
     @Override
+    @SneakyThrows
     public List<Attachment> createAttachments(List<AttachmentReceivedDto> dtos) {
         List<Attachment> savedAttachments = attachmentRepository.saveAll(dtos.stream()
                 .map(Attachment::from)
                 .toList());
         Set<AttachmentReceivedDto> processedDtos = new HashSet<>();
-        savedAttachments.forEach(e -> {
+        for (Attachment e : savedAttachments) {
             AttachmentReceivedDto processedDto = dtos.stream()
                     .filter(dto -> e.getFileExtension().equals(dto.getExtension()))
                     .filter(dto -> !processedDtos.contains(dto))
                     .findFirst()
                     .orElseThrow();
             processedDtos.add(processedDto);
-            e.setContent(processedDto.getContent());
+            e.setContent(processedDto.getContent().getInputStream());
             persistAttachment(e);
-        });
+        }
         return savedAttachments;
     }
 
@@ -49,13 +51,6 @@ public class LocalStorageAttachmentService implements AttachmentService {
                 .peek(this::deleteAttachmentFile)
                 .map(Attachment::getId)
                 .toList());
-    }
-
-    @Override
-    public List<Attachment> getAttachments(List<UUID> ids) {
-        return attachmentRepository.findAllById(ids).stream()
-                .peek(e -> e.setContent(getAttachmentContent(e)))
-                .toList();
     }
 
     @Override
@@ -73,10 +68,11 @@ public class LocalStorageAttachmentService implements AttachmentService {
         }
     }
 
-    private byte[] getAttachmentContent(Attachment attachment) {
+    @Override
+    public byte[] getAttachmentContent(Attachment attachment) {
         String dir = "/attachment/" + attachment.getTo().getId().toString();
         File dirFile = new File(dir);
-        String fileName = attachment.getId().toString() + attachment.getFileExtension();
+        String fileName = attachment.getId().toString() + "." + attachment.getFileExtension();
         File file = new File(dirFile, fileName);
         try (FileInputStream fileInputStream = new FileInputStream(file)) {
             return fileInputStream.readAllBytes();
@@ -85,13 +81,20 @@ public class LocalStorageAttachmentService implements AttachmentService {
         }
     }
 
+    @Override
+    public List<byte[]> getgetAttachmentContents(List<Attachment> attachments) {
+        return attachments.stream()
+                .map(this::getAttachmentContent)
+                .toList();
+    }
+
     private void persistAttachment(Attachment attachment) {
         String dir = "/attachment/" + attachment.getTo().getId().toString();
         File dirFile = new File(dir);
-        String fileName = attachment.getId().toString() + attachment.getFileExtension();
+        String fileName = attachment.getId().toString() + "." + attachment.getFileExtension();
         File file = new File(dirFile, fileName);
         try (FileOutputStream outputStream = new FileOutputStream(file)) {
-            outputStream.write(attachment.getContent());
+            outputStream.write(attachment.getContent().readAllBytes());
         } catch (IOException e) {
             throw new CustomRuntimeException("can not save attachment", HttpStatus.INTERNAL_SERVER_ERROR);
         }

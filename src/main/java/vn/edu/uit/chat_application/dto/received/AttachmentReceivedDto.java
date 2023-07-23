@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.springframework.web.multipart.MultipartFile;
 import vn.edu.uit.chat_application.dto.FromLoggedInUserDto;
 import vn.edu.uit.chat_application.entity.User;
 
@@ -19,5 +20,5 @@ public class AttachmentReceivedDto implements FromLoggedInUserDto {
     @JsonIgnore
     private User from;
     private String extension;
-    private byte[] content;
+    private MultipartFile content;
 }

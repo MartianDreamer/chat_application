@@ -18,6 +18,7 @@ import lombok.Setter;
 import vn.edu.uit.chat_application.aspect.annotation.FillFromUserField;
 import vn.edu.uit.chat_application.dto.received.AttachmentReceivedDto;
 
+import java.io.InputStream;
 import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.UUID;
@@ -46,7 +47,7 @@ public final class Attachment implements Serializable, ConversationContent {
     @Column(nullable = false)
     private LocalDateTime timestamp;
     @Transient
-    private byte[] content;
+    private InputStream content;
 
     public Attachment(UUID id) {
         this.id = id;
@@ -59,7 +60,6 @@ public final class Attachment implements Serializable, ConversationContent {
                 .to(to)
                 .from(attachmentReceivedDto.getFrom())
                 .fileExtension(attachmentReceivedDto.getExtension())
-                .content(attachmentReceivedDto.getContent())
                 .timestamp(LocalDateTime.now())
                 .build();
     }
