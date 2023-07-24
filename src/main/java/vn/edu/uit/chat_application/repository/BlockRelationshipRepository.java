@@ -14,5 +14,7 @@ public interface BlockRelationshipRepository extends JpaRepository<BlockRelation
             "or (b.blocker.id = :blockedId and b.blocked.id = :blockerId)")
     boolean existsByUserIds(UUID blockerId, UUID blockedId);
 
+    void deleteByBlockerIdAndBlockedId(UUID blockerId, UUID blockedId);
+
     Page<BlockRelationship> findAllByBlockerId(UUID blockerId, Pageable pageable);
 }

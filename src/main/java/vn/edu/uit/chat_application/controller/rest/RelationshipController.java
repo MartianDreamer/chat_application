@@ -1,8 +1,7 @@
-package vn.edu.uit.chat_application.controller;
+package vn.edu.uit.chat_application.controller.rest;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -11,6 +10,7 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 import vn.edu.uit.chat_application.dto.sent.BlockRelationshipSentDto;
 import vn.edu.uit.chat_application.dto.sent.FriendRelationshipSentDto;
@@ -31,77 +31,70 @@ public class RelationshipController {
     private final RelationshipService relationshipService;
 
     @PutMapping("/friend-requests")
-    public ResponseEntity<UUID> createFriendRequest(@RequestBody UUID userId) {
-        return ResponseEntity.ok(relationshipService.createFriendRequest(userId).getId());
+    @ResponseBody
+    public UUID createFriendRequest(@RequestBody UUID userId) {
+        return relationshipService.createFriendRequest(userId).getId();
     }
 
     @PostMapping("/friend-requests/{id}")
-    public ResponseEntity<Void> acceptFriendRequest(@PathVariable("id") UUID id) {
+    public void acceptFriendRequest(@PathVariable("id") UUID id) {
         relationshipService.acceptFriendRequest(id);
-        return ResponseEntity.ok().build();
     }
 
     @DeleteMapping("/friend-requests/{id}")
-    public ResponseEntity<Void> cancelFriendRequest(@PathVariable("id") UUID id) {
+    public void cancelFriendRequest(@PathVariable("id") UUID id) {
         relationshipService.cancelFriendRequest(id);
-        return ResponseEntity.ok().build();
     }
 
-    @GetMapping("/friend-requests/from")
-    public ResponseEntity<Page<FriendRequestSentDto>> getFromFriendRequest(
+    @GetMapping("/friend-requests")
+    public @ResponseBody Page<FriendRequestSentDto> getFriendRequests(
             @RequestParam(name = "page", required = false, defaultValue = "0") int page,
-            @RequestParam(name = "size", required = false, defaultValue = "10") int size
+            @RequestParam(name = "size", required = false, defaultValue = "10") int size,
+            @RequestParam(name = "from_me", required = false, defaultValue = "true") boolean fromMe
     ) {
         UUID userId = PrincipalUtils.getLoggedInUser().getId();
-        Page<FriendRequest> results = relationshipService.getFromFriendRequests(userId, page, size);
-        return ResponseEntity.ok(results.map(FriendRequestSentDto::fromFrom));
-    }
-
-    @GetMapping("/friend-requests/to")
-    public ResponseEntity<Page<FriendRequestSentDto>> getToFriendRequest(
-            @RequestParam(name = "page", required = false, defaultValue = "0") int page,
-            @RequestParam(name = "size", required = false, defaultValue = "10") int size
-    ) {
-        UUID userId = PrincipalUtils.getLoggedInUser().getId();
-        Page<FriendRequest> results = relationshipService.getToFriendRequests(userId, page, size);
-        return ResponseEntity.ok(results.map(FriendRequestSentDto::fromTo));
+        Page<FriendRequest> results;
+        if (fromMe) {
+            results = relationshipService.getFromFriendRequests(userId, page, size);
+            return results.map(FriendRequestSentDto::friendRequestWithToUser);
+        }
+        results = relationshipService.getToFriendRequests(userId, page, size);
+        return results.map(FriendRequestSentDto::friendRequestWithFromUser);
     }
 
     @DeleteMapping("/friends/{id}")
-    public ResponseEntity<Void> unfriend(@PathVariable("id") UUID id) {
+    public void unfriend(@PathVariable("id") UUID id) {
         relationshipService.unfriend(id);
-        return ResponseEntity.ok().build();
     }
 
     @GetMapping("/friends")
-    public ResponseEntity<Page<FriendRelationshipSentDto>> getFriends(
+    public @ResponseBody Page<FriendRelationshipSentDto> getFriends(
             @RequestParam(name = "page", required = false, defaultValue = "0") int page,
             @RequestParam(name = "size", required = false, defaultValue = "10") int size
     ) {
         UUID userId = PrincipalUtils.getLoggedInUser().getId();
         Page<FriendRelationship> results = relationshipService.getFriends(userId, page, size);
         Function<FriendRelationship, FriendRelationshipSentDto> converter = (e) -> FriendRelationshipSentDto.from(e, userId);
-        return ResponseEntity.ok(results.map(converter));
+        return results.map(converter);
     }
 
     @PutMapping("/block")
-    public ResponseEntity<UUID> blockUser(@RequestBody UUID userId) {
-        return ResponseEntity.ok(relationshipService.blockUser(userId).getId());
+    public @ResponseBody UUID blockUser(@RequestBody UUID userId) {
+        return relationshipService.blockUser(userId).getId();
     }
 
-    @DeleteMapping("/block/{id}")
-    public ResponseEntity<Void> unblockUser(@PathVariable("id") UUID id) {
-        relationshipService.unblockUser(id);
-        return ResponseEntity.ok().build();
+    @DeleteMapping("/block/{userId}")
+    public void unblockUser(@PathVariable("userId") UUID userId) {
+        relationshipService.unblockUser(userId);
     }
 
     @GetMapping("/block")
-    public ResponseEntity<Page<BlockRelationshipSentDto>> getBlockedUsers(
+    public @ResponseBody Page<BlockRelationshipSentDto> getBlockedRelationships(
             @RequestParam(name = "page", required = false, defaultValue = "0") int page,
             @RequestParam(name = "size", required = false, defaultValue = "10") int size
     ) {
         UUID userId = PrincipalUtils.getLoggedInUser().getId();
         Page<BlockRelationship> results = relationshipService.getBlockedUsers(userId, page, size);
-        return ResponseEntity.ok(results.map(BlockRelationshipSentDto::from));
+        return results.map(BlockRelationshipSentDto::from);
     }
 }

@@ -22,6 +22,7 @@ import java.io.Serializable;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Collection;
+import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -36,6 +37,7 @@ import static vn.edu.uit.chat_application.constants.Constants.CONFIRMATION_DURAT
 @Builder
 @Setter
 public class User implements UserDetails, Serializable {
+    private static final String DELIMETER = ",";
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     @Column(name = "id", nullable = false)
@@ -82,9 +84,16 @@ public class User implements UserDetails, Serializable {
 
     @Override
     public Collection<Role> getAuthorities() {
-        return Stream.of(roles.split("_"))
+        return Stream.of(roles.split(DELIMETER))
+                .map(String::strip)
                 .map(Role::valueOf)
                 .collect(Collectors.toSet());
+    }
+
+    public void setRoles(Set<Role> roles) {
+        this.roles = roles.stream()
+                .map(Role::toString)
+                .collect(Collectors.joining(DELIMETER));
     }
 
     @Override
@@ -119,7 +128,6 @@ public class User implements UserDetails, Serializable {
 
     public static User from(UserReceivedDto userReceivedDto) {
         return User.builder()
-                .id(userReceivedDto.getId())
                 .username(userReceivedDto.getUsername())
                 .password(userReceivedDto.getPassword())
                 .validUntil(LocalDate.now().plusDays(CONFIRMATION_DURATION_IN_DAY))
@@ -130,7 +138,11 @@ public class User implements UserDetails, Serializable {
                 .avatarExtension(userReceivedDto.getAvatarExtension())
                 .confirmationString(UserService.generateConfirmationString())
                 .active(false)
-                .roles("USER")
+                .roles(Role.ROLE_USER.name())
                 .build();
+    }
+
+    public User(UUID id) {
+        this.id = id;
     }
 }

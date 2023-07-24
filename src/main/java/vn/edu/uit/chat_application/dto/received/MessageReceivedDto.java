@@ -8,7 +8,6 @@ import lombok.Setter;
 import vn.edu.uit.chat_application.dto.FromLoggedInUserDto;
 import vn.edu.uit.chat_application.entity.User;
 
-import java.util.List;
 import java.util.UUID;
 
 @Getter
@@ -20,5 +19,4 @@ public class MessageReceivedDto implements FromLoggedInUserDto {
     private User from;
     private UUID to;
     private String content;
-    private List<AttachmentReceivedDto> attachments;
 }

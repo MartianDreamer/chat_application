@@ -44,4 +44,8 @@ public class FriendRequest {
         this.from = from;
         this.to = to;
     }
+
+    public FriendRequest(UUID id) {
+        this.id = id;
+    }
 }

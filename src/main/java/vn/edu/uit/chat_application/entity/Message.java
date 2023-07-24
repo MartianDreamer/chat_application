@@ -32,18 +32,16 @@ import java.util.UUID;
 @Builder
 @Entity
 @Table(name = "T_MESSAGE")
-public class Message implements Serializable {
+public final class Message implements Serializable, ConversationContent {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Setter(AccessLevel.NONE)
     @Column(nullable = false, length = 36)
     private UUID id;
     @ManyToOne
-    @JoinColumn(name = "from_id")
     private User from;
     @ManyToOne
-    @JoinColumn(name = "conversation_id")
-    private Conversation conversation;
+    private Conversation to;
     private LocalDateTime timestamp;
     @JoinTable(
             name = "T_MESSAGE_SEEN_BY",
@@ -53,17 +51,21 @@ public class Message implements Serializable {
     @ManyToMany
     private List<User> seenBy;
     @Column(nullable = false, columnDefinition = "TEXT")
-    protected String content;
+    private String content;
 
     @FillFromUserField
     public static Message from(MessageReceivedDto dto) {
-        Conversation conversation = Conversation.builder().id(dto.getTo()).build();
+        Conversation to = new Conversation(dto.getTo());
         return Message.builder()
-                .conversation(conversation)
+                .to(to)
                 .from(dto.getFrom())
                 .timestamp(LocalDateTime.now())
                 .seenBy(new LinkedList<>())
                 .content(dto.getContent())
                 .build();
+    }
+
+    public Message(UUID id) {
+        this.id = id;
     }
 }

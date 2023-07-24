@@ -4,15 +4,13 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-
-import java.util.UUID;
+import vn.edu.uit.chat_application.dto.PasswordHolder;
 
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter
 @Setter
-public class UserReceivedDto {
-    private UUID id;
+public class UserReceivedDto implements PasswordHolder {
     private String username;
     private String password;
     private String email;

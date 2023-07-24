@@ -6,7 +6,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import vn.edu.uit.chat_application.entity.Attachment;
-import vn.edu.uit.chat_application.entity.Conversation;
 
 import java.time.LocalDateTime;
 import java.util.UUID;
@@ -16,10 +15,14 @@ import java.util.UUID;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class AttachmentSentDto {
+public final class AttachmentSentDto implements ConversationContentDto {
     private UUID id;
-    private Conversation conversation;
-    private Attachment.Type type;
-    private UserSentDto from;
+    private UUID to;
+    private UUID from;
     private LocalDateTime timestamp;
+    private String extension;
+
+    public static AttachmentSentDto from(Attachment attachment) {
+        return new AttachmentSentDto(attachment.getId(), attachment.getTo().getId(), attachment.getFrom().getId(), attachment.getTimestamp(), attachment.getFileExtension());
+    }
 }

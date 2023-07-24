@@ -1,13 +1,17 @@
 package vn.edu.uit.chat_application.service;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import vn.edu.uit.chat_application.dto.received.MessageReceivedDto;
 import vn.edu.uit.chat_application.entity.Message;
+import vn.edu.uit.chat_application.exception.CustomRuntimeException;
 import vn.edu.uit.chat_application.repository.MessageRepository;
 
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 @RequiredArgsConstructor
@@ -15,8 +19,19 @@ import java.util.UUID;
 public class MessageService {
 
     private final MessageRepository messageRepository;
-    Message save(MessageReceivedDto dto) {
+    @Value("${app.message-modifiability-duration}")
+    private long messageModifiabilityDuration;
+
+    public Message createMessage(MessageReceivedDto dto) {
         return messageRepository.save(Message.from(dto));
+    }
+
+    public void update(UUID id, String content) {
+        LocalDateTime validTime = LocalDateTime.now().minusMinutes(messageModifiabilityDuration);
+        if (!messageRepository.isModifiable(id, validTime)) {
+            throw new CustomRuntimeException("unmodifiable", HttpStatus.BAD_REQUEST);
+        }
+        messageRepository.updateContent(id, content);
     }
 
     void delete(UUID id) {
@@ -24,6 +39,6 @@ public class MessageService {
     }
 
     Page<Message> findByConversation(UUID conversationId, int page, int size) {
-        return messageRepository.findAllByConversationId(conversationId, PageRequest.of(page, size));
+        return messageRepository.findAllByToId(conversationId, PageRequest.of(page, size));
     }
 }

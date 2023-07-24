@@ -1,5 +1,6 @@
 package vn.edu.uit.chat_application.util;
 
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import vn.edu.uit.chat_application.entity.User;
 
@@ -13,5 +14,9 @@ public final class PrincipalUtils {
         if (principals instanceof User user)
             return user;
         throw new ClassCastException();
+    }
+
+    public static User getLogginUserFromAuthentication(Authentication authentication) {
+        return (User) authentication.getPrincipal();
     }
 }

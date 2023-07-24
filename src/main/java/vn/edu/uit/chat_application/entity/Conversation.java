@@ -38,4 +38,8 @@ public class Conversation implements Serializable {
     private String name;
     @Column(length = 50)
     private String duplicatedTwoPeopleConversationIdentifier;
+
+    public Conversation(UUID id) {
+        this.id = id;
+    }
 }

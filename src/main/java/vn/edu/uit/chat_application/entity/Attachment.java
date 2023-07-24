@@ -2,8 +2,6 @@ package vn.edu.uit.chat_application.entity;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -20,7 +18,9 @@ import lombok.Setter;
 import vn.edu.uit.chat_application.aspect.annotation.FillFromUserField;
 import vn.edu.uit.chat_application.dto.received.AttachmentReceivedDto;
 
+import java.io.InputStream;
 import java.io.Serializable;
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Getter
@@ -30,10 +30,7 @@ import java.util.UUID;
 @Builder
 @Entity
 @Table(name = "T_ATTACHMENT")
-public class Attachment implements Serializable {
-    public enum Type {
-        STICKER, PICTURE, VIDEO, FILE
-    }
+public final class Attachment implements Serializable, ConversationContent {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     @Column(name = "id", nullable = false)
@@ -45,23 +42,25 @@ public class Attachment implements Serializable {
     @ManyToOne
     @JoinColumn(name = "from_id")
     private User from;
-    @Enumerated(EnumType.STRING)
-    @Column(nullable = false, length =  10)
-    private Type type;
     @Column(nullable = false, length = 10)
     private String fileExtension;
+    @Column(nullable = false)
+    private LocalDateTime timestamp;
     @Transient
-    private byte[] content;
+    private InputStream content;
+
+    public Attachment(UUID id) {
+        this.id = id;
+    }
 
     @FillFromUserField
     public static Attachment from(AttachmentReceivedDto attachmentReceivedDto) {
-        Conversation to = Conversation.builder().id(attachmentReceivedDto.getTo()).build();
+        Conversation to = new Conversation(attachmentReceivedDto.getTo());
         return Attachment.builder()
                 .to(to)
                 .from(attachmentReceivedDto.getFrom())
-                .type(attachmentReceivedDto.getType())
                 .fileExtension(attachmentReceivedDto.getExtension())
-                .content(attachmentReceivedDto.getContent())
+                .timestamp(LocalDateTime.now())
                 .build();
     }
 }

@@ -5,7 +5,7 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-import vn.edu.uit.chat_application.dto.TokenDto;
+import vn.edu.uit.chat_application.dto.sent.TokenDto;
 import vn.edu.uit.chat_application.entity.User;
 
 import javax.crypto.spec.SecretKeySpec;
@@ -13,6 +13,7 @@ import java.security.Key;
 import java.time.temporal.ChronoUnit;
 import java.util.Base64;
 import java.util.Date;
+import java.util.Optional;
 import java.util.UUID;
 
 @Service
@@ -23,11 +24,12 @@ public class JwtService {
     private Long duration;
     @Value("${jwt.refresh.duration}")
     private Long refreshDuration;
+
     private Key getKey() {
         return new SecretKeySpec(Base64.getEncoder().encode(secret.getBytes()), SignatureAlgorithm.HS256.getJcaName());
     }
 
-    private TokenDto generateTokens(User user) {
+    public TokenDto issueTokenPair(User user) {
         Date now = new Date();
         Date refreshValidFrom = Date.from(now.toInstant().plus(duration, ChronoUnit.SECONDS));
         Date refreshExpired = Date.from(refreshValidFrom.toInstant().plus(refreshDuration, ChronoUnit.SECONDS));
@@ -49,24 +51,17 @@ public class JwtService {
         return new TokenDto(accessToken, refreshToken, now, duration, refreshValidFrom, refreshDuration);
     }
 
-    public UUID getUserId(String token) {
-        Claims claims = Jwts.parserBuilder()
-                .setSigningKey(getKey())
-                .build()
-                .parseClaimsJws(token)
-                .getBody();
-        return UUID.fromString(claims.getSubject());
-    }
 
-    public boolean validateToken(String token) {
+    public Optional<UUID> validateToken(String token) {
         try {
-            Jwts.parserBuilder()
+            Claims claims = Jwts.parserBuilder()
                     .setSigningKey(getKey())
                     .build()
-                    .parseClaimsJws(token);
-            return true;
-        } catch (Exception e) {
-            return false;
+                    .parseClaimsJws(token)
+                    .getBody();
+            return Optional.of(UUID.fromString(claims.getSubject()));
+        } catch (RuntimeException e) {
+            return Optional.empty();
         }
     }
 }

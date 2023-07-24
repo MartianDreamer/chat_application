@@ -5,7 +5,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import vn.edu.uit.chat_application.entity.BlockRelationship;
 import vn.edu.uit.chat_application.entity.FriendRelationship;
@@ -47,7 +46,7 @@ public class RelationshipService {
         friendRequestRepository.deleteById(id);
     }
 
-    @Transactional(propagation = Propagation.REQUIRED)
+    @Transactional
     public void acceptFriendRequest(UUID id) {
         FriendRequest friendRequest = friendRequestRepository.findById(id).orElseThrow(CustomRuntimeException::notFound);
         friendRelationshipRepository.save(new FriendRelationship(friendRequest.getFrom(), friendRequest.getTo()));
@@ -75,7 +74,7 @@ public class RelationshipService {
         if (blocker.getId().equals(userId)) {
             throw new CustomRuntimeException("can not block yourself", HttpStatus.BAD_REQUEST);
         }
-        User blocked = userService.findById(userId);
+        User blocked = new User(userId);
         return blockRelationshipRepository.save(new BlockRelationship(blocker, blocked));
     }
 
@@ -83,7 +82,12 @@ public class RelationshipService {
         friendRelationshipRepository.deleteById(id);
     }
 
-    public void unblockUser(UUID id) {
-        blockRelationshipRepository.deleteById(id);
+    public void unblockUser(UUID userId) {
+        UUID blockerId = PrincipalUtils.getLoggedInUser().getId();
+        blockRelationshipRepository.deleteByBlockerIdAndBlockedId(blockerId, userId);
+    }
+
+    public boolean areNotFriends(UUID id1, UUID id2) {
+        return !friendRelationshipRepository.existsByUserIds(id1, id2);
     }
 }

@@ -33,5 +33,13 @@ public class OnlineUser {
     @JoinColumn(name = "user_id", unique = true, nullable = false)
     private User user;
     @Column(nullable = false)
+    private boolean online;
+    @Column(nullable = false)
     private LocalDateTime lastSeen;
+
+    public OnlineUser(User user, boolean online, LocalDateTime lastSeen) {
+        this.user = user;
+        this.online = online;
+        this.lastSeen = lastSeen;
+    }
 }
