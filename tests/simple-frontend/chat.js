@@ -5,7 +5,7 @@ let stompClient;
 const onConnect = (frame) => {
     console.log("Connected: " + frame);
     stompClient.subscribe("/topic/announcement", onReceivedPublic);
-    stompClient.subscribe(`/user/${username}/announcement`)
+    stompClient.subscribe(`/user/queue/announcement`, onReceivedPrivate)
 };
 
 const onError = (e) => {
@@ -26,14 +26,13 @@ function connect(e) {
     })
         .then(rsp => rsp.json())
         .then((body) => {
-            $("#disconnect-btn").removeAttr("hidden")
-            $("#clear-btn").removeAttr("hidden")
+            $("#chat-interface").removeAttr("hidden");
             $("#input-block").attr("hidden", true);
             const sock = new SockJS("http://localhost:8080/ws");
             stompClient = StompJs.Stomp.over(sock);
             stompClient.connect(
                 {
-                    Authorization: body.token,
+                    Authorization: `Bearer ${body.token}`,
                 },
                 onConnect,
                 onError
@@ -52,9 +51,8 @@ function onReceivedPrivate(message) {
 function disconnect(e) {
     e.preventDefault();
     stompClient.disconnect(() => {
-        $("#disconnect-btn").attr("hidden", true);
-        $("#clear-btn").attr("hidden", true);
-        $("#input-block").removeAttr("hidden")
+        $("#chat-interface").attr("hidden", true);
+        $("#input-block").removeAttr("hidden");
     }, {});
 }
 

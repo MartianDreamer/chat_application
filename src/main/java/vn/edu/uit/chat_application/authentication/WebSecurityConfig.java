@@ -60,9 +60,6 @@ public class WebSecurityConfig {
                 .authorizeHttpRequests(authorizationManagerRequestMatcherRegistry -> {
                     RequestMatcher[] permitAllRequests = {
                             RegexRequestMatcher.regexMatcher("/ws/.*"),
-                            RegexRequestMatcher.regexMatcher("/app/.*"),
-                            RegexRequestMatcher.regexMatcher("/topic/.*"),
-                            RegexRequestMatcher.regexMatcher("/user/.*"),
                             RegexRequestMatcher.regexMatcher(HttpMethod.PUT, "/rest/users"),
                             RegexRequestMatcher.regexMatcher(HttpMethod.POST, "/rest/users/confirm.*"),
                             RegexRequestMatcher.regexMatcher("/swagger-ui.html.*"),

@@ -13,10 +13,14 @@
     <label for="password-input">Password</label><input id="password-input" type="password" name="username"/>
     <button type="submit" id="connect-btn">Connect</button>
 </div>
-<button type="submit" id="disconnect-btn" hidden>Disconnect</button>
-<button type="submit" id="clear-btn" hidden>Clear</button>
-<div id="public-announcement-box"></div>
-<div id="private-announcement-box"></div>
+<div id="chat-interface" hidden>
+    <button type="submit" id="disconnect-btn">Disconnect</button>
+    <button type="submit" id="clear-btn">Clear</button>
+    <div style="display: flex">
+        <div id="public-announcement-box" style="width: 300px; min-height: 500px; border-color: green; border-style: solid; margin: 10px"></div>
+        <div id="private-announcement-box" style="width: 300px; min-height: 500px; border-color: green; border-style: solid;margin: 10px"></div>
+    </div>
+</div>
 </body>
 <script src="https://www.unpkg.com/@stomp/stompjs@7.0.0/bundles/stomp.umd.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/sockjs-client@1/dist/sockjs.min.js"></script>

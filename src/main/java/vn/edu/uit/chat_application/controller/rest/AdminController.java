@@ -28,7 +28,7 @@ public class AdminController {
         }
         announcementReceivedDto.getTos().forEach(e -> {
             AnnouncementSentDto sentDto = new AnnouncementSentDto(announcementReceivedDto.getContent(), LocalDateTime.now());
-            simpMessagingTemplate.convertAndSendToUser(e, "/user/announcement", sentDto);
+            simpMessagingTemplate.convertAndSendToUser(e, "/queue/announcement", sentDto);
         });
     }
 }
