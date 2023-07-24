@@ -9,6 +9,7 @@ import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
@@ -22,6 +23,9 @@ import vn.edu.uit.chat_application.authentication.authorization.UserControllerAu
 import vn.edu.uit.chat_application.service.UserService;
 
 @Configuration
+@EnableMethodSecurity(
+        securedEnabled = true,
+        jsr250Enabled = true)
 @RequiredArgsConstructor
 public class WebSecurityConfig {
     private final AuthenticationConfiguration authenticationConfiguration;
@@ -55,12 +59,16 @@ public class WebSecurityConfig {
                 .cors(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(authorizationManagerRequestMatcherRegistry -> {
                     RequestMatcher[] permitAllRequests = {
+                            RegexRequestMatcher.regexMatcher("/ws/.*"),
+                            RegexRequestMatcher.regexMatcher("/app/.*"),
+                            RegexRequestMatcher.regexMatcher("/topic/.*"),
+                            RegexRequestMatcher.regexMatcher("/user/.*"),
                             RegexRequestMatcher.regexMatcher(HttpMethod.PUT, "/rest/users"),
                             RegexRequestMatcher.regexMatcher(HttpMethod.POST, "/rest/users/confirm.*"),
                             RegexRequestMatcher.regexMatcher("/swagger-ui.html.*"),
                             RegexRequestMatcher.regexMatcher("/v3/api-docs.*"),
                             RegexRequestMatcher.regexMatcher("/swagger-ui.*"),
-                            RegexRequestMatcher.regexMatcher(HttpMethod.POST, "/rest/login")
+                            RegexRequestMatcher.regexMatcher( "/rest/login")
                     };
                     authorizationManagerRequestMatcherRegistry
                             .requestMatchers(permitAllRequests)

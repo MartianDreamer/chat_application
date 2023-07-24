@@ -37,7 +37,7 @@ import static vn.edu.uit.chat_application.constants.Constants.CONFIRMATION_DURAT
 @Builder
 @Setter
 public class User implements UserDetails, Serializable {
-    private static final String DELIMETER = "_";
+    private static final String DELIMETER = ",";
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     @Column(name = "id", nullable = false)
@@ -85,6 +85,7 @@ public class User implements UserDetails, Serializable {
     @Override
     public Collection<Role> getAuthorities() {
         return Stream.of(roles.split(DELIMETER))
+                .map(String::strip)
                 .map(Role::valueOf)
                 .collect(Collectors.toSet());
     }
@@ -137,7 +138,7 @@ public class User implements UserDetails, Serializable {
                 .avatarExtension(userReceivedDto.getAvatarExtension())
                 .confirmationString(UserService.generateConfirmationString())
                 .active(false)
-                .roles("USER")
+                .roles(Role.ROLE_USER.name())
                 .build();
     }
 

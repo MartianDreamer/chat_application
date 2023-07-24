@@ -1,24 +1,19 @@
 package vn.edu.uit.chat_application.event.listener;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
-import org.springframework.web.socket.messaging.SessionConnectEvent;
-import org.springframework.web.socket.messaging.SessionDisconnectEvent;
-import org.springframework.web.socket.messaging.SessionSubscribeEvent;
+import org.springframework.web.socket.messaging.SessionConnectedEvent;
 
 @Component
 @RequiredArgsConstructor
+@Slf4j
 public class WebSocketEventListener {
 
-    public void handleWebSocketDisconnectEvent(SessionDisconnectEvent sessionDisconnectEvent) {
-        // TODO - handle event when user disconnect
+    @EventListener
+    public void handleWebSocketConnectEvent(SessionConnectedEvent sessionConnectEvent) {
+        log.debug("connect {}", sessionConnectEvent);
     }
 
-    public void handleWebSocketConnectEvent(SessionConnectEvent sessionConnectEvent) {
-        // TODO - handle event when user connect
-    }
-
-    public void handleWebSocketAckEven(SessionSubscribeEvent sessionSubscribeEvent) {
-
-    }
 }

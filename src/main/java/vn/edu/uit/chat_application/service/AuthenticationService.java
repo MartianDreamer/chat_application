@@ -18,7 +18,7 @@ public class AuthenticationService {
 
     public Optional<User> authenticate(LoginReceivedDto dto) {
         User user = userRepository.findDistinctByUsername(dto.getUsername());
-        if(passwordEncoder.matches(dto.getPassword(), user.getPassword())) {
+        if(user != null && passwordEncoder.matches(dto.getPassword(), user.getPassword())) {
             return Optional.of(user);
         }
         return Optional.empty();

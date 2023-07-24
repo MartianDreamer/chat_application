@@ -2,7 +2,6 @@ package vn.edu.uit.chat_application.controller.rest;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -11,6 +10,7 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 import vn.edu.uit.chat_application.dto.received.UserReceivedDto;
 import vn.edu.uit.chat_application.dto.sent.UserSentDto;
@@ -28,36 +28,35 @@ public class UserController {
     private final UserService userService;
 
     @PutMapping
-    public ResponseEntity<String> createUser(@RequestBody UserReceivedDto dto) {
-        return ResponseEntity.ok(userService.createUser(dto));
+    public @ResponseBody String createUser(@RequestBody UserReceivedDto dto) {
+        return userService.createUser(dto);
     }
 
     @PatchMapping("/{id}")
-    public ResponseEntity<String> updateUser(@PathVariable("id") UUID id, @RequestBody UserReceivedDto dto) {
+    public @ResponseBody String updateUser(@PathVariable("id") UUID id, @RequestBody UserReceivedDto dto) {
         userService.updateUser(id, dto);
-        return ResponseEntity.ok("updated");
+        return "updated";
     }
 
     @PostMapping("/confirm/{confirmationString}")
-    public ResponseEntity<Void> activateUser(@PathVariable("confirmationString") String confirmationString) {
-        if (userService.activateUser(confirmationString)) {
-            return ResponseEntity.ok().build();
+    public void activateUser(@PathVariable("confirmationString") String confirmationString) {
+        if (!userService.activateUser(confirmationString)) {
+            throw new CustomRuntimeException("invalid confirmation", HttpStatus.BAD_REQUEST);
         }
-        throw new CustomRuntimeException("invalid confirmation", HttpStatus.BAD_REQUEST);
     }
 
     @GetMapping()
-    public ResponseEntity<UserSentDto> findByUsername(
+    public @ResponseBody UserSentDto findByUsername(
             @RequestParam(value = "username", required = false) String username,
             @RequestParam(value = "self", required = false, defaultValue = "false") boolean self) {
         if (self) {
-            return ResponseEntity.ok(UserSentDto.from(PrincipalUtils.getLoggedInUser()));
+            return UserSentDto.from(PrincipalUtils.getLoggedInUser());
         }
-        return ResponseEntity.ok(UserSentDto.from(userService.loadByUsername(username)));
+        return UserSentDto.from(userService.loadByUsername(username));
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<UserSentDto> findById(@PathVariable("id") UUID username) {
-        return ResponseEntity.ok(UserSentDto.from(userService.findById(username)));
+    public @ResponseBody UserSentDto findById(@PathVariable("id") UUID username) {
+        return UserSentDto.from(userService.findById(username));
     }
 }
