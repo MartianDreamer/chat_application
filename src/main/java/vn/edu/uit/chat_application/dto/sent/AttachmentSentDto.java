@@ -20,9 +20,8 @@ public class AttachmentSentDto {
     private UUID to;
     private UUID from;
     private LocalDateTime timestamp;
-    private String extension;
 
     public static AttachmentSentDto from(Attachment attachment) {
-        return new AttachmentSentDto(attachment.getId(), attachment.getTo().getId(), attachment.getFrom().getId(), attachment.getTimestamp(), attachment.getFileExtension());
+        return new AttachmentSentDto(attachment.getId(), attachment.getTo().getId(), attachment.getFrom().getId(), attachment.getTimestamp());
     }
 }

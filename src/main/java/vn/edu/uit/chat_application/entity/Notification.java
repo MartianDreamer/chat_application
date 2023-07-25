@@ -1,7 +1,6 @@
 package vn.edu.uit.chat_application.entity;
 
 import jakarta.persistence.Column;
-import jakarta.persistence.ElementCollection;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
@@ -19,7 +18,6 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.time.LocalDateTime;
-import java.util.List;
 import java.util.UUID;
 
 @Getter
@@ -32,7 +30,7 @@ import java.util.UUID;
 public class Notification {
 
     public enum Type {
-        MESSAGE, FRIEND_REQUEST, ATTACHMENT
+        MESSAGE, FRIEND_REQUEST, ATTACHMENT, FRIEND_ACCEPT
     }
 
     @Id
@@ -40,8 +38,8 @@ public class Notification {
     @Setter(AccessLevel.NONE)
     @Column(nullable = false, length = 36)
     private UUID id;
-    @ElementCollection
-    List<UUID> entityId;
+    @Column(nullable = false, length = 36)
+    UUID entityId;
     @Column(nullable = false)
     private LocalDateTime timestamp;
     @ManyToOne
@@ -51,7 +49,7 @@ public class Notification {
     @Enumerated(EnumType.STRING)
     private Type type;
 
-    public Notification(List<UUID> entityId, LocalDateTime timestamp, User to, Type type) {
+    public Notification(UUID entityId, LocalDateTime timestamp, User to, Type type) {
         this.entityId = entityId;
         this.timestamp = timestamp;
         this.to = to;
