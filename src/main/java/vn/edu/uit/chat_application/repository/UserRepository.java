@@ -28,4 +28,12 @@ public interface UserRepository extends JpaRepository<User, UUID> {
     )
     void updateOnlineStatusByUserId(UUID userId, boolean online, LocalDateTime lastSeen);
 
+    @Modifying
+    @Query(
+            value = "update User u " +
+                    "set u.avatar = :avatar, " +
+                    "u.avatarExtension = :extension " +
+                    "where u.id = :userId"
+    )
+    void uploadAvatar(UUID userId, String extension, byte[] avatar);
 }
