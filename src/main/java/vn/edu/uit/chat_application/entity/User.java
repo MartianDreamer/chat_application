@@ -5,7 +5,6 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.Lob;
 import jakarta.persistence.Table;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -70,9 +69,6 @@ public class User implements UserDetails, Serializable {
 
     @Column(unique = true, length = 15)
     private String phoneNumber;
-
-    @Lob
-    private byte[] avatar;
 
     @Column(length = 5)
     private String avatarExtension;
@@ -141,8 +137,6 @@ public class User implements UserDetails, Serializable {
                 .createdAt(LocalDateTime.now())
                 .email(userReceivedDto.getEmail())
                 .phoneNumber(userReceivedDto.getPhoneNumber())
-                .avatar(userReceivedDto.getAvatar())
-                .avatarExtension(userReceivedDto.getAvatarExtension())
                 .confirmationString(UserService.generateConfirmationString())
                 .active(false)
                 .roles(Role.ROLE_USER.name())

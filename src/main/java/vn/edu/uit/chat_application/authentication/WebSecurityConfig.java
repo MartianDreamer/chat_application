@@ -105,7 +105,8 @@ public class WebSecurityConfig {
                             .permitAll()
                             // config authorization for UserController
                             .requestMatchers(
-                                    RegexRequestMatcher.regexMatcher(HttpMethod.PATCH, "/rest/users/.{36}")
+                                    RegexRequestMatcher.regexMatcher(HttpMethod.PATCH, "/rest/users/.{36}"),
+                                    RegexRequestMatcher.regexMatcher(HttpMethod.POST, "/rest/users/avatar/.{36}")
                             )
                             .access(userControllerAuthorization::update)
                             // config authorization for RelationshipController

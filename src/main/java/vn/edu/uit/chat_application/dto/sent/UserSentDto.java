@@ -19,7 +19,7 @@ public class UserSentDto {
     private String username;
     private String email;
     private String phoneNumber;
-    private byte[] avatar;
+    private String avatar;
     private String avatarExtension;
     private boolean online;
     private LocalDateTime lastSeen;
@@ -30,7 +30,6 @@ public class UserSentDto {
                 .username(user.getUsername())
                 .email(user.getEmail())
                 .phoneNumber(user.getPhoneNumber())
-                .avatar(user.getAvatar())
                 .online(user.isOnline())
                 .lastSeen(user.getLastSeen())
                 .build();

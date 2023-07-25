@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 import vn.edu.uit.chat_application.dto.received.UserReceivedDto;
 import vn.edu.uit.chat_application.dto.sent.UserSentDto;
 import vn.edu.uit.chat_application.exception.CustomRuntimeException;
@@ -58,5 +59,15 @@ public class UserController {
     @GetMapping("/{id}")
     public @ResponseBody UserSentDto findById(@PathVariable("id") UUID username) {
         return UserSentDto.from(userService.findById(username).orElseThrow(CustomRuntimeException::notFound));
+    }
+
+    @PostMapping("/avatar/{id}")
+    public void uploadAvatar(@PathVariable("id") UUID id, @RequestParam("file")MultipartFile file) {
+        userService.uploadAvatar(id, file);
+    }
+
+    @GetMapping("/avatar/{id}")
+    public @ResponseBody byte[] loadAvatar(@PathVariable("id") UUID id) {
+        return userService.loadAvatar(id);
     }
 }

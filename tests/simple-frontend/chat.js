@@ -1,141 +1,176 @@
 let username = "";
 let password = "";
-let token = "";
-let jsonType = "application/json";
 let stompClient;
 let currentConversationId;
+let headers = {
+  "Content-Type": "application/json",
+};
+
+function byteArrayToBase64(array) {
+    let binary = '';
+    for (let e of array) {
+        binary += String.fromCharCode(e)
+    }
+    return btoa(binary);
+}
+
+
+function loadProfile() {
+  fetch("http://localhost:8080/rest/users?self=true", {
+    method: "GET",
+    headers: headers,
+  })
+    .then((rsp) => rsp.json())
+    .then((rsp) => {
+      const $profile = $("#profile");
+      $profile.append(`<p>Username: ${rsp.username}</p>`);
+      $profile.append(`<p>Email: ${rsp.email}</p>`);
+      $profile.append(`<p>Phone Number: ${rsp.phoneNumber}</p>`);
+      $profile.append(`<p>Avatar: <img id="my-avatar" alt="" > </p>`);
+      fetch(`http://localhost:8080/rest/users/avatar/${rsp.id}`, {
+        method: "GET",
+        headers: headers,
+      })
+        .then((resp) => resp.body.getReader().read())
+        .then((resp) => {
+          const base64 = byteArrayToBase64(resp.value);
+          $("#my-avatar").attr("src", `data:image/png;base64,${base64}`);
+        });
+    });
+}
 
 function connectWS() {
-    const sock = new SockJS("http://localhost:8080/ws");
-    stompClient = StompJs.Stomp.over(sock);
-    stompClient.connect(
-        {
-            Authorization: token,
-        },
-        onConnect,
-        onError
-    );
+  const sock = new SockJS("http://localhost:8080/ws");
+  stompClient = StompJs.Stomp.over(sock);
+  stompClient.connect(
+    {
+      Authorization: headers.Authorization,
+    },
+    onConnect,
+    onError
+  );
 }
 
 function getConversation() {
-    const headers = {
-        "Content-Type": jsonType,
-        Authorization: token
-    };
-    fetch("http://localhost:8080/rest/conversations?page=0&size=100", {
-        method: "GET",
-        headers: headers
-    })
-        .then(rsp => rsp.json())
-        .then(body => {
-            body.content.forEach(e => {
-                const conversation = $(`<p id="${e.id}">${e.name}</p>`)
-                conversation.on("click", c => {
-                    if (c.target.id === currentConversationId) {
-                        return;
-                    }
-                    currentConversationId = c.target.id;
-                    fetch(`http://localhost:8080/rest/conversations/contents/${currentConversationId}`, {
-                        method: "GET",
-                        headers: headers
-                    })
-                        .then(rsp => rsp.json())
-                        .then(body => {
-                            $("#conversation-content").empty();
-                            body.forEach(e => {
-                                if (e.type === "MESSAGE") {
-                                    $("#conversation-content").append(`<p>${e.dto.content}</p>`)
-                                }
-                            })
-                        })
-                });
-                $("#conversation-list").append(conversation);
+  fetch("http://localhost:8080/rest/conversations?page=0&size=100", {
+    method: "GET",
+    headers: headers,
+  })
+    .then((rsp) => rsp.json())
+    .then((body) => {
+      body.content.forEach((e) => {
+        const conversation = $(`<p id="${e.id}">${e.name}</p>`);
+        conversation.on("click", (c) => {
+          if (c.target.id === currentConversationId) {
+            return;
+          }
+          currentConversationId = c.target.id;
+          fetch(
+            `http://localhost:8080/rest/conversations/contents/${currentConversationId}`,
+            {
+              method: "GET",
+              headers: headers,
+            }
+          )
+            .then((rsp) => rsp.json())
+            .then((body) => {
+              $("#conversation-content").empty();
+              body.forEach((e) => {
+                if (e.type === "MESSAGE") {
+                  $("#conversation-content").append(`<p>${e.dto.content}</p>`);
+                }
+              });
             });
         });
+        $("#conversation-list").append(conversation);
+      });
+    });
 }
 
-
 function onConnect(frame) {
-    console.log("Connected: " + frame);
-    stompClient.subscribe("/topic/announcement", onReceivedPublic);
-    stompClient.subscribe("/user/queue/announcement", onReceivedPrivate)
-    stompClient.subscribe("/user/queue/notification", onNotification)
+  console.log("Connected: " + frame);
+  stompClient.subscribe("/topic/announcement", onReceivedPublic);
+  stompClient.subscribe("/user/queue/announcement", onReceivedPrivate);
+  stompClient.subscribe("/user/queue/notification", onNotification);
 }
 
 function onError(e) {
-    console.debug(e);
+  console.debug(e);
 }
 
 function connect(e) {
-    e.preventDefault();
-    fetch("http://localhost:8080/rest/login", {
-        method: "POST",
-        headers: {
-            "Content-Type": jsonType,
-        },
-        body: JSON.stringify({
-            username: username,
-            password: password,
-        }),
-    })
-        .then(rsp => rsp.json())
-        .then((body) => {
-            token = `Bearer ${body.token}`;
-            $("#chat-interface").removeAttr("hidden");
-            $("#input-block").attr("hidden", true);
-            connectWS();
-            getConversation();
-        });
+  e.preventDefault();
+  fetch("http://localhost:8080/rest/login", {
+    method: "POST",
+    headers: headers,
+    body: JSON.stringify({
+      username: username,
+      password: password,
+    }),
+  })
+    .then((rsp) => rsp.json())
+    .then((body) => {
+      headers.Authorization = `Bearer ${body.token}`;
+      $("#chat-interface").removeAttr("hidden");
+      $("#input-block").attr("hidden", true);
+      connectWS();
+      getConversation();
+      loadProfile();
+    });
 }
 
 function onReceivedPublic(message) {
-    $("#public-announcement-box").append(`<p>${JSON.parse(message.body).content}</p>`);
+  $("#public-announcement-box").append(
+    `<p>${JSON.parse(message.body).content}</p>`
+  );
 }
 
 function onReceivedPrivate(message) {
-    $("#private-announcement-box").append(`<p>${JSON.parse(message.body).content}</p>`);
+  $("#private-announcement-box").append(
+    `<p>${JSON.parse(message.body).content}</p>`
+  );
 }
 
 function onNotification(message) {
-    JSON.parse(message.body).content.map(e => {
-        $("#conversation-content").append(`<p>${e.content}</p>`);
-    })
+  JSON.parse(message.body).content.map((e) => {
+    $("#conversation-content").append(`<p>${e.content}</p>`);
+  });
 }
 
 function disconnect(e) {
-    e.preventDefault();
-    stompClient.disconnect(() => {
-        $("#chat-interface").attr("hidden", true);
-        $("#input-block").removeAttr("hidden");
-        $("#conversation-content").empty();
-        $("#conversation-list").empty();
-    }, {});
+  e.preventDefault();
+  stompClient.disconnect(() => {
+    $("#chat-interface").attr("hidden", true);
+    $("#input-block").removeAttr("hidden");
+    $("#conversation-content").empty();
+    $("#conversation-list").empty();
+    $("#profile").empty();
+  }, {});
 }
 
 function send(e) {
-    e.preventDefault();
-    const $chatContent = $("#chat-content");
-    const message = $chatContent.val();
-    $chatContent.val("");
-    stompClient.send(`/app/conversations/${currentConversationId}`, {}, message);
-
+  e.preventDefault();
+  const $chatContent = $("#chat-content");
+  const message = $chatContent.val();
+  $chatContent.val("");
+  stompClient.send(`/app/conversations/${currentConversationId}`, {}, message);
 }
 
 function clear(e) {
-    e.preventDefault();
-    $("#public-announcement-box").empty();
-    $("#private-announcement-box").empty();
+  e.preventDefault();
+  $("#public-announcement-box").empty();
+  $("#private-announcement-box").empty();
 }
 
 $("#connect-btn").on("click", connect);
 $("#disconnect-btn").on("click", disconnect);
-$("#clear-btn").on("click", clear)
+$("#clear-btn").on("click", clear);
 $("#username-input").on("change", (e) => {
-    username = e.target.value;
+  username = e.target.value;
 });
 
 $("#password-input").on("change", (e) => {
-    password = e.target.value;
+  password = e.target.value;
 });
 
 $("#send-button").on("click", send);

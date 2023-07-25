@@ -30,10 +30,9 @@ public interface UserRepository extends JpaRepository<User, UUID> {
 
     @Modifying
     @Query(
-            value = "update User u " +
-                    "set u.avatar = :avatar, " +
+            value = "update User u set " +
                     "u.avatarExtension = :extension " +
                     "where u.id = :userId"
     )
-    void uploadAvatar(UUID userId, String extension, byte[] avatar);
+    void uploadAvatar(UUID userId, String extension);
 }

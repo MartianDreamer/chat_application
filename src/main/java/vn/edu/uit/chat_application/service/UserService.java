@@ -17,17 +17,22 @@ import vn.edu.uit.chat_application.exception.CustomRuntimeException;
 import vn.edu.uit.chat_application.repository.UserRepository;
 import vn.edu.uit.chat_application.util.CommonUtils;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.util.Optional;
 import java.util.UUID;
 
+import static vn.edu.uit.chat_application.constants.Constants.MAX_AVATAR_SIZE;
+
 @Service
 @RequiredArgsConstructor
 public class UserService implements UserDetailsService {
 
     private final UserRepository userRepository;
+    private final StorageService storageService;
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
@@ -74,16 +79,34 @@ public class UserService implements UserDetailsService {
     }
 
     @SneakyThrows
+    @Transactional
     public void uploadAvatar(UUID userId, MultipartFile multipartFile) {
-        if (multipartFile.getSize() > 5 * 1024 * 1024) {
+        if (multipartFile.getSize() > MAX_AVATAR_SIZE) {
             throw new CustomRuntimeException("image is too big", HttpStatus.BAD_REQUEST);
         }
-        String fileName = multipartFile.getContentType();
-        if (fileName == null) {
-            throw new CustomRuntimeException("unnamed file", HttpStatus.BAD_REQUEST);
+        String fileType = multipartFile.getContentType();
+        if (fileType == null) {
+            throw new CustomRuntimeException("unknown type", HttpStatus.BAD_REQUEST);
         }
-        String[] fileParts = fileName.split("/.");
+        String[] fileParts = fileType.split("/");
+        if (!fileParts[0].equals("image")) {
+            throw new CustomRuntimeException("unknown type", HttpStatus.BAD_REQUEST);
+        }
         String extension = fileParts[fileParts.length - 1];
-        userRepository.uploadAvatar(userId, extension, multipartFile.getBytes());
+        storageService.store("/avatar", userId.toString() + "." + extension, multipartFile.getBytes());
+        userRepository.uploadAvatar(userId, extension);
+    }
+
+
+    public byte[] loadAvatar(UUID id) {
+        return findById(id)
+                .map(e -> {
+                    try (InputStream inputStream = storageService.serve("/avatar", id.toString() + "." + e.getAvatarExtension())) {
+                        return inputStream.readAllBytes();
+                    } catch (IOException ex) {
+                        throw new CustomRuntimeException("can not load avatar", HttpStatus.INTERNAL_SERVER_ERROR);
+                    }
+                })
+                .orElseThrow(CustomRuntimeException::notFound);
     }
 }
