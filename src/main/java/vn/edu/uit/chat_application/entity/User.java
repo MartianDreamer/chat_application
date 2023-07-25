@@ -57,6 +57,7 @@ public class User implements UserDetails, Serializable {
 
     @Column(nullable = false)
     @Getter(value = AccessLevel.NONE)
+    @Builder.Default
     private boolean accountLocked = false;
 
     private LocalDate validUntil;
