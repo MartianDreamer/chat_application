@@ -1,4 +1,4 @@
-package vn.edu.uit.chat_application.controller.rest.websocket;
+package vn.edu.uit.chat_application.controller.websocket;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.messaging.handler.annotation.DestinationVariable;
