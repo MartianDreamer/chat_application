@@ -35,13 +35,13 @@ public class ConversationController {
         return ConversationSentDto.from(conversationService.createConversation(dto));
     }
 
-    @PostMapping("/{conversationId}/members")
+    @PostMapping("/members/{conversationId}")
     public @ResponseBody String addMembers(@PathVariable("conversationId") UUID conversationId, @RequestBody List<UUID> userIds) {
         conversationService.addMembers(conversationId, userIds);
         return "update succeeded";
     }
 
-    @DeleteMapping("/{conversationId}/members")
+    @DeleteMapping("/members/{conversationId}")
     public @ResponseBody String removeMembers(@PathVariable("conversationId") UUID conversationId, @RequestBody List<UUID> userIds) {
         conversationService.removeMembers(conversationId, userIds);
         return "remove succeeded";
@@ -49,7 +49,7 @@ public class ConversationController {
 
     @GetMapping("/{conversationId}")
     public @ResponseBody ConversationSentDto getConversation(@PathVariable("conversationId") UUID conversationId) {
-        List<ConversationMembership> conversationMemberships = conversationService.getConversation(conversationId);
+        List<ConversationMembership> conversationMemberships = conversationService.getConversationMembers(conversationId);
         ConversationSentDto result = ConversationSentDto.from(conversationMemberships.get(0).getConversation());
         result.setMembers(conversationMemberships.stream()
                 .map(ConversationMembership::getMember)
@@ -66,11 +66,11 @@ public class ConversationController {
         return conversationService.getMyConversations(page, size).map(ConversationSentDto::from);
     }
 
-    @GetMapping("/{conversationId}/contents")
+    @GetMapping("/contents/{conversationId}")
     public @ResponseBody List<ConversationContentDto> getContents(
             @PathVariable("conversationId") UUID conversationId,
             @RequestParam(value = "timestamp", required = false) Optional<LocalDateTime> optionalTimestamp,
-            @RequestParam(value = "limit", required = false, defaultValue = "20") int limit
+            @RequestParam(value = "limit", required = false, defaultValue = "0") int limit
     ) {
         LocalDateTime timestamp = optionalTimestamp.orElse(LocalDateTime.now());
         return conversationService.getConversationContentsBefore(conversationId, timestamp, limit).stream()

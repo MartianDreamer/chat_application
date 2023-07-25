@@ -36,7 +36,7 @@ public class Conversation implements Serializable {
     private LocalDateTime createdAt;
     @Column(length = 30)
     private String name;
-    @Column(length = 50)
+    @Column(length = 100)
     private String duplicatedTwoPeopleConversationIdentifier;
 
     public Conversation(UUID id) {

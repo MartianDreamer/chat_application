@@ -57,6 +57,6 @@ public class UserController {
 
     @GetMapping("/{id}")
     public @ResponseBody UserSentDto findById(@PathVariable("id") UUID username) {
-        return UserSentDto.from(userService.findById(username));
+        return UserSentDto.from(userService.findById(username).orElseThrow(CustomRuntimeException::notFound));
     }
 }

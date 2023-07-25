@@ -82,6 +82,12 @@ public class User implements UserDetails, Serializable {
     @Column(nullable = false)
     private String roles;
 
+    @Column(nullable = false)
+    private boolean online;
+
+    private LocalDateTime lastSeen;
+
+
     @Override
     public Collection<Role> getAuthorities() {
         return Stream.of(roles.split(DELIMETER))

@@ -1,12 +1,15 @@
 package vn.edu.uit.chat_application.entity;
 
 import jakarta.persistence.Column;
+import jakarta.persistence.ElementCollection;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -16,6 +19,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.UUID;
 
 @Getter
@@ -28,7 +32,7 @@ import java.util.UUID;
 public class Notification {
 
     public enum Type {
-        MESSAGE, FRIEND_REQUEST, USER_ONLINE
+        MESSAGE, FRIEND_REQUEST, ATTACHMENT
     }
 
     @Id
@@ -36,12 +40,21 @@ public class Notification {
     @Setter(AccessLevel.NONE)
     @Column(nullable = false, length = 36)
     private UUID id;
-    @Column(nullable = false)
-    private UUID notificationId;
-    private UUID entityId;
+    @ElementCollection
+    List<UUID> entityId;
     @Column(nullable = false)
     private LocalDateTime timestamp;
+    @ManyToOne
+    @JoinColumn(name = "to_id")
+    private User to;
     @Column(nullable = false, length = 10)
     @Enumerated(EnumType.STRING)
     private Type type;
+
+    public Notification(List<UUID> entityId, LocalDateTime timestamp, User to, Type type) {
+        this.entityId = entityId;
+        this.timestamp = timestamp;
+        this.to = to;
+        this.type = type;
+    }
 }

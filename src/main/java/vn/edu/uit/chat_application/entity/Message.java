@@ -16,8 +16,8 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import vn.edu.uit.chat_application.aspect.annotation.FillFromUserField;
 import vn.edu.uit.chat_application.dto.received.MessageReceivedDto;
+import vn.edu.uit.chat_application.util.PrincipalUtils;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
@@ -53,12 +53,11 @@ public final class Message implements Serializable, ConversationContent {
     @Column(nullable = false, columnDefinition = "TEXT")
     private String content;
 
-    @FillFromUserField
     public static Message from(MessageReceivedDto dto) {
         Conversation to = new Conversation(dto.getTo());
         return Message.builder()
                 .to(to)
-                .from(dto.getFrom())
+                .from(PrincipalUtils.getLoggedInUser())
                 .timestamp(LocalDateTime.now())
                 .seenBy(new LinkedList<>())
                 .content(dto.getContent())

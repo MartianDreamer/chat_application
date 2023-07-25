@@ -1,5 +1,7 @@
 package vn.edu.uit.chat_application.repository;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import vn.edu.uit.chat_application.entity.ConversationMembership;
 
@@ -10,4 +12,5 @@ public interface ConversationMembershipRepository extends JpaRepository<Conversa
     boolean existsByConversationIdAndMemberId(UUID conversationId, UUID memberId);
     void deleteByConversationIdAndMemberIdIn(UUID conversationId, List<UUID> memberId);
     List<ConversationMembership> findByConversationId(UUID conversationId);
+    Page<ConversationMembership> findByMemberId(UUID memberId, Pageable pageable);
 }

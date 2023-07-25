@@ -18,6 +18,7 @@ import vn.edu.uit.chat_application.util.CommonUtils;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
+import java.util.Optional;
 import java.util.UUID;
 
 @Service
@@ -62,8 +63,8 @@ public class UserService implements UserDetailsService {
         return true;
     }
 
-    public User findById(UUID id) {
-        return userRepository.findById(id).orElseThrow(CustomRuntimeException::notFound);
+    public Optional<User> findById(UUID id) {
+        return userRepository.findById(id);
     }
 
     public static String generateConfirmationString() {

@@ -15,8 +15,8 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import vn.edu.uit.chat_application.aspect.annotation.FillFromUserField;
 import vn.edu.uit.chat_application.dto.received.AttachmentReceivedDto;
+import vn.edu.uit.chat_application.util.PrincipalUtils;
 
 import java.io.InputStream;
 import java.io.Serializable;
@@ -53,12 +53,11 @@ public final class Attachment implements Serializable, ConversationContent {
         this.id = id;
     }
 
-    @FillFromUserField
     public static Attachment from(AttachmentReceivedDto attachmentReceivedDto) {
         Conversation to = new Conversation(attachmentReceivedDto.getTo());
         return Attachment.builder()
                 .to(to)
-                .from(attachmentReceivedDto.getFrom())
+                .from(PrincipalUtils.getLoggedInUser())
                 .fileExtension(attachmentReceivedDto.getExtension())
                 .timestamp(LocalDateTime.now())
                 .build();

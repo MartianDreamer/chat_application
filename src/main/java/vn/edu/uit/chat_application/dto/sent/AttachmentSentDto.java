@@ -15,7 +15,7 @@ import java.util.UUID;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public final class AttachmentSentDto implements ConversationContentDto {
+public class AttachmentSentDto {
     private UUID id;
     private UUID to;
     private UUID from;
