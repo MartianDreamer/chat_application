@@ -6,6 +6,19 @@ let headers = {
     "Content-Type": "application/json",
 };
 
+function renderProfile(profile) {
+    const $profile = $("#profile");
+    $profile.append(`<div id="${profile.id}" style="margin: 10px"><img id="my-avatar${profile.id}" alt="" style="width: 200px; height: 200px"><p id="online-status${profile.id}">${profile.online ? "Online" : "Offline"}</p><p>Username: ${profile.username}</p><p>Email: ${profile.email}</p><p>Phone Number: ${profile.phoneNumber}</p></div>`);
+    fetch(`http://localhost:8080/rest/users/avatar/${profile.id}`, {
+        method: "GET",
+        headers: headers,
+    })
+        .then((resp) => resp.json())
+        .then((resp) => {
+            $(`#my-avatar${profile.id}`).attr("src", `data:image/jpeg;base64,${resp.content}`);
+        });
+}
+
 function loadProfile() {
     fetch("http://localhost:8080/rest/users?self=true", {
         method: "GET",
@@ -13,19 +26,8 @@ function loadProfile() {
     })
         .then((rsp) => rsp.json())
         .then((rsp) => {
-            const $profile = $("#profile");
-            $profile.append(`<p>Username: ${rsp.username}</p>`);
-            $profile.append(`<p>Email: ${rsp.email}</p>`);
-            $profile.append(`<p>Phone Number: ${rsp.phoneNumber}</p>`);
-            $profile.append(`<p>Avatar: <img id="my-avatar" alt="" > </p>`);
-            fetch(`http://localhost:8080/rest/users/avatar/${rsp.id}`, {
-                method: "GET",
-                headers: headers,
-            })
-                .then((resp) => resp.json())
-                .then((resp) => {
-                    $("#my-avatar").attr("src", `data:image/jpeg;base64,${resp.content}`);
-                });
+            rsp.online = true;
+            renderProfile(rsp);
         });
 }
 
@@ -122,9 +124,15 @@ function onReceivedPrivate(message) {
 }
 
 function onNotification(message) {
-    JSON.parse(message.body).content.map((e) => {
-        $("#conversation-content").append(`<p>${e.content}</p>`);
-    });
+    const notification = JSON.parse(message.body);
+    if (notification.type === "MESSAGE") {
+        $("#conversation-content").append(`<p>${notification.content.content}</p>`);
+    } else if (notification.type === "ONLINE_STATUS_CHANGE") {
+        $(`#${notification.content.id}`).remove();
+        if (notification.content.online) {
+            renderProfile(notification.content);
+        }
+    }
 }
 
 function disconnect(e) {

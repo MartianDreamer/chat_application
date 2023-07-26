@@ -34,9 +34,9 @@ public class RelationshipController {
     private final RelationshipService relationshipService;
     private final NotificationService notificationService;
 
-    @PutMapping("/friend-requests")
+    @PutMapping("/friend-requests/{userId}")
     @Transactional
-    public @ResponseBody UUID createFriendRequest(@RequestBody UUID userId) {
+    public @ResponseBody UUID createFriendRequest(@PathVariable("userId") UUID userId) {
         FriendRequest friendRequest = relationshipService.createFriendRequest(userId);
         notificationService.sendFriendRequestNotification(friendRequest);
         return friendRequest.getId();

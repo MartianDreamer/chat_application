@@ -34,8 +34,9 @@ public class UserController {
         return userService.createUser(dto);
     }
 
-    @PatchMapping("/{id}")
-    public @ResponseBody String updateUser(@PathVariable("id") UUID id, @RequestBody UserReceivedDto dto) {
+    @PatchMapping
+    public @ResponseBody String updateUser(@RequestBody UserReceivedDto dto) {
+        UUID id = PrincipalUtils.getLoggedInUser().getId();
         userService.updateUser(id, dto);
         return "updated";
     }
@@ -47,7 +48,7 @@ public class UserController {
         }
     }
 
-    @GetMapping()
+    @GetMapping
     public @ResponseBody UserSentDto findByUsername(
             @RequestParam(value = "username", required = false) String username,
             @RequestParam(value = "self", required = false, defaultValue = "false") boolean self) {
@@ -62,9 +63,10 @@ public class UserController {
         return UserSentDto.from(userService.findById(username).orElseThrow(CustomRuntimeException::notFound));
     }
 
-    @PostMapping("/avatar/{id}")
-    public void uploadAvatar(@PathVariable("id") UUID id, @RequestParam("file")MultipartFile file) {
-        userService.uploadAvatar(id, file);
+    @PostMapping("/avatar")
+    public void uploadAvatar(@RequestParam("file")MultipartFile file) {
+        UUID userId = PrincipalUtils.getLoggedInUser().getId();
+        userService.uploadAvatar(userId, file);
     }
 
     @GetMapping("/avatar/{id}")

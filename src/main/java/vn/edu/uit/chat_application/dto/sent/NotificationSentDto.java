@@ -25,4 +25,10 @@ public class NotificationSentDto {
     public static NotificationSentDto from(Notification notification) {
         return new NotificationSentDto(notification.getId(), notification.getTimestamp(), notification.getObject(), notification.getType());
     }
+
+    public NotificationSentDto(LocalDateTime timestamp, Object content, Notification.Type type) {
+        this.timestamp = timestamp;
+        this.content = content;
+        this.type = type;
+    }
 }

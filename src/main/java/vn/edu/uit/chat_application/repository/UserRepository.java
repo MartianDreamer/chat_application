@@ -1,6 +1,5 @@
 package vn.edu.uit.chat_application.repository;
 
-import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import vn.edu.uit.chat_application.entity.User;
@@ -9,7 +8,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
-public interface UserRepository extends JpaRepository<User, UUID> {
+public interface UserRepository extends CommonRepository<User> {
     User findDistinctByUsername(String username);
 
     @Modifying

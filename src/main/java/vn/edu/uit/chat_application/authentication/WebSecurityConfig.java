@@ -27,7 +27,6 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import vn.edu.uit.chat_application.authentication.authorization.AttachmentAuthorization;
 import vn.edu.uit.chat_application.authentication.authorization.ConversationAuthorization;
 import vn.edu.uit.chat_application.authentication.authorization.RelationshipAuthorization;
-import vn.edu.uit.chat_application.authentication.authorization.UserAuthorization;
 import vn.edu.uit.chat_application.filter.CustomWsCorsFilter;
 import vn.edu.uit.chat_application.filter.HttpJwtFilter;
 import vn.edu.uit.chat_application.service.UserService;
@@ -44,7 +43,6 @@ public class WebSecurityConfig {
     private final AuthenticationManagerBuilder authenticationManagerBuilder;
     private final HttpJwtFilter httpJwtFilter;
     private final UserService userService;
-    private final UserAuthorization userAuthorization;
     private final RelationshipAuthorization relationshipAuthorization;
     private final ConversationAuthorization conversationAuthorization;
     private final AttachmentAuthorization attachmentAuthorization;
@@ -105,13 +103,6 @@ public class WebSecurityConfig {
                     authorizationManagerRequestMatcherRegistry
                             .requestMatchers(permitAllRequests)
                             .permitAll()
-                            // config authorization for UserController
-                            .requestMatchers(
-                                    RegexRequestMatcher.regexMatcher(HttpMethod.PATCH, "/rest/users/.{36}"),
-                                    RegexRequestMatcher.regexMatcher(HttpMethod.POST, "/rest/users/avatar/.{36}")
-                            )
-                            .access(userAuthorization::update)
-                            // config authorization for RelationshipController
                             .requestMatchers(RegexRequestMatcher.regexMatcher(HttpMethod.DELETE, "/rest/relationships/friend-requests/.{36}"))
                             .access(relationshipAuthorization::cancelFriendRequest)
                             .requestMatchers(RegexRequestMatcher.regexMatcher(HttpMethod.POST, "/rest/relationships/friend-requests/.{36}"))

@@ -4,7 +4,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 import vn.edu.uit.chat_application.dto.sent.AttachmentSentDto;
@@ -22,6 +21,7 @@ import vn.edu.uit.chat_application.entity.Notification;
 import vn.edu.uit.chat_application.entity.User;
 import vn.edu.uit.chat_application.entity.UuidIdEntity;
 import vn.edu.uit.chat_application.repository.AttachmentRepository;
+import vn.edu.uit.chat_application.repository.CommonRepository;
 import vn.edu.uit.chat_application.repository.ConversationRepository;
 import vn.edu.uit.chat_application.repository.FriendRequestRepository;
 import vn.edu.uit.chat_application.repository.MessageRepository;
@@ -43,6 +43,7 @@ public class NotificationService {
     private static final String NOTIFICATION_QUEUE = "/queue/notification";
     private final NotificationRepository notificationRepository;
     private final ConversationService conversationService;
+    private final RelationshipService relationshipService;
     private final FriendRequestRepository friendRequestRepository;
     private final MessageRepository messageRepository;
     private final SimpMessagingTemplate simpMessagingTemplate;
@@ -102,6 +103,16 @@ public class NotificationService {
         });
     }
 
+    public void sendOnlineStatusNotification(User user) {
+        List<User> friends = relationshipService.getFriends(user.getId()).stream()
+                .map(e -> e.getFirst().getId().equals(user.getId()) ? e.getSecond() : e.getFirst())
+                .toList();
+        friends.forEach(e -> {
+            NotificationSentDto notificationSentDto = new NotificationSentDto(LocalDateTime.now(), UserSentDto.from(user), Notification.Type.ONLINE_STATUS_CHANGE);
+            simpMessagingTemplate.convertAndSendToUser(e.getUsername(), "/queue/notification", notificationSentDto);
+        });
+    }
+
     public void acknowledge(UUID notificationId) {
         notificationRepository.deleteById(notificationId);
     }
@@ -136,7 +147,7 @@ public class NotificationService {
         };
     }
 
-    private JpaRepository<? extends UuidIdEntity, UUID> getRepository(Notification.Type type) {
+    private CommonRepository<? extends UuidIdEntity> getRepository(Notification.Type type) {
         return switch (type) {
             case MESSAGE -> messageRepository;
             case FRIEND_REQUEST -> friendRequestRepository;
@@ -155,8 +166,8 @@ public class NotificationService {
         return result;
     }
 
-    private <T extends UuidIdEntity> Map<UUID, T> findContent(List<UUID> ids, JpaRepository<T, UUID> repository) {
-        return repository.findAllById(ids)
+    private <T extends UuidIdEntity> Map<UUID, T> findContent(List<UUID> ids, CommonRepository<T> repository) {
+        return repository.findByIdIn(ids)
                 .stream()
                 .collect(Collectors.toMap(UuidIdEntity::getId, e -> e));
     }

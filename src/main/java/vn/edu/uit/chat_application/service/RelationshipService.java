@@ -16,6 +16,7 @@ import vn.edu.uit.chat_application.repository.FriendRelationshipRepository;
 import vn.edu.uit.chat_application.repository.FriendRequestRepository;
 import vn.edu.uit.chat_application.util.PrincipalUtils;
 
+import java.util.List;
 import java.util.UUID;
 
 @Service
@@ -64,6 +65,10 @@ public class RelationshipService {
 
     public Page<FriendRelationship> getFriends(UUID userId, int page, int size) {
         return friendRelationshipRepository.findAllByFirstIdOrSecondId(userId, userId,PageRequest.of(page, size));
+    }
+
+    public List<FriendRelationship> getFriends(UUID userId) {
+        return friendRelationshipRepository.findAllByFirstIdOrSecondId(userId, userId);
     }
 
     public Page<BlockRelationship> getBlockedUsers(UUID userId, int page, int size) {
