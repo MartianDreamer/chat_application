@@ -5,7 +5,6 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.Lob;
 import jakarta.persistence.Table;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -36,7 +35,7 @@ import static vn.edu.uit.chat_application.constants.Constants.CONFIRMATION_DURAT
 @NoArgsConstructor
 @Builder
 @Setter
-public class User implements UserDetails, Serializable {
+public class User implements UserDetails, Serializable, UuidIdEntity {
     private static final String DELIMETER = ",";
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
@@ -57,6 +56,7 @@ public class User implements UserDetails, Serializable {
 
     @Column(nullable = false)
     @Getter(value = AccessLevel.NONE)
+    @Builder.Default
     private boolean accountLocked = false;
 
     private LocalDate validUntil;
@@ -70,17 +70,17 @@ public class User implements UserDetails, Serializable {
     @Column(unique = true, length = 15)
     private String phoneNumber;
 
-    @Lob
-    private byte[] avatar;
-
-    @Column(length = 5)
-    private String avatarExtension;
-
     @Column(nullable = false)
     private boolean active;
 
     @Column(nullable = false)
     private String roles;
+
+    @Column(nullable = false)
+    private boolean online;
+
+    private LocalDateTime lastSeen;
+
 
     @Override
     public Collection<Role> getAuthorities() {
@@ -134,8 +134,6 @@ public class User implements UserDetails, Serializable {
                 .createdAt(LocalDateTime.now())
                 .email(userReceivedDto.getEmail())
                 .phoneNumber(userReceivedDto.getPhoneNumber())
-                .avatar(userReceivedDto.getAvatar())
-                .avatarExtension(userReceivedDto.getAvatarExtension())
                 .confirmationString(UserService.generateConfirmationString())
                 .active(false)
                 .roles(Role.ROLE_USER.name())

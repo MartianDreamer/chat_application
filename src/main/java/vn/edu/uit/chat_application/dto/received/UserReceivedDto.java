@@ -15,6 +15,4 @@ public class UserReceivedDto implements PasswordHolder {
     private String password;
     private String email;
     private String phoneNumber;
-    private byte[] avatar;
-    private String avatarExtension;
 }

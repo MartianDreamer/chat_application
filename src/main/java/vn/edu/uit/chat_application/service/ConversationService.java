@@ -1,6 +1,7 @@
 package vn.edu.uit.chat_application.service;
 
 import jakarta.persistence.EntityManager;
+import jakarta.persistence.TypedQuery;
 import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.CriteriaQuery;
 import jakarta.persistence.criteria.Root;
@@ -42,7 +43,7 @@ public class ConversationService {
     private final RelationshipService relationshipService;
     private final EntityManager entityManager;
 
-    public Conversation createConversation(ConversationReceivedDto dto) {
+    public List<ConversationMembership> createConversation(ConversationReceivedDto dto) {
         User creator = PrincipalUtils.getLoggedInUser();
         UUID creatorId = creator.getId();
         dto.getMembers().stream()
@@ -70,26 +71,25 @@ public class ConversationService {
                 .map(e -> new ConversationMembership(savedConversation, e))
                 .collect(Collectors.toCollection(LinkedList::new));
         conversationMemberships.add(new ConversationMembership(savedConversation, creator));
-        conversationMembershipRepository.saveAll(conversationMemberships);
-        return savedConversation;
+        return conversationMembershipRepository.saveAll(conversationMemberships);
     }
 
 
-    public void addMembers(UUID conversationId, List<UUID> memberIds) {
+    public List<ConversationMembership> addMembers(UUID conversationId, List<UUID> memberIds) {
         UUID adderId = PrincipalUtils.getLoggedInUser().getId();
         if (memberIds.stream().anyMatch(e -> relationshipService.areNotFriends(adderId, e))) {
             throw new CustomRuntimeException("the person whom you added into this conversation is not your friend", HttpStatus.BAD_REQUEST);
         }
-        if (memberIds.stream().anyMatch(e -> conversationMembershipRepository.existsByConversationIdAndMemberId(conversationId, e))) {
+        if (memberIds.stream().anyMatch(e -> isMember(conversationId, e))) {
             throw new CustomRuntimeException("this person is already a member", HttpStatus.BAD_REQUEST);
         }
         List<ConversationMembership> savedMemberships = memberIds.stream().map(e -> new ConversationMembership(new Conversation(conversationId), new User(e))).toList();
-        conversationMembershipRepository.saveAll(savedMemberships);
+        return conversationMembershipRepository.saveAll(savedMemberships);
     }
 
     public void removeMembers(UUID conversationId, List<UUID> memberIds) {
         memberIds.stream()
-                .filter(e -> conversationMembershipRepository.existsByConversationIdAndMemberId(conversationId, e))
+                .filter(e -> isMember(conversationId, e))
                 .findFirst()
                 .ifPresent((e) -> {
                     throw new CustomRuntimeException("the person with this id " + e + " is not a member of this conversation", HttpStatus.BAD_REQUEST);
@@ -97,7 +97,7 @@ public class ConversationService {
         conversationMembershipRepository.deleteByConversationIdAndMemberIdIn(conversationId, memberIds);
     }
 
-    public List<ConversationMembership> getConversation(UUID conversationId) {
+    public List<ConversationMembership> getConversationMembers(UUID conversationId) {
         List<ConversationMembership> results = conversationMembershipRepository.findByConversationId(conversationId);
         if (results.isEmpty()) {
             throw CustomRuntimeException.notFound();
@@ -108,16 +108,18 @@ public class ConversationService {
     public Page<Conversation> getMyConversations(int page, int size) {
         Pageable pageable = PageRequest.of(page, size);
         UUID myId = PrincipalUtils.getLoggedInUser().getId();
-        return conversationRepository.findByMemberId(myId, pageable);
+        return conversationMembershipRepository.findByMemberId(myId, pageable).map(ConversationMembership::getConversation);
     }
 
     public List<ConversationContent> getConversationContentsBefore(UUID conversationId, LocalDateTime before, int limit) {
-        return Stream.of(getConversationContentsBefore(conversationId, before, limit, Message.class),
+        Stream<ConversationContent> contents = Stream.of(getConversationContentsBefore(conversationId, before, limit, Message.class),
                         getConversationContentsBefore(conversationId, before, limit, Attachment.class))
                 .flatMap(Collection::stream)
-                .sorted(Comparator.comparing(ConversationContent::getTimestamp))
-                .limit(limit)
-                .toList();
+                .sorted(Comparator.comparing(ConversationContent::getTimestamp));
+        if (limit > 0) {
+            contents = contents.limit(limit);
+        }
+        return contents.toList();
     }
 
     private <T extends ConversationContent> List<ConversationContent> getConversationContentsBefore(UUID conversationId, LocalDateTime before, int limit, Class<T> clazz) {
@@ -128,12 +130,19 @@ public class ConversationService {
                 .where(
                         criteriaBuilder.and(
                                 criteriaBuilder.lessThanOrEqualTo(root.get("timestamp"), before),
-                                criteriaBuilder.equal(root.get("to.id"), conversationId)
+                                criteriaBuilder.equal(root.get("to").get("id"), conversationId)
                         )
                 )
                 .orderBy(criteriaBuilder.desc(root.get("timestamp")));
-        return entityManager.createQuery(criteriaQuery)
-                .setMaxResults(limit)
+        TypedQuery<ConversationContent> query = entityManager.createQuery(criteriaQuery);
+        if (limit > 0) {
+            query.setMaxResults(limit);
+        }
+        return query
                 .getResultList();
+    }
+
+    public boolean isMember(UUID conversationId, UUID userId) {
+        return conversationMembershipRepository.existsByConversationIdAndMemberId(conversationId, userId);
     }
 }

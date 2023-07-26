@@ -15,6 +15,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.io.Serializable;
 import java.util.UUID;
 
 @Entity
@@ -27,7 +28,7 @@ import java.util.UUID;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class FriendRequest {
+public class FriendRequest implements Serializable, UuidIdEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)

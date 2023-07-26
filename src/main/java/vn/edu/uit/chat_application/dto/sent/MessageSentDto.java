@@ -15,7 +15,7 @@ import java.util.UUID;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public final class MessageSentDto implements ConversationContentDto {
+public class MessageSentDto {
     private UUID id;
     private UUID to;
     private UUID from;

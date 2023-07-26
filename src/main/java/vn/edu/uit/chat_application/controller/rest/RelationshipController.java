@@ -2,6 +2,7 @@ package vn.edu.uit.chat_application.controller.rest;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -18,6 +19,8 @@ import vn.edu.uit.chat_application.dto.sent.FriendRequestSentDto;
 import vn.edu.uit.chat_application.entity.BlockRelationship;
 import vn.edu.uit.chat_application.entity.FriendRelationship;
 import vn.edu.uit.chat_application.entity.FriendRequest;
+import vn.edu.uit.chat_application.entity.Notification;
+import vn.edu.uit.chat_application.service.NotificationService;
 import vn.edu.uit.chat_application.service.RelationshipService;
 import vn.edu.uit.chat_application.util.PrincipalUtils;
 
@@ -29,16 +32,22 @@ import java.util.function.Function;
 @RequiredArgsConstructor
 public class RelationshipController {
     private final RelationshipService relationshipService;
+    private final NotificationService notificationService;
 
     @PutMapping("/friend-requests")
-    @ResponseBody
-    public UUID createFriendRequest(@RequestBody UUID userId) {
-        return relationshipService.createFriendRequest(userId).getId();
+    @Transactional
+    public @ResponseBody UUID createFriendRequest(@RequestBody UUID userId) {
+        FriendRequest friendRequest = relationshipService.createFriendRequest(userId);
+        notificationService.sendFriendRequestNotification(friendRequest);
+        return friendRequest.getId();
     }
 
     @PostMapping("/friend-requests/{id}")
+    @Transactional
     public void acceptFriendRequest(@PathVariable("id") UUID id) {
-        relationshipService.acceptFriendRequest(id);
+        FriendRequest friendRequest = relationshipService.acceptFriendRequest(id);
+        notificationService.sendFriendAcceptNotification(friendRequest);
+        notificationService.acknowledge(friendRequest.getId(), Notification.Type.FRIEND_REQUEST);
     }
 
     @DeleteMapping("/friend-requests/{id}")

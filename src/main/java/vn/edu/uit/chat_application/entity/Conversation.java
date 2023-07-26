@@ -24,7 +24,7 @@ import java.util.UUID;
 @Getter
 @Setter
 @AllArgsConstructor
-public class Conversation implements Serializable {
+public class Conversation implements Serializable, UuidIdEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
@@ -36,7 +36,7 @@ public class Conversation implements Serializable {
     private LocalDateTime createdAt;
     @Column(length = 30)
     private String name;
-    @Column(length = 50)
+    @Column(length = 100)
     private String duplicatedTwoPeopleConversationIdentifier;
 
     public Conversation(UUID id) {

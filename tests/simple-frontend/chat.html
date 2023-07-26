@@ -16,9 +16,25 @@
 <div id="chat-interface" hidden>
     <button type="submit" id="disconnect-btn">Disconnect</button>
     <button type="submit" id="clear-btn">Clear</button>
+    <div id="profile">
+
+    </div>
     <div style="display: flex">
-        <div id="public-announcement-box" style="width: 300px; min-height: 500px; border-color: green; border-style: solid; margin: 10px"></div>
-        <div id="private-announcement-box" style="width: 300px; min-height: 500px; border-color: green; border-style: solid;margin: 10px"></div>
+        <div id="public-announcement-box"
+             style="width: 300px; min-height: 500px; border-color: green; border-style: solid; margin: 10px"></div>
+        <div id="private-announcement-box"
+             style="width: 300px; min-height: 500px; border-color: green; border-style: solid;margin: 10px"></div>
+    </div>
+    <div style="display: flex">
+        <div id="conversation-list"
+             style="width: 200px; min-height: 500px; border-color: green; border-style: solid;margin: 10px"></div>
+        <div id="conversation-content"
+             style="width: 600px; min-height: 500px; border-color: green; border-style: solid;margin: 10px; overflow-wrap: break-word"></div>
+    </div>
+    <div>
+        <textarea type="text" name="chat-content" id="chat-content"
+                  style="width: 400px; height: 50px; resize: none"></textarea>
+        <button id="send-button" type="submit">Send</button>
     </div>
 </div>
 </body>

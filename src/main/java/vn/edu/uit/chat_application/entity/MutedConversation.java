@@ -26,7 +26,7 @@ import java.util.UUID;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class MutedConversation implements Serializable {
+public class MutedConversation implements Serializable, UuidIdEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     @Column(name = "id", nullable = false)

@@ -8,7 +8,6 @@ import org.springframework.messaging.simp.stomp.StompHeaderAccessor;
 import org.springframework.messaging.support.ChannelInterceptor;
 import org.springframework.messaging.support.MessageHeaderAccessor;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 import vn.edu.uit.chat_application.service.JwtService;
@@ -27,8 +26,7 @@ public class WebSocketJwtChannelInterceptor implements ChannelInterceptor {
         StompHeaderAccessor accessor = MessageHeaderAccessor.getAccessor(message, StompHeaderAccessor.class);
         if (accessor != null && StompCommand.CONNECT.equals(accessor.getCommand())) {
             String token = getBearerToken(accessor);
-            jwtService.validateToken(token).ifPresent(userId -> {
-                UserDetails userDetails = userService.findById(userId);
+            jwtService.validateToken(token).flatMap(userService::findById).ifPresent(userDetails -> {
                 UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
                 accessor.setUser(authenticationToken);
             });

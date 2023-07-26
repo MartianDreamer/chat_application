@@ -7,7 +7,10 @@ import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
+import jakarta.persistence.Transient;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -28,7 +31,7 @@ import java.util.UUID;
 public class Notification {
 
     public enum Type {
-        MESSAGE, FRIEND_REQUEST, USER_ONLINE
+        MESSAGE, FRIEND_REQUEST, ATTACHMENT, FRIEND_ACCEPT, NEW_CONVERSATION, ONLINE_STATUS_CHANGE
     }
 
     @Id
@@ -36,12 +39,23 @@ public class Notification {
     @Setter(AccessLevel.NONE)
     @Column(nullable = false, length = 36)
     private UUID id;
-    @Column(nullable = false)
-    private UUID notificationId;
-    private UUID entityId;
+    @Column(nullable = false, length = 36)
+    UUID entityId;
     @Column(nullable = false)
     private LocalDateTime timestamp;
-    @Column(nullable = false, length = 10)
+    @ManyToOne
+    @JoinColumn(name = "to_id")
+    private User to;
+    @Column(nullable = false, length = 20)
     @Enumerated(EnumType.STRING)
     private Type type;
+    @Transient
+    private Object object;
+
+    public Notification(UUID entityId, LocalDateTime timestamp, User to, Type type) {
+        this.entityId = entityId;
+        this.timestamp = timestamp;
+        this.to = to;
+        this.type = type;
+    }
 }

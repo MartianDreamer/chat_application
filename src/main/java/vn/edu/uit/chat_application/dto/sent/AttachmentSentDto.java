@@ -15,14 +15,13 @@ import java.util.UUID;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public final class AttachmentSentDto implements ConversationContentDto {
+public class AttachmentSentDto {
     private UUID id;
     private UUID to;
     private UUID from;
     private LocalDateTime timestamp;
-    private String extension;
 
     public static AttachmentSentDto from(Attachment attachment) {
-        return new AttachmentSentDto(attachment.getId(), attachment.getTo().getId(), attachment.getFrom().getId(), attachment.getTimestamp(), attachment.getFileExtension());
+        return new AttachmentSentDto(attachment.getId(), attachment.getTo().getId(), attachment.getFrom().getId(), attachment.getTimestamp());
     }
 }

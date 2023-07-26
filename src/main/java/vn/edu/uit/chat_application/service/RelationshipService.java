@@ -31,7 +31,7 @@ public class RelationshipService {
         if (creator.getId().equals(userId)) {
             throw new CustomRuntimeException("can not create friend request to yourself", HttpStatus.BAD_REQUEST);
         }
-        User user = userService.findById(userId);
+        User user = userService.findById(userId).orElseThrow(CustomRuntimeException::notFound);
         if (blockRelationshipRepository.existsByUserIds(creator.getId(), user.getId())) {
             throw new CustomRuntimeException("blocked", HttpStatus.BAD_REQUEST);
         } else if (friendRelationshipRepository.existsByUserIds(creator.getId(), user.getId())) {
@@ -47,10 +47,11 @@ public class RelationshipService {
     }
 
     @Transactional
-    public void acceptFriendRequest(UUID id) {
+    public FriendRequest acceptFriendRequest(UUID id) {
         FriendRequest friendRequest = friendRequestRepository.findById(id).orElseThrow(CustomRuntimeException::notFound);
         friendRelationshipRepository.save(new FriendRelationship(friendRequest.getFrom(), friendRequest.getTo()));
         friendRequestRepository.deleteById(id);
+        return friendRequest;
     }
 
     public Page<FriendRequest> getFromFriendRequests(UUID userId, int page, int size) {
