@@ -9,4 +9,5 @@ import java.util.UUID;
 
 public interface NotificationRepository extends JpaRepository<Notification, UUID> {
     Page<Notification> findByToId(UUID toId, Pageable pageable);
+    void deleteByEntityIdAndType(UUID entityId, Notification.Type type);
 }

@@ -24,9 +24,10 @@ import org.springframework.security.web.util.matcher.RequestMatcher;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
-import vn.edu.uit.chat_application.authentication.authorization.ConversationControllerAuthorization;
-import vn.edu.uit.chat_application.authentication.authorization.RelationshipControllerAuthorization;
-import vn.edu.uit.chat_application.authentication.authorization.UserControllerAuthorization;
+import vn.edu.uit.chat_application.authentication.authorization.AttachmentAuthorization;
+import vn.edu.uit.chat_application.authentication.authorization.ConversationAuthorization;
+import vn.edu.uit.chat_application.authentication.authorization.RelationshipAuthorization;
+import vn.edu.uit.chat_application.authentication.authorization.UserAuthorization;
 import vn.edu.uit.chat_application.filter.CustomWsCorsFilter;
 import vn.edu.uit.chat_application.filter.HttpJwtFilter;
 import vn.edu.uit.chat_application.service.UserService;
@@ -43,9 +44,10 @@ public class WebSecurityConfig {
     private final AuthenticationManagerBuilder authenticationManagerBuilder;
     private final HttpJwtFilter httpJwtFilter;
     private final UserService userService;
-    private final UserControllerAuthorization userControllerAuthorization;
-    private final RelationshipControllerAuthorization relationshipControllerAuthorization;
-    private final ConversationControllerAuthorization conversationControllerAuthorization;
+    private final UserAuthorization userAuthorization;
+    private final RelationshipAuthorization relationshipAuthorization;
+    private final ConversationAuthorization conversationAuthorization;
+    private final AttachmentAuthorization attachmentAuthorization;
 
     @Bean
     public BCryptPasswordEncoder bCryptPasswordEncoder() {
@@ -108,16 +110,22 @@ public class WebSecurityConfig {
                                     RegexRequestMatcher.regexMatcher(HttpMethod.PATCH, "/rest/users/.{36}"),
                                     RegexRequestMatcher.regexMatcher(HttpMethod.POST, "/rest/users/avatar/.{36}")
                             )
-                            .access(userControllerAuthorization::update)
+                            .access(userAuthorization::update)
                             // config authorization for RelationshipController
                             .requestMatchers(RegexRequestMatcher.regexMatcher(HttpMethod.DELETE, "/rest/relationships/friend-requests/.{36}"))
-                            .access(relationshipControllerAuthorization::cancelFriendRequest)
+                            .access(relationshipAuthorization::cancelFriendRequest)
                             .requestMatchers(RegexRequestMatcher.regexMatcher(HttpMethod.POST, "/rest/relationships/friend-requests/.{36}"))
-                            .access(relationshipControllerAuthorization::acceptFriendRequest)
+                            .access(relationshipAuthorization::acceptFriendRequest)
                             .requestMatchers(RegexRequestMatcher.regexMatcher(HttpMethod.DELETE, "/rest/relationships/friends/.{36}"))
-                            .access(relationshipControllerAuthorization::unfriend)
+                            .access(relationshipAuthorization::unfriend)
                             .requestMatchers(RegexRequestMatcher.regexMatcher("/rest/conversations/.*.{36}$"))
-                            .access(conversationControllerAuthorization::isMember)
+                            .access(conversationAuthorization::isMember)
+                            .requestMatchers(RegexRequestMatcher.regexMatcher(HttpMethod.POST,"/rest/attachments/.{36}"))
+                            .access(conversationAuthorization::isMember)
+                            .requestMatchers(RegexRequestMatcher.regexMatcher(HttpMethod.GET, "/rest/attachments/.{36}"))
+                            .access(attachmentAuthorization::hasRightToGet)
+                            .requestMatchers(RegexRequestMatcher.regexMatcher(HttpMethod.DELETE, "/rest/attachments/.{36}"))
+                            .access(attachmentAuthorization::hasRightToDelete)
                             .anyRequest()
                             .authenticated();
                 })

@@ -16,6 +16,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.io.Serializable;
 import java.util.UUID;
 
 @Entity
@@ -30,7 +31,7 @@ import java.util.UUID;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class BlockRelationship {
+public class BlockRelationship implements Serializable, UuidIdEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)

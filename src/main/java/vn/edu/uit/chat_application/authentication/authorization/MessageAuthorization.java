@@ -17,7 +17,7 @@ import static vn.edu.uit.chat_application.constants.Constants.UUID_LENGTH;
 
 @RequiredArgsConstructor
 @Component
-public class MessageControllerAuthorization {
+public class MessageAuthorization {
     private final ConversationService conversationService;
     public AuthorizationDecision isMember(Supplier<Authentication> authentication, MessageAuthorizationContext<?> object) {
         UUID userId = PrincipalUtils.getLogginUserFromAuthentication(authentication.get()).getId();
@@ -25,7 +25,11 @@ public class MessageControllerAuthorization {
         if (destination == null) {
             throw new CustomRuntimeException("destination is null", HttpStatus.BAD_REQUEST);
         }
-        UUID conversationId = UUID.fromString(destination.substring(destination.length() - UUID_LENGTH));
-        return new AuthorizationDecision(conversationService.isMember(conversationId, userId));
+        try {
+            UUID conversationId = UUID.fromString(destination.substring(destination.length() - UUID_LENGTH));
+            return new AuthorizationDecision(conversationService.isMember(conversationId, userId));
+        } catch (RuntimeException e) {
+            return new AuthorizationDecision(false);
+        }
     }
 }

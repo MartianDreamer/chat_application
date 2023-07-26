@@ -24,7 +24,7 @@ import java.util.UUID;
 @Getter
 @Setter
 @AllArgsConstructor
-public class Conversation implements Serializable {
+public class Conversation implements Serializable, UuidIdEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)

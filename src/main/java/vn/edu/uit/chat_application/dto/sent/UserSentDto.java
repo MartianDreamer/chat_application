@@ -19,8 +19,6 @@ public class UserSentDto {
     private String username;
     private String email;
     private String phoneNumber;
-    private String avatar;
-    private String avatarExtension;
     private boolean online;
     private LocalDateTime lastSeen;
 

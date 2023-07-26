@@ -18,7 +18,7 @@ import static vn.edu.uit.chat_application.constants.Constants.UUID_LENGTH;
 
 @Component
 @RequiredArgsConstructor
-public class RelationshipControllerAuthorization {
+public class RelationshipAuthorization {
 
     private final FriendRequestRepository friendRequestRepository;
     private final FriendRelationshipRepository friendRelationshipRepository;

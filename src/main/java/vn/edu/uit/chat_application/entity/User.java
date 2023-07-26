@@ -35,7 +35,7 @@ import static vn.edu.uit.chat_application.constants.Constants.CONFIRMATION_DURAT
 @NoArgsConstructor
 @Builder
 @Setter
-public class User implements UserDetails, Serializable {
+public class User implements UserDetails, Serializable, UuidIdEntity {
     private static final String DELIMETER = ",";
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)

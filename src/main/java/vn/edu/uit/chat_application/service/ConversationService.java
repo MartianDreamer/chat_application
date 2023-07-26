@@ -43,7 +43,7 @@ public class ConversationService {
     private final RelationshipService relationshipService;
     private final EntityManager entityManager;
 
-    public Conversation createConversation(ConversationReceivedDto dto) {
+    public List<ConversationMembership> createConversation(ConversationReceivedDto dto) {
         User creator = PrincipalUtils.getLoggedInUser();
         UUID creatorId = creator.getId();
         dto.getMembers().stream()
@@ -71,12 +71,11 @@ public class ConversationService {
                 .map(e -> new ConversationMembership(savedConversation, e))
                 .collect(Collectors.toCollection(LinkedList::new));
         conversationMemberships.add(new ConversationMembership(savedConversation, creator));
-        conversationMembershipRepository.saveAll(conversationMemberships);
-        return savedConversation;
+        return conversationMembershipRepository.saveAll(conversationMemberships);
     }
 
 
-    public void addMembers(UUID conversationId, List<UUID> memberIds) {
+    public List<ConversationMembership> addMembers(UUID conversationId, List<UUID> memberIds) {
         UUID adderId = PrincipalUtils.getLoggedInUser().getId();
         if (memberIds.stream().anyMatch(e -> relationshipService.areNotFriends(adderId, e))) {
             throw new CustomRuntimeException("the person whom you added into this conversation is not your friend", HttpStatus.BAD_REQUEST);
@@ -85,7 +84,7 @@ public class ConversationService {
             throw new CustomRuntimeException("this person is already a member", HttpStatus.BAD_REQUEST);
         }
         List<ConversationMembership> savedMemberships = memberIds.stream().map(e -> new ConversationMembership(new Conversation(conversationId), new User(e))).toList();
-        conversationMembershipRepository.saveAll(savedMemberships);
+        return conversationMembershipRepository.saveAll(savedMemberships);
     }
 
     public void removeMembers(UUID conversationId, List<UUID> memberIds) {

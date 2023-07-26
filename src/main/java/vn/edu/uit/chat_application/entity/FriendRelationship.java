@@ -32,7 +32,7 @@ import java.util.UUID;
 @NoArgsConstructor
 @Setter
 @Getter
-public class FriendRelationship implements Serializable {
+public class FriendRelationship implements Serializable, UuidIdEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)

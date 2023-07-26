@@ -2,6 +2,7 @@ package vn.edu.uit.chat_application.controller.rest;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -16,8 +17,10 @@ import vn.edu.uit.chat_application.dto.received.ConversationReceivedDto;
 import vn.edu.uit.chat_application.dto.sent.ConversationContentDto;
 import vn.edu.uit.chat_application.dto.sent.ConversationSentDto;
 import vn.edu.uit.chat_application.dto.sent.UserSentDto;
+import vn.edu.uit.chat_application.entity.Conversation;
 import vn.edu.uit.chat_application.entity.ConversationMembership;
 import vn.edu.uit.chat_application.service.ConversationService;
+import vn.edu.uit.chat_application.service.NotificationService;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -29,15 +32,21 @@ import java.util.UUID;
 @RequestMapping("/rest/conversations")
 public class ConversationController {
     private final ConversationService conversationService;
+    private final NotificationService notificationService;
 
     @PutMapping
+    @Transactional
     public @ResponseBody ConversationSentDto createConversation(@RequestBody ConversationReceivedDto dto) {
-        return ConversationSentDto.from(conversationService.createConversation(dto));
+        List<ConversationMembership> result = conversationService.createConversation(dto);
+        notificationService.sendNewConversationNotification(result);
+        Conversation conversation = result.get(0).getConversation();
+        return ConversationSentDto.from(conversation);
     }
 
     @PostMapping("/members/{conversationId}")
+    @Transactional
     public @ResponseBody String addMembers(@PathVariable("conversationId") UUID conversationId, @RequestBody List<UUID> userIds) {
-        conversationService.addMembers(conversationId, userIds);
+        notificationService.sendNewConversationNotification(conversationService.addMembers(conversationId, userIds));
         return "update succeeded";
     }
 

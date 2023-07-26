@@ -25,7 +25,7 @@ import java.util.UUID;
 @Builder
 @Getter
 @Setter
-public class ConversationMembership implements Serializable {
+public class ConversationMembership implements Serializable, UuidIdEntity {
     public static final String TABLE_NAME = "T_USER_GROUP_CONVERSATION";
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)

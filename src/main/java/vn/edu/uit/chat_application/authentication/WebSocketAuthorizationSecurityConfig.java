@@ -6,20 +6,20 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.messaging.Message;
 import org.springframework.security.authorization.AuthorizationManager;
 import org.springframework.security.messaging.access.intercept.MessageMatcherDelegatingAuthorizationManager;
-import vn.edu.uit.chat_application.authentication.authorization.MessageControllerAuthorization;
+import vn.edu.uit.chat_application.authentication.authorization.MessageAuthorization;
 
 
 @Configuration
 @RequiredArgsConstructor
 public class WebSocketAuthorizationSecurityConfig {
-    private final MessageControllerAuthorization messageControllerAuthorization;
+    private final MessageAuthorization messageAuthorization;
 
     @Bean
     public AuthorizationManager<Message<?>> messageAuthorizationManager() {
         MessageMatcherDelegatingAuthorizationManager.Builder messages = MessageMatcherDelegatingAuthorizationManager.builder();
         return messages
                 .simpMessageDestMatchers("/app/conversations/*")
-                .access(messageControllerAuthorization::isMember)
+                .access(messageAuthorization::isMember)
                 .anyMessage()
                 .authenticated()
                 .build();
