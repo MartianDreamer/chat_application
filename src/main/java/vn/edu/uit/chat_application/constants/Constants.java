@@ -11,4 +11,5 @@ public final class Constants {
     public static int CONFIRMATION_DURATION_IN_DAY;
     public static int UUID_LENGTH = 36;
     public static int MAX_AVATAR_SIZE = 3 * 1024 * 1024;
+    public static int MAX_ATTACHMENT_SIZE = 30*1024*1024;
 }

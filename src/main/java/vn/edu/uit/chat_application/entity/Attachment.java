@@ -9,7 +9,6 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
-import jakarta.persistence.Transient;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -17,7 +16,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.io.InputStream;
 import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -46,10 +44,15 @@ public final class Attachment implements Serializable, ConversationContent {
     private List<String> fileName;
     @Column(nullable = false)
     private LocalDateTime timestamp;
-    @Transient
-    private InputStream content;
 
     public Attachment(UUID id) {
         this.id = id;
+    }
+
+    public Attachment(Conversation to, User from, List<String> fileName, LocalDateTime timestamp) {
+        this.to = to;
+        this.from = from;
+        this.fileName = fileName;
+        this.timestamp = timestamp;
     }
 }

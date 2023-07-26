@@ -12,13 +12,15 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 import vn.edu.uit.chat_application.aspect.annotation.EncryptPassword;
 import vn.edu.uit.chat_application.dto.received.UserReceivedDto;
+import vn.edu.uit.chat_application.dto.sent.AttachmentContentDto;
 import vn.edu.uit.chat_application.entity.User;
 import vn.edu.uit.chat_application.exception.CustomRuntimeException;
 import vn.edu.uit.chat_application.repository.UserRepository;
 import vn.edu.uit.chat_application.util.CommonUtils;
 
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
@@ -33,6 +35,7 @@ public class UserService implements UserDetailsService {
 
     private final UserRepository userRepository;
     private final StorageService storageService;
+    private static final String AVATAR_PREFIX = "/avatar";
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
@@ -93,20 +96,18 @@ public class UserService implements UserDetailsService {
             throw new CustomRuntimeException("unknown type", HttpStatus.BAD_REQUEST);
         }
         String extension = fileParts[fileParts.length - 1];
-        storageService.store("/avatar", userId.toString() + "." + extension, multipartFile.getBytes());
-        userRepository.uploadAvatar(userId, extension);
+        storageService.store(AVATAR_PREFIX, userId.toString() + "." + extension, multipartFile.getBytes());
     }
 
 
-    public byte[] loadAvatar(UUID id) {
-        return findById(id)
-                .map(e -> {
-                    try (InputStream inputStream = storageService.serve("/avatar", id.toString() + "." + e.getAvatarExtension())) {
-                        return inputStream.readAllBytes();
-                    } catch (IOException ex) {
-                        throw new CustomRuntimeException("can not load avatar", HttpStatus.INTERNAL_SERVER_ERROR);
-                    }
-                })
-                .orElseThrow(CustomRuntimeException::notFound);
+    public AttachmentContentDto loadAvatar(UUID id) {
+        try {
+            File file = storageService.serveFirstWithoutExtension(AVATAR_PREFIX, id.toString());
+            try (FileInputStream inputStream = new FileInputStream(file)) {
+                return new AttachmentContentDto(file.getName(), inputStream.readAllBytes());
+            }
+        } catch (IOException e) {
+            return new AttachmentContentDto("", new byte[]{});
+        }
     }
 }

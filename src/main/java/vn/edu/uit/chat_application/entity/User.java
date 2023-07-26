@@ -70,9 +70,6 @@ public class User implements UserDetails, Serializable {
     @Column(unique = true, length = 15)
     private String phoneNumber;
 
-    @Column(length = 5)
-    private String avatarExtension;
-
     @Column(nullable = false)
     private boolean active;
 

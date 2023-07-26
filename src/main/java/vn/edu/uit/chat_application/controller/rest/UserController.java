@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 import vn.edu.uit.chat_application.dto.received.UserReceivedDto;
+import vn.edu.uit.chat_application.dto.sent.AttachmentContentDto;
 import vn.edu.uit.chat_application.dto.sent.UserSentDto;
 import vn.edu.uit.chat_application.exception.CustomRuntimeException;
 import vn.edu.uit.chat_application.service.UserService;
@@ -67,7 +68,7 @@ public class UserController {
     }
 
     @GetMapping("/avatar/{id}")
-    public @ResponseBody byte[] loadAvatar(@PathVariable("id") UUID id) {
+    public @ResponseBody AttachmentContentDto loadAvatar(@PathVariable("id") UUID id) {
         return userService.loadAvatar(id);
     }
 }
