@@ -10,7 +10,7 @@
     </parent>
     <groupId>vn.edu.uit</groupId>
     <artifactId>chat_application</artifactId>
-    <version>0.0.1-SNAPSHOT</version>
+    <version>1.0.0</version>
     <name>chat_application</name>
     <description>chat_application</description>
     <properties>
@@ -117,12 +117,5 @@
             </plugin>
         </plugins>
     </build>
-    <distributionManagement>
-        <repository>
-            <id>github</id>
-            <name>GitHub Packages</name>
-            <url>https://maven.pkg.github.com/MartianDreamer/chat_application</url>
-        </repository>
-    </distributionManagement>
 
 </project>
