@@ -17,7 +17,7 @@ public class AuthenticationService {
     private final BCryptPasswordEncoder passwordEncoder;
 
     public Optional<User> authenticate(LoginReceivedDto dto) {
-        User user = userRepository.findDistinctByUsername(dto.getUsername());
+        User user = userRepository.findByUsername(dto.getUsername());
         if(user != null && passwordEncoder.matches(dto.getPassword(), user.getPassword())) {
             return Optional.of(user);
         }

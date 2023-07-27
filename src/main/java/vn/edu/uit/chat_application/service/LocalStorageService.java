@@ -1,5 +1,6 @@
 package vn.edu.uit.chat_application.service;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import vn.edu.uit.chat_application.exception.CustomRuntimeException;
@@ -14,7 +15,9 @@ import java.util.List;
 
 @Service
 public class LocalStorageService implements StorageService {
-    private static final String ROOT_LOCATION = "/chat_application";
+
+    @Value("${app.storage-location}")
+    private static String ROOT_LOCATION;
 
     @Override
     public void store(String prefix, String name, byte[] content) throws IOException {
