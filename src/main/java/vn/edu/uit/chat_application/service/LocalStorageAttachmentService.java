@@ -31,17 +31,17 @@ public class LocalStorageAttachmentService implements AttachmentService {
     @Override
     @Transactional
     public Attachment create(UUID toId, List<MultipartFile> multipartFiles) {
+        if (multipartFiles.stream().anyMatch(multipartFile -> multipartFile.getSize() >= MAX_ATTACHMENT_SIZE)) {
+            throw new CustomRuntimeException("attachment is bigger than 30MB", HttpStatus.BAD_REQUEST);
+        }
         List<String> fileNames = multipartFiles.stream()
-                .map(MultipartFile::getName)
+                .map(MultipartFile::getOriginalFilename)
                 .toList();
         User from = PrincipalUtils.getLoggedInUser();
         Attachment attachment = attachmentRepository.save(new Attachment(new Conversation(toId), from, fileNames, LocalDateTime.now()));
         multipartFiles.forEach(e -> {
             try {
-                if (e.getSize() > MAX_ATTACHMENT_SIZE) {
-                    throw new CustomRuntimeException("attachment is bigger than 30MB", HttpStatus.BAD_REQUEST);
-                }
-                localStorage.store(ATTACHMENT_PREFIX + "/" + attachment.getId(), e.getName(), e.getBytes());
+                localStorage.store(ATTACHMENT_PREFIX + "/" + attachment.getId(), e.getOriginalFilename(), e.getBytes());
             } catch (IOException ex) {
                 throw new CustomRuntimeException("can not save attachment", HttpStatus.INTERNAL_SERVER_ERROR);
             }

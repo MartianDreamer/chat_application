@@ -1,3 +1,4 @@
+const backendAddress = "http://localhost:8080";
 let username = "";
 let password = "";
 let stompClient;
@@ -6,10 +7,25 @@ let headers = {
     "Content-Type": "application/json",
 };
 
+function renderImage(id) {
+    fetch(`${backendAddress}/rest/attachments/${id}` , {
+        method: "GET",
+        headers: headers
+    })
+        .then(rsp => rsp.json())
+        .then(rsp => {
+            const $attachment = $(`<div id="attachment${id}"></div>`);
+            $("#conversation-content").append($attachment)
+            rsp.map(e => {
+                $attachment.append(`<img alt="" src="data:image/jpeg;base64,${e.content}" style="max-height: 200px">`)
+            })
+        })
+}
+
 function renderProfile(profile) {
     const $profile = $("#profile");
-    $profile.append(`<div id="${profile.id}" style="margin: 10px"><img id="my-avatar${profile.id}" alt="" style="width: 200px; height: 200px"><p id="online-status${profile.id}">${profile.online ? "Online" : "Offline"}</p><p>Username: ${profile.username}</p><p>Email: ${profile.email}</p><p>Phone Number: ${profile.phoneNumber}</p></div>`);
-    fetch(`http://localhost:8080/rest/users/avatar/${profile.id}`, {
+    $profile.append(`<div id="${profile.id}" style="margin: 10px"><img id="my-avatar${profile.id}" alt="" style="max-height: 200px"><p id="online-status${profile.id}">${profile.online ? "Online" : "Offline"}</p><p>Username: ${profile.username}</p><p>Email: ${profile.email}</p><p>Phone Number: ${profile.phoneNumber}</p></div>`);
+    fetch(`${backendAddress}/rest/users/avatar/${profile.id}`, {
         method: "GET",
         headers: headers,
     })
@@ -20,7 +36,7 @@ function renderProfile(profile) {
 }
 
 function loadProfile() {
-    fetch("http://localhost:8080/rest/users?self=true", {
+    fetch(`${backendAddress}/rest/users?self=true`, {
         method: "GET",
         headers: headers,
     })
@@ -32,7 +48,7 @@ function loadProfile() {
 }
 
 function connectWS() {
-    const sock = new SockJS("http://localhost:8080/ws");
+    const sock = new SockJS(`${backendAddress}/ws`);
     stompClient = StompJs.Stomp.over(sock);
     stompClient.connect(
         {
@@ -44,7 +60,7 @@ function connectWS() {
 }
 
 function getConversation() {
-    fetch("http://localhost:8080/rest/conversations?page=0&size=100", {
+    fetch(`${backendAddress}/rest/conversations?page=0&size=100`, {
         method: "GET",
         headers: headers,
     })
@@ -58,7 +74,7 @@ function getConversation() {
                     }
                     currentConversationId = c.target.id;
                     fetch(
-                        `http://localhost:8080/rest/conversations/contents/${currentConversationId}`,
+                        `${backendAddress}/rest/conversations/contents/${currentConversationId}`,
                         {
                             method: "GET",
                             headers: headers,
@@ -70,6 +86,8 @@ function getConversation() {
                             body.forEach((e) => {
                                 if (e.type === "MESSAGE") {
                                     $("#conversation-content").append(`<p>${e.dto.content}</p>`);
+                                } else {
+                                    renderImage(e.dto.id)
                                 }
                             });
                         });
@@ -92,7 +110,7 @@ function onError(e) {
 
 function connect(e) {
     e.preventDefault();
-    fetch("http://localhost:8080/rest/login", {
+    fetch(`${backendAddress}/rest/login`, {
         method: "POST",
         headers: headers,
         body: JSON.stringify({
@@ -132,6 +150,8 @@ function onNotification(message) {
         if (notification.content.online) {
             renderProfile(notification.content);
         }
+    } else if (notification.type === "ATTACHMENT") {
+        renderImage(notification.content.id);
     }
 }
 
