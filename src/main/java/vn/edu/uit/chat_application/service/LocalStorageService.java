@@ -17,7 +17,7 @@ import java.util.List;
 public class LocalStorageService implements StorageService {
 
     @Value("${app.storage-location}")
-    private static String ROOT_LOCATION;
+    private String ROOT_LOCATION;
 
     @Override
     public void store(String prefix, String name, byte[] content) throws IOException {

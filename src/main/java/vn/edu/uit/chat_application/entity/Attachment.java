@@ -1,5 +1,6 @@
 package vn.edu.uit.chat_application.entity;
 
+import jakarta.persistence.CollectionTable;
 import jakarta.persistence.Column;
 import jakarta.persistence.ElementCollection;
 import jakarta.persistence.Entity;
@@ -41,6 +42,7 @@ public final class Attachment implements Serializable, ConversationContent, Uuid
     @JoinColumn(name = "from_id")
     private User from;
     @ElementCollection
+    @CollectionTable(name = "T_ATTACHMENT_FILE")
     private List<String> fileName;
     @Column(nullable = false)
     private LocalDateTime timestamp;

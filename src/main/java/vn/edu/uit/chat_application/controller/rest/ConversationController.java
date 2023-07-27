@@ -21,6 +21,7 @@ import vn.edu.uit.chat_application.entity.Conversation;
 import vn.edu.uit.chat_application.entity.ConversationMembership;
 import vn.edu.uit.chat_application.service.ConversationService;
 import vn.edu.uit.chat_application.service.NotificationService;
+import vn.edu.uit.chat_application.util.PrincipalUtils;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -65,6 +66,30 @@ public class ConversationController {
                 .map(UserSentDto::from)
                 .toList());
         return result;
+    }
+
+    @PostMapping("/leave/{conversationId}")
+    public void leave(@PathVariable("conversationId") UUID conversationId) {
+        conversationService.removeMembers(conversationId, List.of(PrincipalUtils.getLoggedInUser().getId()));
+    }
+
+    @PutMapping("/mute/{conversationId}")
+    public void mute(@PathVariable("conversationId") UUID conversationId) {
+        conversationService.muteConversation(conversationId);
+    }
+
+    @DeleteMapping("/mute/{conversationId}")
+    public void unmute(@PathVariable("conversationId") UUID conversationId) {
+        conversationService.unmuteConversation(conversationId);
+    }
+
+
+    @GetMapping("/mute")
+    public @ResponseBody List<ConversationSentDto> getMutedConversations() {
+        return conversationService.getMyMutedConversation()
+                .stream()
+                .map(ConversationSentDto::from)
+                .toList();
     }
 
     @GetMapping
