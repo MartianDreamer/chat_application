@@ -1,5 +1,6 @@
 package vn.edu.uit.chat_application.controller.rest;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -30,12 +31,12 @@ public class UserController {
     private final UserService userService;
 
     @PutMapping
-    public @ResponseBody String createUser(@RequestBody UserReceivedDto dto) {
+    public @ResponseBody String createUser(@RequestBody @Valid UserReceivedDto dto) {
         return userService.createUser(dto);
     }
 
     @PatchMapping
-    public @ResponseBody String updateUser(@RequestBody UserReceivedDto dto) {
+    public @ResponseBody String updateUser(@RequestBody @Valid UserReceivedDto dto) {
         UUID id = PrincipalUtils.getLoggedInUser().getId();
         userService.updateUser(id, dto);
         return "updated";
