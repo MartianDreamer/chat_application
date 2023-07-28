@@ -11,6 +11,7 @@ import vn.edu.uit.chat_application.entity.Conversation;
 import vn.edu.uit.chat_application.entity.User;
 import vn.edu.uit.chat_application.exception.CustomRuntimeException;
 import vn.edu.uit.chat_application.repository.AttachmentRepository;
+import vn.edu.uit.chat_application.repository.ConversationRepository;
 import vn.edu.uit.chat_application.util.PrincipalUtils;
 
 import java.io.FileInputStream;
@@ -25,6 +26,7 @@ import static vn.edu.uit.chat_application.constants.Constants.MAX_ATTACHMENT_SIZ
 @Service
 public class LocalStorageAttachmentService implements AttachmentService {
     private final AttachmentRepository attachmentRepository;
+    private final ConversationRepository conversationRepository;
     private final StorageService localStorage;
     private static final String ATTACHMENT_PREFIX = "/attachment";
 
@@ -46,6 +48,7 @@ public class LocalStorageAttachmentService implements AttachmentService {
                 throw new CustomRuntimeException("can not save attachment", HttpStatus.INTERNAL_SERVER_ERROR);
             }
         });
+        conversationRepository.updateByIdSetModifiedAt(toId, LocalDateTime.now());
         return attachment;
     }
 

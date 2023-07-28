@@ -52,6 +52,7 @@ public class RelationshipController {
 
     @DeleteMapping("/friend-requests/{id}")
     public void cancelFriendRequest(@PathVariable("id") UUID id) {
+        notificationService.acknowledge(id, Notification.Type.FRIEND_REQUEST);
         relationshipService.cancelFriendRequest(id);
     }
 

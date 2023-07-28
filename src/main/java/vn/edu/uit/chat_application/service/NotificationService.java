@@ -1,5 +1,6 @@
 package vn.edu.uit.chat_application.service;
 
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -134,6 +135,7 @@ public class NotificationService {
         notificationRepository.deleteAllById(notificationIds);
     }
 
+    @Transactional
     public void acknowledge(UUID entityId, Notification.Type type) {
         notificationRepository.deleteByEntityIdAndType(entityId, type);
     }

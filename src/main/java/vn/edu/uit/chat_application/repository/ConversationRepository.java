@@ -4,6 +4,7 @@ import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import vn.edu.uit.chat_application.entity.Conversation;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 
@@ -34,4 +35,11 @@ public interface ConversationRepository extends CommonRepository<Conversation> {
             nativeQuery = true
     )
     List<Conversation> findConversationByMuterId(UUID muterId);
+
+    @Modifying
+    @Query(
+            value = "update Conversation c set c.modifiedAt = :modifiedAt where " +
+                    "c.id = :id"
+    )
+    void updateByIdSetModifiedAt(UUID id, LocalDateTime modifiedAt);
 }

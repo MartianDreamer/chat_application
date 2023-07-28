@@ -29,6 +29,6 @@ public class ConversationSentDto {
     }
 
     public static ConversationSentDto from(Conversation conversation) {
-        return new ConversationSentDto(conversation.getId(), conversation.getCreatedAt(), conversation.getName());
+        return new ConversationSentDto(conversation.getId(), conversation.getModifiedAt(), conversation.getName());
     }
 }

@@ -37,7 +37,7 @@ public class Conversation implements Serializable, UuidIdEntity {
     private UUID id;
 
     @Column(nullable = false)
-    private LocalDateTime createdAt;
+    private LocalDateTime modifiedAt;
     @Column(length = 30)
     private String name;
     @Column(length = 100)

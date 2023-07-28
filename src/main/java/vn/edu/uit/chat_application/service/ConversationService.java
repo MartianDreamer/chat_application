@@ -57,7 +57,7 @@ public class ConversationService {
                     throw new CustomRuntimeException("the person with this id " + e + " is not your friend ", HttpStatus.BAD_REQUEST);
                 });
         ConversationBuilder conversationBuilder = Conversation.builder()
-                .createdAt(LocalDateTime.now())
+                .modifiedAt(LocalDateTime.now())
                 .name(dto.getName());
         if (dto.getMembers().size() <= 1) {
             Set<UUID> memberSet = new HashSet<>();
@@ -81,22 +81,29 @@ public class ConversationService {
     @Transactional
     public List<ConversationMembership> addMembers(UUID conversationId, List<UUID> memberIds) {
         UUID adderId = PrincipalUtils.getLoggedInUser().getId();
-        if (memberIds.stream().anyMatch(e -> relationshipService.areNotFriends(adderId, e))) {
-            throw new CustomRuntimeException("the person whom you added into this conversation is not your friend", HttpStatus.BAD_REQUEST);
-        }
-        if (memberIds.stream().anyMatch(e -> isMember(conversationId, e))) {
-            throw new CustomRuntimeException("this person is already a member", HttpStatus.BAD_REQUEST);
-        }
+        memberIds.stream()
+                .filter(e -> relationshipService.areNotFriends(adderId, e))
+                .findFirst()
+                .ifPresent((e) -> {
+                    throw new CustomRuntimeException("the person with this id " + e + " is not your friend", HttpStatus.BAD_REQUEST);
+                });
+        memberIds.stream()
+                .filter(e -> isMember(conversationId, e))
+                .findFirst()
+                .ifPresent((e) -> {
+                    throw new CustomRuntimeException("the person with this id " + e + " is already a member of this conversation", HttpStatus.BAD_REQUEST);
+                });
         List<ConversationMembership> savedMemberships = userRepository.findByIdIn(memberIds).stream()
                 .map(e -> new ConversationMembership(new Conversation(conversationId), e))
                 .toList();
+        conversationRepository.updateByIdSetModifiedAt(conversationId, LocalDateTime.now());
         return conversationMembershipRepository.saveAll(savedMemberships);
     }
 
     @Transactional
     public void removeMembers(UUID conversationId, List<UUID> memberIds) {
         memberIds.stream()
-                .filter(e -> isMember(conversationId, e))
+                .filter(e -> !isMember(conversationId, e))
                 .findFirst()
                 .ifPresent((e) -> {
                     throw new CustomRuntimeException("the person with this id " + e + " is not a member of this conversation", HttpStatus.BAD_REQUEST);
