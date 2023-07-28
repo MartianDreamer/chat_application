@@ -10,6 +10,7 @@ import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
+import jakarta.persistence.UniqueConstraint;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -46,7 +47,10 @@ public final class Message implements Serializable, ConversationContent, UuidIdE
     @JoinTable(
             name = "T_MESSAGE_SEEN_BY",
             joinColumns = {@JoinColumn(name = "message_id")},
-            inverseJoinColumns = {@JoinColumn(name = "user_id")}
+            inverseJoinColumns = {@JoinColumn(name = "user_id")},
+            uniqueConstraints = {
+                    @UniqueConstraint(name = "message_user_constraint", columnNames = {"message_id", "user_id"})
+            }
     )
     @ManyToMany
     private List<User> seenBy;

@@ -25,6 +25,10 @@ public class MessageService {
     public Message createMessage(MessageReceivedDto dto) {
         return messageRepository.save(Message.from(dto));
     }
+    public Message findById(UUID id) {
+        return messageRepository.findById(id)
+                .orElseThrow(CustomRuntimeException::notFound);
+    }
 
     public void update(UUID id, String content) {
         LocalDateTime validTime = LocalDateTime.now().minusMinutes(messageModifiabilityDuration);
@@ -40,5 +44,9 @@ public class MessageService {
 
     Page<Message> findByConversation(UUID conversationId, int page, int size) {
         return messageRepository.findAllByToId(conversationId, PageRequest.of(page, size));
+    }
+
+    public void update(Message message) {
+        messageRepository.save(message);
     }
 }

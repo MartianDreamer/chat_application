@@ -126,7 +126,8 @@ public class ConversationService {
         if (limit > 0) {
             contents = contents.limit(limit);
         }
-        return contents.toList();
+        return contents
+                .toList();
     }
 
     private <T extends ConversationContent> List<ConversationContent> getConversationContentsBefore(UUID conversationId, LocalDateTime before, int limit, Class<T> clazz) {

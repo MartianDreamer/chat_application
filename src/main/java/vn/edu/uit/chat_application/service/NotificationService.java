@@ -11,6 +11,7 @@ import vn.edu.uit.chat_application.dto.sent.ConversationSentDto;
 import vn.edu.uit.chat_application.dto.sent.FriendRequestSentDto;
 import vn.edu.uit.chat_application.dto.sent.MessageSentDto;
 import vn.edu.uit.chat_application.dto.sent.NotificationSentDto;
+import vn.edu.uit.chat_application.dto.sent.SeenSentDto;
 import vn.edu.uit.chat_application.dto.sent.UserSentDto;
 import vn.edu.uit.chat_application.entity.Attachment;
 import vn.edu.uit.chat_application.entity.Conversation;
@@ -113,6 +114,18 @@ public class NotificationService {
         });
     }
 
+    public void sendSeenByNotification(Message message) {
+        conversationService.getConversationMembers(message.getTo().getId()).stream()
+                .map(ConversationMembership::getMember)
+                .forEach(e -> {
+                    UserSentDto seenBy = UserSentDto.from(e);
+                    MessageSentDto messageSentDto = MessageSentDto.from(message);
+                    SeenSentDto seenSentDto = new SeenSentDto(messageSentDto, seenBy);
+                    NotificationSentDto notificationSentDto = new NotificationSentDto(LocalDateTime.now(), seenSentDto, Notification.Type.SEEN_BY);
+                    simpMessagingTemplate.convertAndSendToUser(e.getUsername(), "/queue/notification", notificationSentDto);
+                });
+    }
+
     public void acknowledge(UUID notificationId) {
         notificationRepository.deleteById(notificationId);
     }
@@ -144,12 +157,13 @@ public class NotificationService {
             case ATTACHMENT -> AttachmentSentDto.from((Attachment) object);
             case FRIEND_ACCEPT, ONLINE_STATUS_CHANGE -> UserSentDto.from((User) object);
             case NEW_CONVERSATION -> ConversationSentDto.from((Conversation) object);
+            case SEEN_BY -> null;
         };
     }
 
     private CommonRepository<? extends UuidIdEntity> getRepository(Notification.Type type) {
         return switch (type) {
-            case MESSAGE -> messageRepository;
+            case MESSAGE, SEEN_BY -> messageRepository;
             case FRIEND_REQUEST -> friendRequestRepository;
             case ATTACHMENT -> attachmentRepository;
             case FRIEND_ACCEPT, ONLINE_STATUS_CHANGE -> userRepository;
