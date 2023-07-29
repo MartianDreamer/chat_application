@@ -17,6 +17,7 @@ import vn.edu.uit.chat_application.entity.User;
 import vn.edu.uit.chat_application.exception.CustomRuntimeException;
 import vn.edu.uit.chat_application.repository.UserRepository;
 import vn.edu.uit.chat_application.util.CommonUtils;
+import vn.edu.uit.chat_application.util.PrincipalUtils;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -39,7 +40,7 @@ public class UserService implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        return userRepository.findDistinctByUsername(username);
+        return userRepository.findByUsername(username);
     }
 
     @EncryptPassword
@@ -58,9 +59,9 @@ public class UserService implements UserDetailsService {
     }
 
     public User loadByUsername(String username) {
-        User user = userRepository.findDistinctByUsername(username);
+        User user = userRepository.findByUsernameAndNotBlocked(username, PrincipalUtils.getLoggedInUser().getId());
         if (user == null) {
-            throw CustomRuntimeException.notFound();
+            throw new CustomRuntimeException("user not found", HttpStatus.NOT_FOUND);
         }
         return user;
     }

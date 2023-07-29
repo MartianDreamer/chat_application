@@ -11,6 +11,7 @@ import vn.edu.uit.chat_application.entity.Conversation;
 import vn.edu.uit.chat_application.entity.User;
 import vn.edu.uit.chat_application.exception.CustomRuntimeException;
 import vn.edu.uit.chat_application.repository.AttachmentRepository;
+import vn.edu.uit.chat_application.repository.ConversationRepository;
 import vn.edu.uit.chat_application.util.PrincipalUtils;
 
 import java.io.FileInputStream;
@@ -25,27 +26,29 @@ import static vn.edu.uit.chat_application.constants.Constants.MAX_ATTACHMENT_SIZ
 @Service
 public class LocalStorageAttachmentService implements AttachmentService {
     private final AttachmentRepository attachmentRepository;
+    private final ConversationRepository conversationRepository;
     private final StorageService localStorage;
     private static final String ATTACHMENT_PREFIX = "/attachment";
 
     @Override
     @Transactional
     public Attachment create(UUID toId, List<MultipartFile> multipartFiles) {
+        if (multipartFiles.stream().anyMatch(multipartFile -> multipartFile.getSize() >= MAX_ATTACHMENT_SIZE)) {
+            throw new CustomRuntimeException("attachment is bigger than 30MB", HttpStatus.BAD_REQUEST);
+        }
         List<String> fileNames = multipartFiles.stream()
-                .map(MultipartFile::getName)
+                .map(MultipartFile::getOriginalFilename)
                 .toList();
         User from = PrincipalUtils.getLoggedInUser();
         Attachment attachment = attachmentRepository.save(new Attachment(new Conversation(toId), from, fileNames, LocalDateTime.now()));
         multipartFiles.forEach(e -> {
             try {
-                if (e.getSize() > MAX_ATTACHMENT_SIZE) {
-                    throw new CustomRuntimeException("attachment is bigger than 30MB", HttpStatus.BAD_REQUEST);
-                }
-                localStorage.store(ATTACHMENT_PREFIX + "/" + attachment.getId(), e.getName(), e.getBytes());
+                localStorage.store(ATTACHMENT_PREFIX + "/" + attachment.getId(), e.getOriginalFilename(), e.getBytes());
             } catch (IOException ex) {
                 throw new CustomRuntimeException("can not save attachment", HttpStatus.INTERNAL_SERVER_ERROR);
             }
         });
+        conversationRepository.updateByIdSetModifiedAt(toId, LocalDateTime.now());
         return attachment;
     }
 

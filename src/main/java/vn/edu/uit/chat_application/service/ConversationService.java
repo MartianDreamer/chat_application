@@ -5,6 +5,7 @@ import jakarta.persistence.TypedQuery;
 import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.CriteriaQuery;
 import jakarta.persistence.criteria.Root;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -22,6 +23,7 @@ import vn.edu.uit.chat_application.entity.User;
 import vn.edu.uit.chat_application.exception.CustomRuntimeException;
 import vn.edu.uit.chat_application.repository.ConversationMembershipRepository;
 import vn.edu.uit.chat_application.repository.ConversationRepository;
+import vn.edu.uit.chat_application.repository.UserRepository;
 import vn.edu.uit.chat_application.util.PrincipalUtils;
 
 import java.time.LocalDateTime;
@@ -42,7 +44,9 @@ public class ConversationService {
     private final ConversationMembershipRepository conversationMembershipRepository;
     private final RelationshipService relationshipService;
     private final EntityManager entityManager;
+    private final UserRepository userRepository;
 
+    @Transactional
     public List<ConversationMembership> createConversation(ConversationReceivedDto dto) {
         User creator = PrincipalUtils.getLoggedInUser();
         UUID creatorId = creator.getId();
@@ -53,7 +57,7 @@ public class ConversationService {
                     throw new CustomRuntimeException("the person with this id " + e + " is not your friend ", HttpStatus.BAD_REQUEST);
                 });
         ConversationBuilder conversationBuilder = Conversation.builder()
-                .createdAt(LocalDateTime.now())
+                .modifiedAt(LocalDateTime.now())
                 .name(dto.getName());
         if (dto.getMembers().size() <= 1) {
             Set<UUID> memberSet = new HashSet<>();
@@ -66,30 +70,40 @@ public class ConversationService {
             conversationBuilder.duplicatedTwoPeopleConversationIdentifier(duplicatedTwoPeopleConversationIdentifier);
         }
         Conversation savedConversation = conversationRepository.save(conversationBuilder.build());
-        List<ConversationMembership> conversationMemberships = dto.getMembers().stream()
-                .map(User::new)
+        List<ConversationMembership> conversationMemberships = userRepository.findByIdIn(dto.getMembers()).stream()
                 .map(e -> new ConversationMembership(savedConversation, e))
                 .collect(Collectors.toCollection(LinkedList::new));
         conversationMemberships.add(new ConversationMembership(savedConversation, creator));
-        return conversationMembershipRepository.saveAll(conversationMemberships);
+        return conversationMembershipRepository.saveAllAndFlush(conversationMemberships);
     }
 
 
+    @Transactional
     public List<ConversationMembership> addMembers(UUID conversationId, List<UUID> memberIds) {
         UUID adderId = PrincipalUtils.getLoggedInUser().getId();
-        if (memberIds.stream().anyMatch(e -> relationshipService.areNotFriends(adderId, e))) {
-            throw new CustomRuntimeException("the person whom you added into this conversation is not your friend", HttpStatus.BAD_REQUEST);
-        }
-        if (memberIds.stream().anyMatch(e -> isMember(conversationId, e))) {
-            throw new CustomRuntimeException("this person is already a member", HttpStatus.BAD_REQUEST);
-        }
-        List<ConversationMembership> savedMemberships = memberIds.stream().map(e -> new ConversationMembership(new Conversation(conversationId), new User(e))).toList();
+        memberIds.stream()
+                .filter(e -> relationshipService.areNotFriends(adderId, e))
+                .findFirst()
+                .ifPresent((e) -> {
+                    throw new CustomRuntimeException("the person with this id " + e + " is not your friend", HttpStatus.BAD_REQUEST);
+                });
+        memberIds.stream()
+                .filter(e -> isMember(conversationId, e))
+                .findFirst()
+                .ifPresent((e) -> {
+                    throw new CustomRuntimeException("the person with this id " + e + " is already a member of this conversation", HttpStatus.BAD_REQUEST);
+                });
+        List<ConversationMembership> savedMemberships = userRepository.findByIdIn(memberIds).stream()
+                .map(e -> new ConversationMembership(new Conversation(conversationId), e))
+                .toList();
+        conversationRepository.updateByIdSetModifiedAt(conversationId, LocalDateTime.now());
         return conversationMembershipRepository.saveAll(savedMemberships);
     }
 
+    @Transactional
     public void removeMembers(UUID conversationId, List<UUID> memberIds) {
         memberIds.stream()
-                .filter(e -> isMember(conversationId, e))
+                .filter(e -> !isMember(conversationId, e))
                 .findFirst()
                 .ifPresent((e) -> {
                     throw new CustomRuntimeException("the person with this id " + e + " is not a member of this conversation", HttpStatus.BAD_REQUEST);
@@ -119,7 +133,8 @@ public class ConversationService {
         if (limit > 0) {
             contents = contents.limit(limit);
         }
-        return contents.toList();
+        return contents
+                .toList();
     }
 
     private <T extends ConversationContent> List<ConversationContent> getConversationContentsBefore(UUID conversationId, LocalDateTime before, int limit, Class<T> clazz) {
@@ -144,5 +159,22 @@ public class ConversationService {
 
     public boolean isMember(UUID conversationId, UUID userId) {
         return conversationMembershipRepository.existsByConversationIdAndMemberId(conversationId, userId);
+    }
+
+    @Transactional
+    public void muteConversation(UUID conversationId) {
+        UUID muterId = PrincipalUtils.getLoggedInUser().getId();
+        conversationRepository.insertIntoTConversationMuter(conversationId, muterId);
+    }
+
+    @Transactional
+    public void unmuteConversation(UUID conversationId) {
+        UUID muterId = PrincipalUtils.getLoggedInUser().getId();
+        conversationRepository.deleteConversationMuterByConversationId(conversationId, muterId);
+    }
+
+    public List<Conversation> getMyMutedConversation() {
+        UUID muterId = PrincipalUtils.getLoggedInUser().getId();
+        return conversationRepository.findConversationByMuterId(muterId);
     }
 }

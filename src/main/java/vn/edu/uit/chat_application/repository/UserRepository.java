@@ -9,7 +9,14 @@ import java.time.LocalDateTime;
 import java.util.UUID;
 
 public interface UserRepository extends CommonRepository<User> {
-    User findDistinctByUsername(String username);
+    User findByUsername(String username);
+
+    @Query(
+            value = "from User u where u.username = :username " +
+                    "and u.id not in " +
+                    "(select b from BlockRelationship b where b.blocked = :finderId)"
+    )
+    User findByUsernameAndNotBlocked(String username, UUID finderId);
 
     @Modifying
     @Query(

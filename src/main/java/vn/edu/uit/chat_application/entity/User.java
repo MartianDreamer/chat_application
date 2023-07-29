@@ -28,6 +28,7 @@ import java.util.stream.Stream;
 
 import static vn.edu.uit.chat_application.constants.Constants.CONFIRMATION_DURATION_IN_DAY;
 
+
 @Entity
 @Table(name = "T_USER")
 @Getter

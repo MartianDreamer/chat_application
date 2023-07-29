@@ -17,10 +17,14 @@ import vn.edu.uit.chat_application.dto.received.ConversationReceivedDto;
 import vn.edu.uit.chat_application.dto.sent.ConversationContentDto;
 import vn.edu.uit.chat_application.dto.sent.ConversationSentDto;
 import vn.edu.uit.chat_application.dto.sent.UserSentDto;
+import vn.edu.uit.chat_application.entity.Attachment;
 import vn.edu.uit.chat_application.entity.Conversation;
 import vn.edu.uit.chat_application.entity.ConversationMembership;
+import vn.edu.uit.chat_application.entity.Message;
+import vn.edu.uit.chat_application.entity.Notification;
 import vn.edu.uit.chat_application.service.ConversationService;
 import vn.edu.uit.chat_application.service.NotificationService;
+import vn.edu.uit.chat_application.util.PrincipalUtils;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -67,6 +71,30 @@ public class ConversationController {
         return result;
     }
 
+    @PostMapping("/leave/{conversationId}")
+    public void leave(@PathVariable("conversationId") UUID conversationId) {
+        conversationService.removeMembers(conversationId, List.of(PrincipalUtils.getLoggedInUser().getId()));
+    }
+
+    @PutMapping("/mute/{conversationId}")
+    public void mute(@PathVariable("conversationId") UUID conversationId) {
+        conversationService.muteConversation(conversationId);
+    }
+
+    @DeleteMapping("/mute/{conversationId}")
+    public void unmute(@PathVariable("conversationId") UUID conversationId) {
+        conversationService.unmuteConversation(conversationId);
+    }
+
+
+    @GetMapping("/mute")
+    public @ResponseBody List<ConversationSentDto> getMutedConversations() {
+        return conversationService.getMyMutedConversation()
+                .stream()
+                .map(ConversationSentDto::from)
+                .toList();
+    }
+
     @GetMapping
     public @ResponseBody Page<ConversationSentDto> getMyConversations(
             @RequestParam(value = "page", required = false, defaultValue = "0") int page,
@@ -83,6 +111,13 @@ public class ConversationController {
     ) {
         LocalDateTime timestamp = optionalTimestamp.orElse(LocalDateTime.now());
         return conversationService.getConversationContentsBefore(conversationId, timestamp, limit).stream()
+                .peek(e -> {
+                    if (e instanceof Message m) {
+                        notificationService.acknowledge(m.getId(), Notification.Type.MESSAGE);
+                    } else if (e instanceof Attachment a) {
+                        notificationService.acknowledge(a.getId(), Notification.Type.ATTACHMENT);
+                    }
+                })
                 .map(ConversationContentDto::from)
                 .toList();
     }

@@ -1,7 +1,7 @@
 {
     "client": "Thunder Client",
     "collectionName": "api test cases",
-    "dateExported": "2023-07-26T16:51:38.492Z",
+    "dateExported": "2023-07-27T08:47:44.950Z",
     "version": "1.1",
     "folders": [
         {
@@ -38,6 +38,13 @@
             "containerId": "",
             "created": "2023-07-26T15:09:13.071Z",
             "sortNum": 50000
+        },
+        {
+            "_id": "340fb6c9-7145-42b2-a582-cf57d6c47bb0",
+            "name": "Attachment",
+            "containerId": "",
+            "created": "2023-07-27T07:52:37.104Z",
+            "sortNum": 60000
         }
     ],
     "requests": [
@@ -97,11 +104,11 @@
             "colId": "67ded785-e1c1-46b2-97b0-8b0c1898f858",
             "containerId": "7ead8ac1-ed34-44b3-82ba-87ea35cc88d4",
             "name": "Activate account",
-            "url": "/rest/users/confirm/iMs4Vp0bAYlNryKDtUt0C1FtepIDtmZpCZlZ5PmS1690412232",
+            "url": "/rest/users/confirm/EO7170YFU2hvurfk3aZp2UX98AtNhQuhdv3XnrMU1690461671",
             "method": "POST",
             "sortNum": 30000,
             "created": "2023-07-26T15:09:13.069Z",
-            "modified": "2023-07-26T15:57:19.552Z",
+            "modified": "2023-07-27T05:41:19.680Z",
             "headers": [],
             "params": [],
             "tests": []
@@ -115,12 +122,12 @@
             "method": "PUT",
             "sortNum": 40000,
             "created": "2023-07-26T15:09:13.070Z",
-            "modified": "2023-07-26T15:57:12.288Z",
+            "modified": "2023-07-27T05:41:11.740Z",
             "headers": [],
             "params": [],
             "body": {
                 "type": "json",
-                "raw": "{\n  \"username\": \"ronweasley\",\n  \"password\": \"password\",\n  \"email\": \"ronweasley@email.com\",\n  \"phoneNumber\": \"0987654310\"\n}",
+                "raw": "{\n  \"username\": \"harrypotter\",\n  \"password\": \"password\",\n  \"email\": \"harrypotter@email.com\",\n  \"phoneNumber\": \"0123456789\"\n}",
                 "form": []
             },
             "tests": []
@@ -134,12 +141,12 @@
             "method": "POST",
             "sortNum": 50000,
             "created": "2023-07-26T15:09:13.071Z",
-            "modified": "2023-07-26T16:05:20.113Z",
+            "modified": "2023-07-27T07:55:54.735Z",
             "headers": [],
             "params": [],
             "body": {
                 "type": "json",
-                "raw": "{\n  \"username\" : \"ronweasley\",\n  \"password\": \"password\"\n}",
+                "raw": "{\n  \"username\" : \"harry\",\n  \"password\": \"password\"\n}",
                 "form": []
             },
             "tests": [
@@ -275,12 +282,12 @@
             "method": "PUT",
             "sortNum": 160000,
             "created": "2023-07-26T15:09:13.079Z",
-            "modified": "2023-07-26T15:09:13.079Z",
+            "modified": "2023-07-27T04:27:45.256Z",
             "headers": [],
             "params": [],
             "body": {
                 "type": "json",
-                "raw": "{\n  \"name\": \"One Ring\",\n  \"members\": [\"b7b20700-57c5-410e-b445-1912f372a43e\"]\n}",
+                "raw": "{\n  \"name\": \"The three\",\n  \"members\": [\"e27804c3-42f6-4f0f-b02f-ab288d63f8eb\", \"df8447db-f505-4017-96aa-4daf36c89654\"]\n}",
                 "form": []
             },
             "tests": []
@@ -308,7 +315,7 @@
             "method": "POST",
             "sortNum": 200000,
             "created": "2023-07-26T15:09:13.081Z",
-            "modified": "2023-07-26T16:05:50.177Z",
+            "modified": "2023-07-27T05:41:46.948Z",
             "headers": [],
             "params": [],
             "body": {
@@ -318,7 +325,7 @@
                 "files": [
                     {
                         "name": "file",
-                        "value": "c:\\Users\\nguye\\Downloads\\image-36.png"
+                        "value": "c:\\Users\\nguye\\Downloads\\newFile-7.jpg"
                     }
                 ]
             },
@@ -336,6 +343,87 @@
             "modified": "2023-07-26T15:09:13.082Z",
             "headers": [],
             "params": [],
+            "tests": []
+        },
+        {
+            "_id": "6c35f19d-6cb7-4536-bed0-01332cfec053",
+            "colId": "67ded785-e1c1-46b2-97b0-8b0c1898f858",
+            "containerId": "16c8ff54-097d-4943-8cda-7fe752a97bcb",
+            "name": "my conversations",
+            "url": "/rest/conversations",
+            "method": "GET",
+            "sortNum": 230000,
+            "created": "2023-07-27T04:59:46.029Z",
+            "modified": "2023-07-27T04:59:49.281Z",
+            "headers": [],
+            "params": [],
+            "tests": []
+        },
+        {
+            "_id": "5f976f82-0ee1-457e-bf19-c6460f3ab655",
+            "colId": "67ded785-e1c1-46b2-97b0-8b0c1898f858",
+            "containerId": "16c8ff54-097d-4943-8cda-7fe752a97bcb",
+            "name": "mute conversation",
+            "url": "/rest/conversations/mute/d13cbb25-10e0-41e7-90ba-ac51b924471d",
+            "method": "PUT",
+            "sortNum": 240000,
+            "created": "2023-07-27T05:00:29.425Z",
+            "modified": "2023-07-27T05:06:31.300Z",
+            "headers": [],
+            "params": [],
+            "tests": []
+        },
+        {
+            "_id": "37e6595e-a377-4bca-8629-1b47ce1417d2",
+            "colId": "67ded785-e1c1-46b2-97b0-8b0c1898f858",
+            "containerId": "16c8ff54-097d-4943-8cda-7fe752a97bcb",
+            "name": "unmute conversation",
+            "url": "/rest/conversations/mute/d13cbb25-10e0-41e7-90ba-ac51b924471d",
+            "method": "DELETE",
+            "sortNum": 245000,
+            "created": "2023-07-27T05:07:17.104Z",
+            "modified": "2023-07-27T05:07:28.771Z",
+            "headers": [],
+            "params": [],
+            "tests": []
+        },
+        {
+            "_id": "366f05a4-9056-4f99-a3d7-953e88800fb1",
+            "colId": "67ded785-e1c1-46b2-97b0-8b0c1898f858",
+            "containerId": "16c8ff54-097d-4943-8cda-7fe752a97bcb",
+            "name": "get muted conversations",
+            "url": "/rest/conversations/mute",
+            "method": "GET",
+            "sortNum": 250000,
+            "created": "2023-07-27T05:06:09.061Z",
+            "modified": "2023-07-27T05:06:40.198Z",
+            "headers": [],
+            "params": [],
+            "tests": []
+        },
+        {
+            "_id": "273936da-ae06-4929-9aa8-42086bfa4358",
+            "colId": "67ded785-e1c1-46b2-97b0-8b0c1898f858",
+            "containerId": "340fb6c9-7145-42b2-a582-cf57d6c47bb0",
+            "name": "Send Request",
+            "url": "/rest/attachments/60cff5f0-7972-4857-8c5e-d1fe987eed27",
+            "method": "POST",
+            "sortNum": 260000,
+            "created": "2023-07-27T07:52:44.951Z",
+            "modified": "2023-07-27T08:43:28.934Z",
+            "headers": [],
+            "params": [],
+            "body": {
+                "type": "formdata",
+                "raw": "",
+                "form": [],
+                "files": [
+                    {
+                        "name": "file",
+                        "value": "c:\\Users\\nguye\\Downloads\\hermione-granger-574037.jpg"
+                    }
+                ]
+            },
             "tests": []
         }
     ],

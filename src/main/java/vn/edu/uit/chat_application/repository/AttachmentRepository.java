@@ -7,7 +7,7 @@ import java.util.UUID;
 
 public interface AttachmentRepository extends CommonRepository<Attachment> {
     @Query(
-            value = "select count(a) from Attachment a " +
+            value = "select count(a) = 1 from Attachment a " +
                     "where a.id = :id and " +
                     "a.to.id in " +
                     "(select distinct(c.conversation.id) from ConversationMembership c where c.member.id = :userId)"
