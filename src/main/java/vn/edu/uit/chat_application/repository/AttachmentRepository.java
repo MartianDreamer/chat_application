@@ -1,13 +1,11 @@
 package vn.edu.uit.chat_application.repository;
 
-import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import vn.edu.uit.chat_application.entity.Attachment;
 
 import java.util.UUID;
 
-public interface AttachmentRepository extends JpaRepository<Attachment, UUID> {
-
+public interface AttachmentRepository extends CommonRepository<Attachment> {
     @Query(
             value = "select count(a) from Attachment a " +
                     "where a.id = :id and " +

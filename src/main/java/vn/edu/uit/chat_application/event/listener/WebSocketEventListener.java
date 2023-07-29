@@ -9,6 +9,7 @@ import org.springframework.web.socket.messaging.AbstractSubProtocolEvent;
 import org.springframework.web.socket.messaging.SessionConnectedEvent;
 import org.springframework.web.socket.messaging.SessionDisconnectEvent;
 import vn.edu.uit.chat_application.entity.User;
+import vn.edu.uit.chat_application.service.NotificationService;
 import vn.edu.uit.chat_application.service.OnlineUserService;
 
 import java.util.Objects;
@@ -20,12 +21,15 @@ import java.util.UUID;
 public class WebSocketEventListener {
 
     private final OnlineUserService onlineUserService;
+    private final NotificationService notificationService;
 
     @EventListener
     public void handleWebSocketConnectEvent(SessionConnectedEvent connectedEvent) {
         User user = getUser(connectedEvent);
         UUID userId = user.getId();
         onlineUserService.userOnline(userId);
+        user.setOnline(true);
+        notificationService.sendOnlineStatusNotification(user);
     }
 
     @EventListener
@@ -33,6 +37,8 @@ public class WebSocketEventListener {
         User user = getUser(disconnectEvent);
         UUID userId = user.getId();
         onlineUserService.userOffline(userId);
+        user.setOnline(false);
+        notificationService.sendOnlineStatusNotification(user);
     }
 
     private User getUser(AbstractSubProtocolEvent event) {
