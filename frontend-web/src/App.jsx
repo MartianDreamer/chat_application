@@ -7,7 +7,9 @@ import {React} from "react";
 function App() {
     axios.defaults.baseURL = 'http://127.0.0.1:8080';
     axios.defaults.withCredentials = false;
+    axios.defaults.headers.post['Content-Type'] = 'application/json';
     axios.defaults.headers.put['Content-Type'] = 'application/json';
+
     return (
         <div className="App">
             <Switch>
