@@ -14,7 +14,7 @@ public interface UserRepository extends CommonRepository<User> {
     @Query(
             value = "from User u where u.username = :username " +
                     "and u.id not in " +
-                    "(select b from BlockRelationship b where b.blocked = :finderId)"
+                    "(select b.blocker.id from BlockRelationship b where b.blocked.id = :finderId)"
     )
     User findByUsernameAndNotBlocked(String username, UUID finderId);
 
