@@ -1,8 +1,10 @@
 package vn.edu.uit.chat_application.controller.rest;
 
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -18,10 +20,12 @@ import vn.edu.uit.chat_application.dto.received.UserReceivedDto;
 import vn.edu.uit.chat_application.dto.sent.AttachmentContentDto;
 import vn.edu.uit.chat_application.dto.sent.UserSentDto;
 import vn.edu.uit.chat_application.exception.CustomRuntimeException;
+import vn.edu.uit.chat_application.service.EmailService;
 import vn.edu.uit.chat_application.service.UserService;
 import vn.edu.uit.chat_application.util.PrincipalUtils;
 
 import java.util.UUID;
+import java.util.concurrent.CompletableFuture;
 
 @RestController
 @RequestMapping("/rest/users")
@@ -29,10 +33,17 @@ import java.util.UUID;
 public class UserController {
 
     private final UserService userService;
+    private final EmailService emailService;
 
     @PutMapping
-    public @ResponseBody String createUser(@RequestBody @Valid UserReceivedDto dto) {
-        return userService.createUser(dto);
+    @Transactional
+    public void createUser(HttpServletRequest req, @RequestBody @Valid UserReceivedDto dto) {
+        String result = userService.createUser(dto);
+        CompletableFuture.runAsync(() -> {
+            String servletPath = req.getRequestURL().toString();
+            String serverAddress = servletPath.substring(0, servletPath.indexOf("/rest/users"));
+            emailService.send(dto.getEmail(), "Activate account " + dto.getUsername(),"Link to activate your account: " + serverAddress + "/rest/users/confirm/" + result);
+        });
     }
 
     @PatchMapping
@@ -42,7 +53,7 @@ public class UserController {
         return "updated";
     }
 
-    @PostMapping("/confirm/{confirmationString}")
+    @GetMapping("/confirm/{confirmationString}")
     public void activateUser(@PathVariable("confirmationString") String confirmationString) {
         if (!userService.activateUser(confirmationString)) {
             throw new CustomRuntimeException("invalid confirmation", HttpStatus.BAD_REQUEST);
