@@ -51,9 +51,11 @@ public class RelationshipController {
     }
 
     @DeleteMapping("/friend-requests/{id}")
+    @Transactional
     public void cancelFriendRequest(@PathVariable("id") UUID id) {
         notificationService.acknowledge(id, Notification.Type.FRIEND_REQUEST);
         relationshipService.cancelFriendRequest(id);
+        notificationService.acknowledge(id, Notification.Type.FRIEND_REQUEST);
     }
 
     @GetMapping("/friend-requests")
