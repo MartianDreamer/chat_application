@@ -25,7 +25,6 @@ import vn.edu.uit.chat_application.service.UserService;
 import vn.edu.uit.chat_application.util.PrincipalUtils;
 
 import java.util.UUID;
-import java.util.concurrent.CompletableFuture;
 
 @RestController
 @RequestMapping("/rest/users")
@@ -39,11 +38,9 @@ public class UserController {
     @Transactional
     public void createUser(HttpServletRequest req, @RequestBody @Valid UserReceivedDto dto) {
         String result = userService.createUser(dto);
-        CompletableFuture.runAsync(() -> {
-            String servletPath = req.getRequestURL().toString();
-            String serverAddress = servletPath.substring(0, servletPath.indexOf("/rest/users"));
-            emailService.send(dto.getEmail(), "Activate account " + dto.getUsername(),"Link to activate your account: " + serverAddress + "/rest/users/confirm/" + result);
-        });
+        String origin = req.getHeader("Origin");
+        String confirmationLink = origin + "/confirmation/" + result;
+        emailService.send(dto.getEmail(), "Activate account " + dto.getUsername(),"Link to activate your account: " + confirmationLink);
     }
 
     @PatchMapping
