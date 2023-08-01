@@ -11,6 +11,6 @@ public class PhoneNumberValidator implements ConstraintValidator<PhoneNumber, St
                 (value.length() >= 10
                         && value.length() <= 13
                         && (value.matches("[0-9]{10,}")
-                        || value.matches("/+[0-9]{11}")));
+                        || value.matches("\\+[0-9]{11}")));
     }
 }
