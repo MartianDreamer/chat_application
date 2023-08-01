@@ -19,12 +19,14 @@ import org.springframework.web.multipart.MultipartFile;
 import vn.edu.uit.chat_application.dto.received.UserReceivedDto;
 import vn.edu.uit.chat_application.dto.sent.AttachmentContentDto;
 import vn.edu.uit.chat_application.dto.sent.UserSentDto;
+import vn.edu.uit.chat_application.entity.User;
 import vn.edu.uit.chat_application.exception.CustomRuntimeException;
 import vn.edu.uit.chat_application.service.EmailService;
 import vn.edu.uit.chat_application.service.UserService;
 import vn.edu.uit.chat_application.util.PrincipalUtils;
 
 import java.util.UUID;
+import java.util.concurrent.CompletableFuture;
 
 @RestController
 @RequestMapping("/rest/users")
@@ -37,10 +39,12 @@ public class UserController {
     @PutMapping
     @Transactional
     public void createUser(HttpServletRequest req, @RequestBody @Valid UserReceivedDto dto) {
-        String result = userService.createUser(dto);
-        String origin = req.getHeader("Origin");
-        String confirmationLink = origin + "/confirmation/" + result;
-        emailService.send(dto.getEmail(), "Activate account " + dto.getUsername(),"Link to activate your account: " + confirmationLink);
+        User user = userService.createUser(dto);
+        CompletableFuture.runAsync(() -> {
+            String origin = req.getHeader("Origin");
+            String confirmationLink = origin + "/confirmation/" + user.getConfirmationString();
+            emailService.send(dto.getEmail(), "Activate account " + dto.getUsername(),"Link to activate your account: " + confirmationLink);
+        });
     }
 
     @PatchMapping
