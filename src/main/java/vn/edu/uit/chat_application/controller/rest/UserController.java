@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
@@ -48,10 +49,9 @@ public class UserController {
     }
 
     @PatchMapping
-    public @ResponseBody String updateUser(@RequestBody @Valid UserReceivedDto dto) {
+    public void updateUser(@RequestBody @Valid UserReceivedDto dto) {
         UUID id = PrincipalUtils.getLoggedInUser().getId();
         userService.updateUser(id, dto);
-        return "updated";
     }
 
     @GetMapping("/confirm/{confirmationString}")
@@ -77,7 +77,7 @@ public class UserController {
     }
 
     @PostMapping("/avatar")
-    public void uploadAvatar(@RequestParam("file")MultipartFile file) {
+    public void uploadAvatar(@RequestPart("file")MultipartFile file) {
         UUID userId = PrincipalUtils.getLoggedInUser().getId();
         userService.uploadAvatar(userId, file);
     }

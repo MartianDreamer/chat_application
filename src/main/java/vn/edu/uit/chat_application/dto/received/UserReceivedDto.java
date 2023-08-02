@@ -1,7 +1,6 @@
 package vn.edu.uit.chat_application.dto.received;
 
 import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -16,13 +15,10 @@ import vn.edu.uit.chat_application.validation.PhoneNumber;
 @Setter
 public class UserReceivedDto implements PasswordHolder {
     @Size(min = 5, max = 20, message = "username is too short")
-    @NotNull
     private String username;
     @Size(min = 8, max = 30, message = "invalid password")
-    @NotNull
     private String password;
     @Email(message = "invalid email")
-    @NotNull
     private String email;
     @PhoneNumber
     private String phoneNumber;
