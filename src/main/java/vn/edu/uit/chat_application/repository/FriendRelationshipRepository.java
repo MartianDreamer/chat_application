@@ -9,7 +9,7 @@ import vn.edu.uit.chat_application.entity.FriendRelationship;
 import java.util.List;
 import java.util.UUID;
 
-public interface FriendRelationshipRepository extends JpaRepository<FriendRelationship, UUID> {
+public interface FriendRelationshipRepository extends CommonRepository<FriendRelationship> {
     @Query(value = "select count(fs) = 1 from FriendRelationship fs " +
             "where (fs.first.id = :firstId and fs.second.id = :secondId) " +
             "or (fs.first.id = :secondId and fs.second.id = :firstId)")

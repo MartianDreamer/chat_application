@@ -27,6 +27,7 @@ import vn.edu.uit.chat_application.entity.UuidIdEntity;
 import vn.edu.uit.chat_application.repository.AttachmentRepository;
 import vn.edu.uit.chat_application.repository.CommonRepository;
 import vn.edu.uit.chat_application.repository.ConversationRepository;
+import vn.edu.uit.chat_application.repository.FriendRelationshipRepository;
 import vn.edu.uit.chat_application.repository.FriendRequestRepository;
 import vn.edu.uit.chat_application.repository.MessageRepository;
 import vn.edu.uit.chat_application.repository.NotificationRepository;
@@ -54,6 +55,7 @@ public class NotificationService {
     private final AttachmentRepository attachmentRepository;
     private final UserRepository userRepository;
     private final ConversationRepository conversationRepository;
+    private final FriendRelationshipRepository friendRelationshipRepository;
 
     public void sendMessageNotifications(Message message) {
         MessageSentDto messageSentDto = MessageSentDto.from(message);
@@ -160,8 +162,9 @@ public class NotificationService {
             case MESSAGE -> MessageSentDto.from((Message) object);
             case FRIEND_REQUEST -> FriendRequestSentDto.friendRequestWithFromUser((FriendRequest) object);
             case ATTACHMENT -> AttachmentSentDto.from((Attachment) object);
-            case FRIEND_ACCEPT, ONLINE_STATUS_CHANGE -> UserSentDto.from((User) object);
+            case ONLINE_STATUS_CHANGE -> UserSentDto.from((User) object);
             case NEW_CONVERSATION -> ConversationSentDto.from((Conversation) object);
+            case FRIEND_ACCEPT -> FriendRelationshipSentDto.from((FriendRelationship) object, PrincipalUtils.getLoggedInUser().getId());
             case SEEN_BY -> null;
         };
     }
@@ -171,7 +174,8 @@ public class NotificationService {
             case MESSAGE, SEEN_BY -> messageRepository;
             case FRIEND_REQUEST -> friendRequestRepository;
             case ATTACHMENT -> attachmentRepository;
-            case FRIEND_ACCEPT, ONLINE_STATUS_CHANGE -> userRepository;
+            case ONLINE_STATUS_CHANGE -> userRepository;
+            case FRIEND_ACCEPT -> friendRelationshipRepository;
             case NEW_CONVERSATION -> conversationRepository;
         };
     }
