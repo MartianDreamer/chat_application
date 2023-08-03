@@ -48,11 +48,11 @@ public class RelationshipService {
     }
 
     @Transactional
-    public FriendRequest acceptFriendRequest(UUID id) {
+    public FriendRelationship acceptFriendRequest(UUID id) {
         FriendRequest friendRequest = friendRequestRepository.findById(id).orElseThrow(CustomRuntimeException::notFound);
-        friendRelationshipRepository.save(new FriendRelationship(friendRequest.getFrom(), friendRequest.getTo()));
+        FriendRelationship  friendRelationShip = friendRelationshipRepository.save(new FriendRelationship(friendRequest.getFrom(), friendRequest.getTo()));
         friendRequestRepository.deleteById(id);
-        return friendRequest;
+        return friendRelationShip;
     }
 
     public Page<FriendRequest> getFromFriendRequests(UUID userId, int page, int size) {

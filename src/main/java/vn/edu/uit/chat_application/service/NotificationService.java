@@ -9,6 +9,7 @@ import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 import vn.edu.uit.chat_application.dto.sent.AttachmentSentDto;
 import vn.edu.uit.chat_application.dto.sent.ConversationSentDto;
+import vn.edu.uit.chat_application.dto.sent.FriendRelationshipSentDto;
 import vn.edu.uit.chat_application.dto.sent.FriendRequestSentDto;
 import vn.edu.uit.chat_application.dto.sent.MessageSentDto;
 import vn.edu.uit.chat_application.dto.sent.NotificationSentDto;
@@ -17,6 +18,7 @@ import vn.edu.uit.chat_application.dto.sent.UserSentDto;
 import vn.edu.uit.chat_application.entity.Attachment;
 import vn.edu.uit.chat_application.entity.Conversation;
 import vn.edu.uit.chat_application.entity.ConversationMembership;
+import vn.edu.uit.chat_application.entity.FriendRelationship;
 import vn.edu.uit.chat_application.entity.FriendRequest;
 import vn.edu.uit.chat_application.entity.Message;
 import vn.edu.uit.chat_application.entity.Notification;
@@ -72,10 +74,11 @@ public class NotificationService {
         simpMessagingTemplate.convertAndSendToUser(notification.getTo().getUsername(), NOTIFICATION_QUEUE, notificationSentDto);
     }
 
-    public void sendFriendAcceptNotification(FriendRequest friendRequest) {
-        Notification notification = notificationRepository.save(new Notification(friendRequest.getTo().getId(), LocalDateTime.now(), friendRequest.getFrom(), Notification.Type.FRIEND_ACCEPT));
-        UserSentDto user = UserSentDto.from(friendRequest.getTo());
-        NotificationSentDto notificationSentDto = NotificationSentDto.from(notification, user);
+    public void sendFriendAcceptNotification(FriendRelationship friendRelationship) {
+        User to = friendRelationship.getFirst().getId().equals(PrincipalUtils.getLoggedInUser().getId()) ? friendRelationship.getSecond() : friendRelationship.getFirst();
+        Notification notification = notificationRepository.save(new Notification(friendRelationship.getId(), LocalDateTime.now(), to, Notification.Type.FRIEND_ACCEPT));
+        FriendRelationshipSentDto content = FriendRelationshipSentDto.from(friendRelationship, PrincipalUtils.getLoggedInUser().getId());
+        NotificationSentDto notificationSentDto = NotificationSentDto.from(notification, content);
         simpMessagingTemplate.convertAndSendToUser(notification.getTo().getUsername(), NOTIFICATION_QUEUE, notificationSentDto);
     }
 

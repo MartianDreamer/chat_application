@@ -17,7 +17,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.io.Serializable;
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Entity
@@ -48,14 +48,11 @@ public class FriendRelationship implements Serializable, UuidIdEntity {
     @JoinColumn(name = "user_2_id")
     private User second;
 
-    private LocalDate since;
+    private LocalDateTime since;
 
     public FriendRelationship(User first, User second) {
         this.first = first;
         this.second = second;
-    }
-
-    public FriendRelationship(UUID id) {
-        this.id = id;
+        this.since = LocalDateTime.now();
     }
 }
