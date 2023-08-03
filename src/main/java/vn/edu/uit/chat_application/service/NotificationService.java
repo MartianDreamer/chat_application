@@ -78,7 +78,7 @@ public class NotificationService {
 
     public void sendFriendAcceptNotification(FriendRelationship friendRelationship) {
         User to = friendRelationship.getFirst().getId().equals(PrincipalUtils.getLoggedInUser().getId()) ? friendRelationship.getSecond() : friendRelationship.getFirst();
-        Notification notification = notificationRepository.save(new Notification(friendRelationship.getId(), LocalDateTime.now(), to, Notification.Type.FRIEND_ACCEPT));
+        Notification notification = new Notification(friendRelationship.getId(), LocalDateTime.now(), to, Notification.Type.FRIEND_ACCEPT);
         FriendRelationshipSentDto content = FriendRelationshipSentDto.from(friendRelationship, to.getId());
         NotificationSentDto notificationSentDto = NotificationSentDto.from(notification, content);
         simpMessagingTemplate.convertAndSendToUser(notification.getTo().getUsername(), NOTIFICATION_QUEUE, notificationSentDto);
