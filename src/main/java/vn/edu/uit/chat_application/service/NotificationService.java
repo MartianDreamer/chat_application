@@ -156,6 +156,14 @@ public class NotificationService {
         return notificationPage;
     }
 
+    public List<Notification> getMyNotificationByType(Notification.Type type) {
+        UUID userId = PrincipalUtils.getLoggedInUser().getId();
+        List<Notification> notifications = notificationRepository.findByToIdAndType(userId, type);
+        Map<UUID, ?> contentMap = findContent(notifications.stream().map(Notification::getEntityId).toList(), getRepository(type));
+        notifications.forEach(e -> e.setObject(convert(type, contentMap.get(e.getEntityId()))));
+        return notifications;
+    }
+
     private Object convert(Notification.Type type, Object object) {
         return switch (type) {
             case MESSAGE -> MessageSentDto.from((Message) object);
