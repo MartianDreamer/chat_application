@@ -64,8 +64,9 @@ public class ConversationService {
             memberSet.add(creatorId);
             memberSet.addAll(dto.getMembers());
             String duplicatedTwoPeopleConversationIdentifier = memberSet.stream().sorted(Comparator.naturalOrder()).map(UUID::toString).collect(Collectors.joining("_"));
-            if (conversationRepository.existsByDuplicatedTwoPeopleConversationIdentifier(duplicatedTwoPeopleConversationIdentifier)) {
-                throw new CustomRuntimeException("conversation is existed", HttpStatus.BAD_REQUEST);
+            Conversation duplicatedConversation = conversationRepository.findByDuplicatedTwoPeopleConversationIdentifier(duplicatedTwoPeopleConversationIdentifier);
+            if (duplicatedConversation != null) {
+                throw new CustomRuntimeException("conversation is existed " + duplicatedConversation.getId(), HttpStatus.BAD_REQUEST);
             }
             conversationBuilder.duplicatedTwoPeopleConversationIdentifier(duplicatedTwoPeopleConversationIdentifier);
         }
