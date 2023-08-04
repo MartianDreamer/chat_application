@@ -55,4 +55,8 @@ public class FriendRelationship implements Serializable, UuidIdEntity {
         this.second = second;
         this.since = LocalDateTime.now();
     }
+
+    public User getTheOther(UUID id) {
+        return first.getId().equals(id) ? second : first;
+    }
 }

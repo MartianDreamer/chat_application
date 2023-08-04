@@ -77,7 +77,7 @@ public class NotificationService {
     }
 
     public void sendFriendAcceptNotification(FriendRelationship friendRelationship) {
-        User to = friendRelationship.getFirst().getId().equals(PrincipalUtils.getLoggedInUser().getId()) ? friendRelationship.getSecond() : friendRelationship.getFirst();
+        User to = friendRelationship.getTheOther(PrincipalUtils.getLoggedInUser().getId());
         Notification notification = new Notification(friendRelationship.getId(), LocalDateTime.now(), to, Notification.Type.FRIEND_ACCEPT);
         FriendRelationshipSentDto content = FriendRelationshipSentDto.from(friendRelationship, to.getId());
         NotificationSentDto notificationSentDto = NotificationSentDto.from(notification, content);
@@ -111,12 +111,11 @@ public class NotificationService {
     }
 
     public void sendOnlineStatusNotification(User user) {
-        List<User> friends = relationshipService.getFriends(user.getId()).stream()
-                .map(e -> e.getFirst().getId().equals(user.getId()) ? e.getSecond() : e.getFirst())
-                .toList();
+        List<FriendRelationship> friends = relationshipService.getFriends(user.getId());
         friends.forEach(e -> {
-            NotificationSentDto notificationSentDto = new NotificationSentDto(LocalDateTime.now(), UserSentDto.from(user), Notification.Type.ONLINE_STATUS_CHANGE);
-            simpMessagingTemplate.convertAndSendToUser(e.getUsername(), "/queue/notification", notificationSentDto);
+            User to = e.getTheOther(user.getId());
+            NotificationSentDto notificationSentDto = new NotificationSentDto(LocalDateTime.now(), FriendRelationshipSentDto.from(e, to.getId()), Notification.Type.ONLINE_STATUS_CHANGE);
+            simpMessagingTemplate.convertAndSendToUser(to.getUsername(), "/queue/notification", notificationSentDto);
         });
     }
 
