@@ -1,8 +1,10 @@
 package vn.edu.uit.chat_application.controller.rest;
 
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -11,17 +13,21 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 import vn.edu.uit.chat_application.dto.received.UserReceivedDto;
 import vn.edu.uit.chat_application.dto.sent.AttachmentContentDto;
 import vn.edu.uit.chat_application.dto.sent.UserSentDto;
+import vn.edu.uit.chat_application.entity.User;
 import vn.edu.uit.chat_application.exception.CustomRuntimeException;
+import vn.edu.uit.chat_application.service.EmailService;
 import vn.edu.uit.chat_application.service.UserService;
 import vn.edu.uit.chat_application.util.PrincipalUtils;
 
 import java.util.UUID;
+import java.util.concurrent.CompletableFuture;
 
 @RestController
 @RequestMapping("/rest/users")
@@ -29,20 +35,26 @@ import java.util.UUID;
 public class UserController {
 
     private final UserService userService;
+    private final EmailService emailService;
 
     @PutMapping
-    public @ResponseBody String createUser(@RequestBody @Valid UserReceivedDto dto) {
-        return userService.createUser(dto);
+    @Transactional
+    public void createUser(HttpServletRequest req, @RequestBody @Valid UserReceivedDto dto) {
+        User user = userService.createUser(dto);
+        CompletableFuture.runAsync(() -> {
+            String origin = req.getHeader("Origin");
+            String confirmationLink = origin + "/confirmation/" + user.getConfirmationString();
+            emailService.send(dto.getEmail(), "Activate account " + dto.getUsername(),"Link to activate your account: " + confirmationLink);
+        });
     }
 
     @PatchMapping
-    public @ResponseBody String updateUser(@RequestBody @Valid UserReceivedDto dto) {
+    public void updateUser(@RequestBody @Valid UserReceivedDto dto) {
         UUID id = PrincipalUtils.getLoggedInUser().getId();
         userService.updateUser(id, dto);
-        return "updated";
     }
 
-    @PostMapping("/confirm/{confirmationString}")
+    @GetMapping("/confirm/{confirmationString}")
     public void activateUser(@PathVariable("confirmationString") String confirmationString) {
         if (!userService.activateUser(confirmationString)) {
             throw new CustomRuntimeException("invalid confirmation", HttpStatus.BAD_REQUEST);
@@ -65,7 +77,7 @@ public class UserController {
     }
 
     @PostMapping("/avatar")
-    public void uploadAvatar(@RequestParam("file")MultipartFile file) {
+    public void uploadAvatar(@RequestPart("file")MultipartFile file) {
         UUID userId = PrincipalUtils.getLoggedInUser().getId();
         userService.uploadAvatar(userId, file);
     }

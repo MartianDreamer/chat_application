@@ -49,15 +49,13 @@ public class ConversationController {
 
     @PostMapping("/members/{conversationId}")
     @Transactional
-    public @ResponseBody String addMembers(@PathVariable("conversationId") UUID conversationId, @RequestBody List<UUID> userIds) {
+    public void addMembers(@PathVariable("conversationId") UUID conversationId, @RequestBody List<UUID> userIds) {
         notificationService.sendNewConversationNotification(conversationService.addMembers(conversationId, userIds));
-        return "update succeeded";
     }
 
     @DeleteMapping("/members/{conversationId}")
-    public @ResponseBody String removeMembers(@PathVariable("conversationId") UUID conversationId, @RequestBody List<UUID> userIds) {
+    public void removeMembers(@PathVariable("conversationId") UUID conversationId, @RequestBody List<UUID> userIds) {
         conversationService.removeMembers(conversationId, userIds);
-        return "remove succeeded";
     }
 
     @GetMapping("/{conversationId}")

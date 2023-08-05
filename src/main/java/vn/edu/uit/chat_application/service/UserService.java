@@ -44,8 +44,8 @@ public class UserService implements UserDetailsService {
     }
 
     @EncryptPassword
-    public String createUser(UserReceivedDto dto) {
-        return userRepository.save(User.from(dto)).getConfirmationString();
+    public User createUser(UserReceivedDto dto) {
+        return userRepository.saveAndFlush(User.from(dto));
     }
 
     @EncryptPassword
