@@ -9,7 +9,7 @@ import java.util.List;
 import java.util.UUID;
 
 public interface ConversationRepository extends CommonRepository<Conversation> {
-    boolean existsByDuplicatedTwoPeopleConversationIdentifier(String duplicatedTwoPeopleConversationIdentifier);
+    Conversation findByDuplicatedTwoPeopleConversationIdentifier(String duplicatedTwoPeopleConversationIdentifier);
 
     @Modifying
     @Query(

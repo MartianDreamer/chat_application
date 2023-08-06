@@ -18,13 +18,13 @@ import java.util.UUID;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class ConversationSentDto {
     private UUID id;
-    private LocalDateTime createdAt;
+    private LocalDateTime modifiedAt;
     private String name;
     private List<UserSentDto> members;
 
-    public ConversationSentDto(UUID id, LocalDateTime createdAt, String name) {
+    public ConversationSentDto(UUID id, LocalDateTime modifiedAt, String name) {
         this.id = id;
-        this.createdAt = createdAt;
+        this.modifiedAt = modifiedAt;
         this.name = name;
     }
 

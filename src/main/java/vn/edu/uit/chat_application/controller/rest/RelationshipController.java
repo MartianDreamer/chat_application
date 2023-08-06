@@ -44,10 +44,11 @@ public class RelationshipController {
 
     @PostMapping("/friend-requests/{id}")
     @Transactional
-    public void acceptFriendRequest(@PathVariable("id") UUID id) {
-        FriendRequest friendRequest = relationshipService.acceptFriendRequest(id);
-        notificationService.sendFriendAcceptNotification(friendRequest);
-        notificationService.acknowledge(friendRequest.getId(), Notification.Type.FRIEND_REQUEST);
+    public FriendRelationshipSentDto acceptFriendRequest(@PathVariable("id") UUID id) {
+        FriendRelationship friendRelationship = relationshipService.acceptFriendRequest(id);
+        notificationService.sendFriendAcceptNotification(friendRelationship);
+        notificationService.acknowledge(friendRelationship.getId(), Notification.Type.FRIEND_REQUEST);
+        return FriendRelationshipSentDto.from(friendRelationship, PrincipalUtils.getLoggedInUser().getId());
     }
 
     @DeleteMapping("/friend-requests/{id}")

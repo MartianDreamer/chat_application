@@ -6,7 +6,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import vn.edu.uit.chat_application.entity.FriendRelationship;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Builder
@@ -16,7 +16,7 @@ import java.util.UUID;
 public class FriendRelationshipSentDto {
     private UUID id;
     private UserSentDto friend;
-    private LocalDate since;
+    private LocalDateTime since;
 
     public static FriendRelationshipSentDto from(FriendRelationship friendRelationship, UUID selfId) {
         if (selfId.equals(friendRelationship.getFirst().getId())) {

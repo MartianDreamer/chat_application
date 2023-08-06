@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 import vn.edu.uit.chat_application.dto.sent.NotificationSentDto;
+import vn.edu.uit.chat_application.entity.Notification;
 import vn.edu.uit.chat_application.service.NotificationService;
 
 import java.util.List;
@@ -38,5 +39,14 @@ public class NotificationController {
             @RequestParam(value = "size", required = false, defaultValue = "30") int size
     ) {
         return notificationService.getMyNotification(page, size).map(NotificationSentDto::from);
+    }
+
+    @GetMapping("/type")
+    @ResponseBody
+    public List<NotificationSentDto> getMyNotificationByType(
+            @RequestParam(value = "type") Notification.Type type
+            ) {
+        return notificationService.getMyNotificationByType(type).stream().map(NotificationSentDto::from)
+                .toList();
     }
 }

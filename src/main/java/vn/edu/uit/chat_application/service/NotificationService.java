@@ -9,6 +9,7 @@ import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 import vn.edu.uit.chat_application.dto.sent.AttachmentSentDto;
 import vn.edu.uit.chat_application.dto.sent.ConversationSentDto;
+import vn.edu.uit.chat_application.dto.sent.FriendRelationshipSentDto;
 import vn.edu.uit.chat_application.dto.sent.FriendRequestSentDto;
 import vn.edu.uit.chat_application.dto.sent.MessageSentDto;
 import vn.edu.uit.chat_application.dto.sent.NotificationSentDto;
@@ -17,6 +18,7 @@ import vn.edu.uit.chat_application.dto.sent.UserSentDto;
 import vn.edu.uit.chat_application.entity.Attachment;
 import vn.edu.uit.chat_application.entity.Conversation;
 import vn.edu.uit.chat_application.entity.ConversationMembership;
+import vn.edu.uit.chat_application.entity.FriendRelationship;
 import vn.edu.uit.chat_application.entity.FriendRequest;
 import vn.edu.uit.chat_application.entity.Message;
 import vn.edu.uit.chat_application.entity.Notification;
@@ -25,6 +27,7 @@ import vn.edu.uit.chat_application.entity.UuidIdEntity;
 import vn.edu.uit.chat_application.repository.AttachmentRepository;
 import vn.edu.uit.chat_application.repository.CommonRepository;
 import vn.edu.uit.chat_application.repository.ConversationRepository;
+import vn.edu.uit.chat_application.repository.FriendRelationshipRepository;
 import vn.edu.uit.chat_application.repository.FriendRequestRepository;
 import vn.edu.uit.chat_application.repository.MessageRepository;
 import vn.edu.uit.chat_application.repository.NotificationRepository;
@@ -52,6 +55,7 @@ public class NotificationService {
     private final AttachmentRepository attachmentRepository;
     private final UserRepository userRepository;
     private final ConversationRepository conversationRepository;
+    private final FriendRelationshipRepository friendRelationshipRepository;
 
     public void sendMessageNotifications(Message message) {
         MessageSentDto messageSentDto = MessageSentDto.from(message);
@@ -72,10 +76,11 @@ public class NotificationService {
         simpMessagingTemplate.convertAndSendToUser(notification.getTo().getUsername(), NOTIFICATION_QUEUE, notificationSentDto);
     }
 
-    public void sendFriendAcceptNotification(FriendRequest friendRequest) {
-        Notification notification = notificationRepository.save(new Notification(friendRequest.getTo().getId(), LocalDateTime.now(), friendRequest.getFrom(), Notification.Type.FRIEND_ACCEPT));
-        UserSentDto user = UserSentDto.from(friendRequest.getTo());
-        NotificationSentDto notificationSentDto = NotificationSentDto.from(notification, user);
+    public void sendFriendAcceptNotification(FriendRelationship friendRelationship) {
+        User to = friendRelationship.getTheOther(PrincipalUtils.getLoggedInUser().getId());
+        Notification notification = new Notification(friendRelationship.getId(), LocalDateTime.now(), to, Notification.Type.FRIEND_ACCEPT);
+        FriendRelationshipSentDto content = FriendRelationshipSentDto.from(friendRelationship, to.getId());
+        NotificationSentDto notificationSentDto = NotificationSentDto.from(notification, content);
         simpMessagingTemplate.convertAndSendToUser(notification.getTo().getUsername(), NOTIFICATION_QUEUE, notificationSentDto);
     }
 
@@ -106,12 +111,11 @@ public class NotificationService {
     }
 
     public void sendOnlineStatusNotification(User user) {
-        List<User> friends = relationshipService.getFriends(user.getId()).stream()
-                .map(e -> e.getFirst().getId().equals(user.getId()) ? e.getSecond() : e.getFirst())
-                .toList();
+        List<FriendRelationship> friends = relationshipService.getFriends(user.getId());
         friends.forEach(e -> {
-            NotificationSentDto notificationSentDto = new NotificationSentDto(LocalDateTime.now(), UserSentDto.from(user), Notification.Type.ONLINE_STATUS_CHANGE);
-            simpMessagingTemplate.convertAndSendToUser(e.getUsername(), "/queue/notification", notificationSentDto);
+            User to = e.getTheOther(user.getId());
+            NotificationSentDto notificationSentDto = new NotificationSentDto(LocalDateTime.now(), FriendRelationshipSentDto.from(e, to.getId()), Notification.Type.ONLINE_STATUS_CHANGE);
+            simpMessagingTemplate.convertAndSendToUser(to.getUsername(), "/queue/notification", notificationSentDto);
         });
     }
 
@@ -152,13 +156,22 @@ public class NotificationService {
         return notificationPage;
     }
 
+    public List<Notification> getMyNotificationByType(Notification.Type type) {
+        UUID userId = PrincipalUtils.getLoggedInUser().getId();
+        List<Notification> notifications = notificationRepository.findByToIdAndType(userId, type);
+        Map<UUID, ?> contentMap = findContent(notifications.stream().map(Notification::getEntityId).toList(), getRepository(type));
+        notifications.forEach(e -> e.setObject(convert(type, contentMap.get(e.getEntityId()))));
+        return notifications;
+    }
+
     private Object convert(Notification.Type type, Object object) {
         return switch (type) {
             case MESSAGE -> MessageSentDto.from((Message) object);
             case FRIEND_REQUEST -> FriendRequestSentDto.friendRequestWithFromUser((FriendRequest) object);
             case ATTACHMENT -> AttachmentSentDto.from((Attachment) object);
-            case FRIEND_ACCEPT, ONLINE_STATUS_CHANGE -> UserSentDto.from((User) object);
+            case ONLINE_STATUS_CHANGE -> UserSentDto.from((User) object);
             case NEW_CONVERSATION -> ConversationSentDto.from((Conversation) object);
+            case FRIEND_ACCEPT -> FriendRelationshipSentDto.from((FriendRelationship) object, PrincipalUtils.getLoggedInUser().getId());
             case SEEN_BY -> null;
         };
     }
@@ -168,7 +181,8 @@ public class NotificationService {
             case MESSAGE, SEEN_BY -> messageRepository;
             case FRIEND_REQUEST -> friendRequestRepository;
             case ATTACHMENT -> attachmentRepository;
-            case FRIEND_ACCEPT, ONLINE_STATUS_CHANGE -> userRepository;
+            case ONLINE_STATUS_CHANGE -> userRepository;
+            case FRIEND_ACCEPT -> friendRelationshipRepository;
             case NEW_CONVERSATION -> conversationRepository;
         };
     }
