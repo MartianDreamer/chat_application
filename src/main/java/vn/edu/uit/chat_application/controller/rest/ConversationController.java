@@ -22,6 +22,7 @@ import vn.edu.uit.chat_application.entity.Conversation;
 import vn.edu.uit.chat_application.entity.ConversationMembership;
 import vn.edu.uit.chat_application.entity.Message;
 import vn.edu.uit.chat_application.entity.Notification;
+import vn.edu.uit.chat_application.repository.ConversationMembershipRepository;
 import vn.edu.uit.chat_application.service.ConversationService;
 import vn.edu.uit.chat_application.service.NotificationService;
 import vn.edu.uit.chat_application.util.PrincipalUtils;
@@ -37,6 +38,7 @@ import java.util.UUID;
 public class ConversationController {
     private final ConversationService conversationService;
     private final NotificationService notificationService;
+    private final ConversationMembershipRepository conversationMembershipRepository;
 
     @PutMapping
     @Transactional
@@ -98,7 +100,17 @@ public class ConversationController {
             @RequestParam(value = "page", required = false, defaultValue = "0") int page,
             @RequestParam(value = "size", required = false, defaultValue = "10") int size
     ) {
-        return conversationService.getMyConversations(page, size).map(ConversationSentDto::from);
+
+        Page<ConversationSentDto> conversationPage = conversationService.getMyConversations(page, size).map(ConversationSentDto::from);
+        conversationPage.getContent().forEach(e -> {
+            List<ConversationMembership> memberships = conversationMembershipRepository.findByConversationId(e.getId());
+            e.setMembers(memberships
+                    .stream()
+                    .map(ConversationMembership::getMember)
+                    .map(UserSentDto::from).toList()
+            );
+        });
+        return conversationPage;
     }
 
     @GetMapping("/contents/{conversationId}")

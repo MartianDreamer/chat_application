@@ -123,6 +123,10 @@ public class ConversationService {
     public Page<Conversation> getMyConversations(int page, int size) {
         Pageable pageable = PageRequest.of(page, size);
         UUID myId = PrincipalUtils.getLoggedInUser().getId();
+        Page<ConversationMembership> conversationMembershipPage = conversationMembershipRepository.findByMemberId(myId, pageable);
+        if (conversationMembershipPage.isEmpty()) {
+            return Page.empty();
+        }
         return conversationMembershipRepository.findByMemberId(myId, pageable).map(ConversationMembership::getConversation);
     }
 
