@@ -1,6 +1,6 @@
 import {useState, useContext} from "react"
 import axios from "axios"
-import {UserContext} from "./UserContext.jsx";
+import {UserContext} from "../UserContext.jsx";
 import {Link} from "react-router-dom"
 
 export default function Register() {
@@ -57,7 +57,7 @@ export default function Register() {
                 </div>
                 <div className="ml-3 text-sm">
                     <label htmlFor="terms" className="font-light text-gray-500 dark:text-gray-300">I accept the <a
-                        className="font-medium text-primary-600 hover:underline dark:text-primary-500" href="#">Terms
+                        className="font-medium text-primary-600 hover:underline dark:text-primary-500" href=".#">Terms
                         and Conditions</a></label>
                 </div>
             </div>
