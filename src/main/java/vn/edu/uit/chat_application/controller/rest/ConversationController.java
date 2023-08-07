@@ -43,10 +43,15 @@ public class ConversationController {
     @PutMapping
     @Transactional
     public @ResponseBody ConversationSentDto createConversation(@RequestBody ConversationReceivedDto dto) {
-        List<ConversationMembership> result = conversationService.createConversation(dto);
-        notificationService.sendNewConversationNotification(result);
-        Conversation conversation = result.get(0).getConversation();
-        return ConversationSentDto.from(conversation);
+        List<ConversationMembership> memberships = conversationService.createConversation(dto);
+        notificationService.sendNewConversationNotification(memberships);
+        Conversation conversation = memberships.get(0).getConversation();
+        var result = ConversationSentDto.from(conversation);
+        result.setMembers(memberships.stream()
+                .map(ConversationMembership::getMember)
+                .map(UserSentDto::from)
+                .toList());
+        return result;
     }
 
     @PostMapping("/members/{conversationId}")
