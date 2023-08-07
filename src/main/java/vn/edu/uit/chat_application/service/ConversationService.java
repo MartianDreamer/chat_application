@@ -78,6 +78,10 @@ public class ConversationService {
         return conversationMembershipRepository.saveAllAndFlush(conversationMemberships);
     }
 
+    public void renameConversation(UUID id, String name) {
+        conversationRepository.updateConversationNameById(id, name, LocalDateTime.now());
+    }
+
 
     @Transactional
     public List<ConversationMembership> addMembers(UUID conversationId, List<UUID> memberIds) {
@@ -134,7 +138,7 @@ public class ConversationService {
         Stream<ConversationContent> contents = Stream.of(getConversationContentsBefore(conversationId, before, limit, Message.class),
                         getConversationContentsBefore(conversationId, before, limit, Attachment.class))
                 .flatMap(Collection::stream)
-                .sorted(Comparator.comparing(ConversationContent::getTimestamp));
+                .sorted(Comparator.comparing(ConversationContent::getTimestamp).reversed());
         if (limit > 0) {
             contents = contents.limit(limit);
         }
