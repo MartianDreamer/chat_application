@@ -22,8 +22,9 @@ import java.util.UUID;
 @RequestMapping("/rest/notifications")
 public class NotificationController {
     private final NotificationService notificationService;
+
     @DeleteMapping("/{id}")
-    public void acknowledge(@PathVariable("id")UUID id) {
+    public void acknowledge(@PathVariable("id") UUID id) {
         notificationService.acknowledge(id);
     }
 
@@ -45,8 +46,13 @@ public class NotificationController {
     @ResponseBody
     public List<NotificationSentDto> getMyNotificationByType(
             @RequestParam(value = "type") Notification.Type type
-            ) {
+    ) {
         return notificationService.getMyNotificationByType(type).stream().map(NotificationSentDto::from)
                 .toList();
+    }
+
+    @GetMapping("/ask")
+    public boolean isAcknowledged(@RequestParam("entity-id") UUID entityId, @RequestParam("type") Notification.Type type) {
+        return notificationService.isAcknowledge(entityId, type);
     }
 }

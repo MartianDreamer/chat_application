@@ -136,4 +136,14 @@ public class ConversationController {
                 .map(ConversationContentDto::from)
                 .toList();
     }
+
+    @GetMapping("/latest/{conversationId}")
+    public @ResponseBody List<ConversationContentDto> getContents(
+            @PathVariable("conversationId") UUID conversationId
+    ) {
+        LocalDateTime timestamp = LocalDateTime.now();
+        return conversationService.getConversationContentsBefore(conversationId, timestamp, 1).stream()
+                .map(ConversationContentDto::from)
+                .toList();
+    }
 }
