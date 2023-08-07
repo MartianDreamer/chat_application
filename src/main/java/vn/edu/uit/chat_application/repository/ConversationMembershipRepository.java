@@ -12,5 +12,5 @@ public interface ConversationMembershipRepository extends JpaRepository<Conversa
     boolean existsByConversationIdAndMemberId(UUID conversationId, UUID memberId);
     void deleteByConversationIdAndMemberIdIn(UUID conversationId, List<UUID> memberId);
     List<ConversationMembership> findByConversationId(UUID conversationId);
-    Page<ConversationMembership> findByMemberId(UUID memberId, Pageable pageable);
+    Page<ConversationMembership> findByMemberIdOrderByConversationModifiedAtDesc(UUID memberId, Pageable pageable);
 }
