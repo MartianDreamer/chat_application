@@ -42,4 +42,10 @@ public interface ConversationRepository extends CommonRepository<Conversation> {
                     "c.id = :id"
     )
     void updateByIdSetModifiedAt(UUID id, LocalDateTime modifiedAt);
+
+    @Modifying
+    @Query(
+            value = "update Conversation c set c.name = :name, c.modifiedAt = :modifiedAt where c.id = :id"
+    )
+    void updateConversationNameById(UUID id, String name, LocalDateTime modifiedAt);
 }

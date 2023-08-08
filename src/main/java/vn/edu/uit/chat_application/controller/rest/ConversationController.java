@@ -5,6 +5,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -29,7 +30,6 @@ import vn.edu.uit.chat_application.util.PrincipalUtils;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 
 @RequiredArgsConstructor
@@ -52,6 +52,11 @@ public class ConversationController {
                 .map(UserSentDto::from)
                 .toList());
         return result;
+    }
+
+    @PatchMapping("/{id}")
+    public void renameConversation(@PathVariable("id") UUID id, @RequestBody String name) {
+        conversationService.renameConversation(id, name);
     }
 
     @PostMapping("/members/{conversationId}")
@@ -121,10 +126,12 @@ public class ConversationController {
     @GetMapping("/contents/{conversationId}")
     public @ResponseBody List<ConversationContentDto> getContents(
             @PathVariable("conversationId") UUID conversationId,
-            @RequestParam(value = "timestamp", required = false) Optional<LocalDateTime> optionalTimestamp,
+            @RequestParam(value = "timestamp", required = false) LocalDateTime timestamp,
             @RequestParam(value = "limit", required = false, defaultValue = "0") int limit
     ) {
-        LocalDateTime timestamp = optionalTimestamp.orElse(LocalDateTime.now());
+        if (timestamp == null) {
+            timestamp = LocalDateTime.now();
+        }
         return conversationService.getConversationContentsBefore(conversationId, timestamp, limit).stream()
                 .peek(e -> {
                     if (e instanceof Message m) {
