@@ -11,5 +11,6 @@ import java.util.UUID;
 public interface NotificationRepository extends JpaRepository<Notification, UUID> {
     Page<Notification> findByToId(UUID toId, Pageable pageable);
     List<Notification> findByToIdAndType(UUID toId, Notification.Type type);
-    void deleteByEntityIdAndType(UUID entityId, Notification.Type type);
+    void deleteByToIdAndEntityIdAndType(UUID toId, UUID entityId, Notification.Type type);
+    boolean existsByToIdAndEntityIdAndType(UUID toId, UUID entityId, Notification.Type type);
 }

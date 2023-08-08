@@ -13,6 +13,7 @@ import vn.edu.uit.chat_application.service.NotificationService;
 import vn.edu.uit.chat_application.service.OnlineUserService;
 
 import java.util.Objects;
+import java.util.Optional;
 import java.util.UUID;
 
 @Component
@@ -25,23 +26,29 @@ public class WebSocketEventListener {
 
     @EventListener
     public void handleWebSocketConnectEvent(SessionConnectedEvent connectedEvent) {
-        User user = getUser(connectedEvent);
-        UUID userId = user.getId();
-        onlineUserService.userOnline(userId);
-        user.setOnline(true);
-        notificationService.sendOnlineStatusNotification(user);
+        getUser(connectedEvent).ifPresent(user -> {
+            UUID userId = user.getId();
+            onlineUserService.userOnline(userId);
+            user.setOnline(true);
+            notificationService.sendOnlineStatusNotification(user);
+        });
     }
 
     @EventListener
     public void handleDisconnectSocketEvent(SessionDisconnectEvent disconnectEvent) {
-        User user = getUser(disconnectEvent);
-        UUID userId = user.getId();
-        onlineUserService.userOffline(userId);
-        user.setOnline(false);
-        notificationService.sendOnlineStatusNotification(user);
+        getUser(disconnectEvent).ifPresent(user -> {
+            UUID userId = user.getId();
+            onlineUserService.userOffline(userId);
+            user.setOnline(false);
+            notificationService.sendOnlineStatusNotification(user);
+        });
     }
 
-    private User getUser(AbstractSubProtocolEvent event) {
-        return (User) ((Authentication) Objects.requireNonNull(event.getUser())).getPrincipal();
+    private Optional<User> getUser(AbstractSubProtocolEvent event) {
+        try {
+            return Optional.of((User) ((Authentication) Objects.requireNonNull(event.getUser())).getPrincipal());
+        } catch (Exception e) {
+            return Optional.empty();
+        }
     }
 }

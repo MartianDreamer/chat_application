@@ -57,6 +57,10 @@ public class NotificationService {
     private final ConversationRepository conversationRepository;
     private final FriendRelationshipRepository friendRelationshipRepository;
 
+    public boolean isAcknowledge(UUID entityId, Notification.Type type) {
+        return notificationRepository.existsByToIdAndEntityIdAndType(PrincipalUtils.getLoggedInUser().getId(), entityId, type);
+    }
+
     public void sendMessageNotifications(Message message) {
         MessageSentDto messageSentDto = MessageSentDto.from(message);
         List<Notification> notifications = notificationRepository.saveAll(conversationService.getConversationMembers(message.getTo().getId()).stream()
@@ -89,6 +93,10 @@ public class NotificationService {
             return;
         }
         ConversationSentDto conversation = ConversationSentDto.from(memberships.get(0).getConversation());
+        conversation.setMembers(memberships.stream()
+                .map(ConversationMembership::getMember)
+                .map(UserSentDto::from)
+                .toList());
         List<Notification> notifications = notificationRepository.saveAll(memberships.stream()
                 .map(e -> new Notification(conversation.getId(), LocalDateTime.now(), e.getMember(), Notification.Type.NEW_CONVERSATION))
                 .toList());
@@ -141,7 +149,7 @@ public class NotificationService {
 
     @Transactional
     public void acknowledge(UUID entityId, Notification.Type type) {
-        notificationRepository.deleteByEntityIdAndType(entityId, type);
+        notificationRepository.deleteByToIdAndEntityIdAndType(PrincipalUtils.getLoggedInUser().getId(), entityId, type);
     }
 
     public Page<Notification> getMyNotification(int page, int size) {
@@ -171,7 +179,8 @@ public class NotificationService {
             case ATTACHMENT -> AttachmentSentDto.from((Attachment) object);
             case ONLINE_STATUS_CHANGE -> UserSentDto.from((User) object);
             case NEW_CONVERSATION -> ConversationSentDto.from((Conversation) object);
-            case FRIEND_ACCEPT -> FriendRelationshipSentDto.from((FriendRelationship) object, PrincipalUtils.getLoggedInUser().getId());
+            case FRIEND_ACCEPT ->
+                    FriendRelationshipSentDto.from((FriendRelationship) object, PrincipalUtils.getLoggedInUser().getId());
             case SEEN_BY -> null;
         };
     }

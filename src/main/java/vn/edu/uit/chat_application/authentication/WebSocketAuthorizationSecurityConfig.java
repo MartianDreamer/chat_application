@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.messaging.Message;
+import org.springframework.messaging.simp.SimpMessageType;
 import org.springframework.security.authorization.AuthorizationManager;
 import org.springframework.security.messaging.access.intercept.MessageMatcherDelegatingAuthorizationManager;
 import vn.edu.uit.chat_application.authentication.authorization.MessageAuthorization;
@@ -20,6 +21,8 @@ public class WebSocketAuthorizationSecurityConfig {
         return messages
                 .simpMessageDestMatchers("/app/conversations/*")
                 .access(messageAuthorization::isMember)
+                .simpTypeMatchers(SimpMessageType.DISCONNECT)
+                .permitAll()
                 .anyMessage()
                 .authenticated()
                 .build();

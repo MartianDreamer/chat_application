@@ -22,6 +22,7 @@ import vn.edu.uit.chat_application.entity.Conversation;
 import vn.edu.uit.chat_application.entity.ConversationMembership;
 import vn.edu.uit.chat_application.entity.Message;
 import vn.edu.uit.chat_application.entity.Notification;
+import vn.edu.uit.chat_application.repository.ConversationMembershipRepository;
 import vn.edu.uit.chat_application.service.ConversationService;
 import vn.edu.uit.chat_application.service.NotificationService;
 import vn.edu.uit.chat_application.util.PrincipalUtils;
@@ -37,14 +38,20 @@ import java.util.UUID;
 public class ConversationController {
     private final ConversationService conversationService;
     private final NotificationService notificationService;
+    private final ConversationMembershipRepository conversationMembershipRepository;
 
     @PutMapping
     @Transactional
     public @ResponseBody ConversationSentDto createConversation(@RequestBody ConversationReceivedDto dto) {
-        List<ConversationMembership> result = conversationService.createConversation(dto);
-        notificationService.sendNewConversationNotification(result);
-        Conversation conversation = result.get(0).getConversation();
-        return ConversationSentDto.from(conversation);
+        List<ConversationMembership> memberships = conversationService.createConversation(dto);
+        notificationService.sendNewConversationNotification(memberships);
+        Conversation conversation = memberships.get(0).getConversation();
+        var result = ConversationSentDto.from(conversation);
+        result.setMembers(memberships.stream()
+                .map(ConversationMembership::getMember)
+                .map(UserSentDto::from)
+                .toList());
+        return result;
     }
 
     @PostMapping("/members/{conversationId}")
@@ -98,7 +105,17 @@ public class ConversationController {
             @RequestParam(value = "page", required = false, defaultValue = "0") int page,
             @RequestParam(value = "size", required = false, defaultValue = "10") int size
     ) {
-        return conversationService.getMyConversations(page, size).map(ConversationSentDto::from);
+
+        Page<ConversationSentDto> conversationPage = conversationService.getMyConversations(page, size).map(ConversationSentDto::from);
+        conversationPage.getContent().forEach(e -> {
+            List<ConversationMembership> memberships = conversationMembershipRepository.findByConversationId(e.getId());
+            e.setMembers(memberships
+                    .stream()
+                    .map(ConversationMembership::getMember)
+                    .map(UserSentDto::from).toList()
+            );
+        });
+        return conversationPage;
     }
 
     @GetMapping("/contents/{conversationId}")
@@ -116,6 +133,16 @@ public class ConversationController {
                         notificationService.acknowledge(a.getId(), Notification.Type.ATTACHMENT);
                     }
                 })
+                .map(ConversationContentDto::from)
+                .toList();
+    }
+
+    @GetMapping("/latest/{conversationId}")
+    public @ResponseBody List<ConversationContentDto> getContents(
+            @PathVariable("conversationId") UUID conversationId
+    ) {
+        LocalDateTime timestamp = LocalDateTime.now();
+        return conversationService.getConversationContentsBefore(conversationId, timestamp, 1).stream()
                 .map(ConversationContentDto::from)
                 .toList();
     }

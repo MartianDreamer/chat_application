@@ -123,7 +123,11 @@ public class ConversationService {
     public Page<Conversation> getMyConversations(int page, int size) {
         Pageable pageable = PageRequest.of(page, size);
         UUID myId = PrincipalUtils.getLoggedInUser().getId();
-        return conversationMembershipRepository.findByMemberId(myId, pageable).map(ConversationMembership::getConversation);
+        Page<ConversationMembership> conversationMembershipPage = conversationMembershipRepository.findByMemberIdOrderByConversationModifiedAtDesc(myId, pageable);
+        if (conversationMembershipPage.isEmpty()) {
+            return Page.empty();
+        }
+        return conversationMembershipRepository.findByMemberIdOrderByConversationModifiedAtDesc(myId, pageable).map(ConversationMembership::getConversation);
     }
 
     public List<ConversationContent> getConversationContentsBefore(UUID conversationId, LocalDateTime before, int limit) {
