@@ -30,7 +30,6 @@ import vn.edu.uit.chat_application.util.PrincipalUtils;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 
 @RequiredArgsConstructor
@@ -127,10 +126,12 @@ public class ConversationController {
     @GetMapping("/contents/{conversationId}")
     public @ResponseBody List<ConversationContentDto> getContents(
             @PathVariable("conversationId") UUID conversationId,
-            @RequestParam(value = "timestamp", required = false) Optional<LocalDateTime> optionalTimestamp,
+            @RequestParam(value = "timestamp", required = false) LocalDateTime timestamp,
             @RequestParam(value = "limit", required = false, defaultValue = "0") int limit
     ) {
-        LocalDateTime timestamp = optionalTimestamp.orElse(LocalDateTime.now());
+        if (timestamp == null) {
+            timestamp = LocalDateTime.now();
+        }
         return conversationService.getConversationContentsBefore(conversationId, timestamp, limit).stream()
                 .peek(e -> {
                     if (e instanceof Message m) {

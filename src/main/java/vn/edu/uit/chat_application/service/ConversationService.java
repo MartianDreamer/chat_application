@@ -153,7 +153,7 @@ public class ConversationService {
         criteriaQuery.select(root)
                 .where(
                         criteriaBuilder.and(
-                                criteriaBuilder.lessThanOrEqualTo(root.get("timestamp"), before),
+                                criteriaBuilder.lessThan(root.get("timestamp"), before),
                                 criteriaBuilder.equal(root.get("to").get("id"), conversationId)
                         )
                 )
