@@ -5,13 +5,14 @@ import jakarta.persistence.TypedQuery;
 import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.CriteriaQuery;
 import jakarta.persistence.criteria.Root;
-import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 import vn.edu.uit.chat_application.dto.received.ConversationReceivedDto;
 import vn.edu.uit.chat_application.entity.Attachment;
 import vn.edu.uit.chat_application.entity.Conversation;
@@ -21,6 +22,7 @@ import vn.edu.uit.chat_application.entity.ConversationMembership;
 import vn.edu.uit.chat_application.entity.Message;
 import vn.edu.uit.chat_application.entity.User;
 import vn.edu.uit.chat_application.exception.CustomRuntimeException;
+import vn.edu.uit.chat_application.exception.DuplicateConversationException;
 import vn.edu.uit.chat_application.repository.ConversationMembershipRepository;
 import vn.edu.uit.chat_application.repository.ConversationRepository;
 import vn.edu.uit.chat_application.repository.UserRepository;
@@ -47,7 +49,7 @@ public class ConversationService {
     private final UserRepository userRepository;
 
     @Transactional
-    public List<ConversationMembership> createConversation(ConversationReceivedDto dto) {
+    public List<ConversationMembership> createConversation(ConversationReceivedDto dto) throws DuplicateConversationException {
         User creator = PrincipalUtils.getLoggedInUser();
         UUID creatorId = creator.getId();
         dto.getMembers().stream()
@@ -66,7 +68,7 @@ public class ConversationService {
             String duplicatedTwoPeopleConversationIdentifier = memberSet.stream().sorted(Comparator.naturalOrder()).map(UUID::toString).collect(Collectors.joining("_"));
             Conversation duplicatedConversation = conversationRepository.findByDuplicatedTwoPeopleConversationIdentifier(duplicatedTwoPeopleConversationIdentifier);
             if (duplicatedConversation != null) {
-                throw new CustomRuntimeException("conversation is existed " + duplicatedConversation.getId(), HttpStatus.BAD_REQUEST);
+                throw new DuplicateConversationException("conversation is existed " + duplicatedConversation.getId(), duplicatedConversation, creator);
             }
             conversationBuilder.duplicatedTwoPeopleConversationIdentifier(duplicatedTwoPeopleConversationIdentifier);
         }
@@ -76,6 +78,13 @@ public class ConversationService {
                 .collect(Collectors.toCollection(LinkedList::new));
         conversationMemberships.add(new ConversationMembership(savedConversation, creator));
         return conversationMembershipRepository.saveAllAndFlush(conversationMemberships);
+    }
+
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
+    public void rejoinTwoMemberConversation(Conversation duplicatedConversation, User creator) {
+        if (!this.conversationMembershipRepository.existsByConversationIdAndMemberId(duplicatedConversation.getId(), creator.getId())) {
+            this.conversationMembershipRepository.save(new ConversationMembership(duplicatedConversation, creator));
+        }
     }
 
     public void renameConversation(UUID id, String name) {

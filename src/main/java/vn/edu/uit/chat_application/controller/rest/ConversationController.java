@@ -2,6 +2,7 @@ package vn.edu.uit.chat_application.controller.rest;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
+import org.springframework.http.HttpStatus;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -23,6 +24,8 @@ import vn.edu.uit.chat_application.entity.Conversation;
 import vn.edu.uit.chat_application.entity.ConversationMembership;
 import vn.edu.uit.chat_application.entity.Message;
 import vn.edu.uit.chat_application.entity.Notification;
+import vn.edu.uit.chat_application.exception.CustomRuntimeException;
+import vn.edu.uit.chat_application.exception.DuplicateConversationException;
 import vn.edu.uit.chat_application.repository.ConversationMembershipRepository;
 import vn.edu.uit.chat_application.service.ConversationService;
 import vn.edu.uit.chat_application.service.NotificationService;
@@ -43,18 +46,24 @@ public class ConversationController {
     @PutMapping
     @Transactional
     public @ResponseBody ConversationSentDto createConversation(@RequestBody ConversationReceivedDto dto) {
-        List<ConversationMembership> memberships = conversationService.createConversation(dto);
-        notificationService.sendNewConversationNotification(memberships);
-        Conversation conversation = memberships.get(0).getConversation();
-        var result = ConversationSentDto.from(conversation);
-        result.setMembers(memberships.stream()
-                .map(ConversationMembership::getMember)
-                .map(UserSentDto::from)
-                .toList());
-        return result;
+        try {
+            List<ConversationMembership> memberships = conversationService.createConversation(dto);
+            notificationService.sendNewConversationNotification(memberships);
+            Conversation conversation = memberships.get(0).getConversation();
+            var result = ConversationSentDto.from(conversation);
+            result.setMembers(memberships.stream()
+                    .map(ConversationMembership::getMember)
+                    .map(UserSentDto::from)
+                    .toList());
+            return result;
+        } catch (DuplicateConversationException e) {
+            conversationService.rejoinTwoMemberConversation(e.getConversation(), e.getCreator());
+            throw new CustomRuntimeException(e.getMessage(), HttpStatus.BAD_REQUEST);
+        }
     }
 
     @PatchMapping("/{id}")
+    @Transactional
     public void renameConversation(@PathVariable("id") UUID id, @RequestBody String name) {
         conversationService.renameConversation(id, name);
     }
