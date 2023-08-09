@@ -31,4 +31,4 @@ jwt:
 
 app:
   message-modifiability-duration: 5
-  storage-location: /chat_application
+  storage-location: /home/martiandreamer/chat_application
