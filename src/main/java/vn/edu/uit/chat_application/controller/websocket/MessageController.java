@@ -28,7 +28,6 @@ public class MessageController {
         Message message = messageService.createMessage(messageReceivedDto);
         notificationService.sendMessageNotifications(message);
     }
-
     @MessageMapping("/messages/{id}")
     public void seen(@DestinationVariable("id") UUID id) {
         User user = PrincipalUtils.getLoggedInUser();

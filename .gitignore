@@ -14,7 +14,8 @@ target/
 .sts4-cache
 
 ### IntelliJ IDEA ###
-.idea
+.idea/*
+!.idea/rcb-settings.xml
 *.iws
 *.iml
 *.ipr
@@ -31,3 +32,6 @@ build/
 
 ### VS Code ###
 .vscode/
+
+# dependencies
+/frontend-web/node_modules
