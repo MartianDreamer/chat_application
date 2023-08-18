@@ -92,7 +92,7 @@ public class WebSecurityConfig {
                 .cors(Customizer.withDefaults())
                 .authorizeHttpRequests(authorizationManagerRequestMatcherRegistry -> {
                     RequestMatcher[] permitAllRequests = {
-                            RegexRequestMatcher.regexMatcher("/ws/.*"),
+                            RegexRequestMatcher.regexMatcher("/ws.*"),
                             RegexRequestMatcher.regexMatcher(HttpMethod.PUT, "/rest/users"),
                             RegexRequestMatcher.regexMatcher(HttpMethod.GET, "/rest/users/confirm.*"),
                             RegexRequestMatcher.regexMatcher("/swagger-ui.html.*"),
